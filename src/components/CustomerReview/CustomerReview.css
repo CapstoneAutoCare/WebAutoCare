@@ -1,0 +1,6 @@
+@media screen and (max-width: 480px) {
+  .CustomerReview {
+    align-items: center;
+    display: inline;
+  }
+}
