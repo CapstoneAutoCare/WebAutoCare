@@ -13,7 +13,6 @@ import {
   Box,
   Grid,
 } from "@mui/material";
-import "../Post/Post.css";
 import usePagination from "../../Data/Pagination";
 import PostApi from "../Axios/PostApi";
 

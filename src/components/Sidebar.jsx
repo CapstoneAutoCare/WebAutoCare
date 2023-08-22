@@ -8,14 +8,16 @@ import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import MainDash from "./MainDash/MainDash";
 import Staff from "./StaffCompany/Staff";
-import Job from "./Job/Job";
-import Apply from "./Apply/Apply";
+import Apply from "./Scheduler/Scheduler";
 import { useNavigate } from "react-router-dom";
 import RightSide from "./RigtSide/RightSide";
-import Post from "./Post/Post";
 import jwt_decode from "jwt-decode";
 import ProfilePage from "./Updates/ProfilePage";
-import Position from "./Position/Position";
+import Position from "./Lands/Lands";
+
+import { AddAlarmRounded } from "@material-ui/icons";
+import AddLand from "./AddLand/AddLand";
+import Booking from "./Booking/Booking";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -52,23 +54,23 @@ const Sidebar = () => {
   const sidebarComponentsAdmin = [
     <MainDash />,
     <Staff />,
-    <Job />,
-    <Post />,
+    <AddLand />,
+    <Booking />,
     <Apply />,
     <ProfilePage />,
   ];
   const sidebarComponentsCompany = [
     <MainDash />,
     <Position />,
-    <Job />,
-    <Post />,
+    <AddLand />,
+    <Booking />,
     <Apply />,
     <ProfilePage />,
   ];
   const renderRightSide = () => {
     if (userRole === "ADMIN") {
       return selected < 7 && <RightSide />;
-    } else if (userRole === "COMPANY") {
+    } else if (userRole === "OWNER") {
       // Add your logic to show RightSide component for COMPANY role
       // For example:
       return selected === 1 && <RightSide />;
