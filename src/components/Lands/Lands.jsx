@@ -184,7 +184,7 @@ export default function Position({ companyItems }) {
       height="100%"
     >
       <Grid>
-        <h3>HR</h3>
+        <h3>Sân bóng</h3>
 
         <TableContainer
           component={Paper}
@@ -195,14 +195,11 @@ export default function Position({ companyItems }) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Account ID</TableCell>
-                <TableCell>User Name</TableCell>
-                <TableCell>Full Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>StatusAccount</TableCell>
-                <TableCell>StatusCompany</TableCell>
-                <TableCell>Information</TableCell>
+                <TableCell>Tên sân bóng</TableCell>
+                <TableCell>Giới thiệu</TableCell>
+                <TableCell>Quận</TableCell>
+                <TableCell>Địa chỉ cụ thể</TableCell>
+                <TableCell> </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -253,7 +250,8 @@ export default function Position({ companyItems }) {
                       </Select>
                     </TableCell>
                     <TableCell className="Details">
-                      <ButtonBase>SHOW</ButtonBase>
+                      <ButtonBase>Thêm sân nhỏ</ButtonBase>
+                      <ButtonBase>Xóa sân bóng</ButtonBase>
                     </TableCell>
                   </TableRow>
                 )))
@@ -261,98 +259,7 @@ export default function Position({ companyItems }) {
             </TableBody>
           </Table>
         </TableContainer>
-        <Pagination
-          variant="outlined"
-          color="primary"
-          showFirstButton
-          showLastButton
-          count={countHr}
-          size="large"
-          page={pageHr}
-          onChange={handlePageChangeHr}
-        />
-        <h3>INTERVIEWER</h3>
 
-        <TableContainer
-          component={Paper}
-          style={{
-            boxShadow: "0px 13px 20px 0px #80808029",
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Account ID</TableCell>
-                <TableCell>User Name</TableCell>
-                <TableCell>Full Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>StatusAccount</TableCell>
-                <TableCell>StatusCompany</TableCell>
-                <TableCell>Information</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {
-                (companyItems = _DataInterviewer
-                  .currentData()
-                  .map((companies) => (
-                    <TableRow
-                      key={`${companies.interviewerId}`}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      {/* <TableCell component="th" scope="row"> */}
-                      <TableCell>{companies.accountId}</TableCell>
-                      <TableCell>{companies.username}</TableCell>
-                      <TableCell>
-                        {companies.firstName} {companies.lastName}
-                      </TableCell>
-                      <TableCell>{companies.email}</TableCell>
-
-                      <TableCell>{formatDate(companies.date)}</TableCell>
-                      <TableCell>
-                        <Tooltip
-                          className="status"
-                          style={makeStyle(companies.status)}
-                        >
-                          {companies.status}
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          value={companies.statusInterviewer}
-                          onChange={(event) => {
-                            const newStatus = event.target.value;
-                            handleStatusChangeInterviewer(
-                              companies.interviewerId,
-                              newStatus
-                            );
-                          }}
-                          className="status"
-                          style={{
-                            ...makeStyle(companies.statusInterviewer),
-                            borderRadius: "10px", // Độ cong viền tròn
-                            width: "120px", // Độ rộng thu nhỏ
-                            fontSize: "12px", // Cỡ chữ nhỏ
-                            height: "38px",
-                          }}
-                        >
-                          {statusOptions.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {status}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </TableCell>
-                      <TableCell className="Details">
-                        <ButtonBase>SHOW</ButtonBase>
-                      </TableCell>
-                    </TableRow>
-                  )))
-              }
-            </TableBody>
-          </Table>
-        </TableContainer>
         <Pagination
           variant="outlined"
           color="primary"

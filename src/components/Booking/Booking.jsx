@@ -76,7 +76,7 @@ export default function Post(PostItems) {
       padding="16px"
       height="100%"
     >
-      <h3>Posts Company</h3>
+      <h3>Lịch sử đặt sân</h3>
 
       <Grid>
         <TableContainer
@@ -88,14 +88,14 @@ export default function Post(PostItems) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Post ID</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Period Date</TableCell>
-                <TableCell>Expired Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Salary</TableCell>
-                <TableCell>Information</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Tên sân bóng</TableCell>
+                <TableCell>Quận</TableCell>
+                <TableCell>Loại sân</TableCell>
+                <TableCell>Giờ bắt đầu</TableCell>
+                <TableCell>Giờ kết thúc</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Giá</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
