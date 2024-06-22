@@ -6,8 +6,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
-import AuthenApi from "../Axios/AuthenApi";
 import Typography from "@mui/material/Typography"; // Import Typography
+import { useDispatch } from "react-redux";
+import { loginAsync } from "../../redux/authSlice";
 
 const theme = createTheme({
   palette: {
@@ -21,9 +22,10 @@ const theme = createTheme({
 });
 
 export default function Login() {
-  const [error, setError] = useState(); // Initialize with null
+  const [error, setError] = useState();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -35,20 +37,17 @@ export default function Login() {
     }));
   };
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      const token = await AuthenApi.Login(formData);
-
-      if (token != null) {
-        localStorage.setItem("localtoken", token.data.data.token);
-        console.log("Login successful! Token:", token.data.data.token);
+      const login = await dispatch(loginAsync(formData));
+      if (login != null) {
+        console.log("Login successful! Token:", login);
         navigate("/dashboard");
       } else {
-        setError(token.message);
-        console.log(token.message);
+        setError(login.message);
+        console.log(login.message);
       }
     } catch (error) {
       console.error("Login error:", error.response.data.Messages);
@@ -66,8 +65,7 @@ export default function Login() {
           justifyContent: "center",
           alignItems: "center",
           minHeight: "100vh",
-          background:
-            "linear-gradient(106.37deg, #ffe1bc 29.63%, #ffcfd1 51.55%, #f3c6f1 90.85%)",
+          backgroundColor: "#6495ED",
         }}
       >
         <div
@@ -106,10 +104,10 @@ export default function Login() {
               Sign in
             </h2>
             <TextField
-              label="Username"
+              label="email"
               variant="outlined"
-              name="username"
-              value={formData.username}
+              name="email"
+              value={formData.email}
               onChange={handleInputChange}
               style={{ marginTop: "35px" }}
               fullWidth

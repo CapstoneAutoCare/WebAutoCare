@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthenApi from "../../components/Axios/AuthenApi";
+import AuthenApi from "../Axios/AuthenApi";
 import {
   Typography,
   Grid,

@@ -27,3 +27,7 @@ function usePagination(data, itemsPerPage) {
 }
 
 export default usePagination;
+
+export const formatDate = (date) => {
+  return new Date(date).toLocaleDateString();
+};

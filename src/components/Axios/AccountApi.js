@@ -34,5 +34,15 @@ const AccountApi = {
     const url = `/Accounts/ChangeStatusAccount`;
     return axiosApi.patch(url, form, config);
   },
+  getProfile: async (token) => {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/Accounts/Profile`;
+    return axiosApi.get(url, config);
+  },
 };
 export default AccountApi;

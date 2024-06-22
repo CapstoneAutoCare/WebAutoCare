@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
-import Logo from "../imgs/logo.png";
 import { UilSignOutAlt } from "@iconscout/react-unicons";
 import { SidebarDataAdmin } from "../Data/Data";
 import { SidebarDataCompany } from "../Data/Data";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import MainDash from "./MainDash/MainDash";
-import Staff from "./StaffCompany/Staff";
 import Apply from "./Scheduler/Scheduler";
 import { useNavigate } from "react-router-dom";
 import RightSide from "./RigtSide/RightSide";
 import jwt_decode from "jwt-decode";
 import ProfilePage from "./Updates/ProfilePage";
-import Position from "./Lands/Lands";
 
-import { AddAlarmRounded } from "@material-ui/icons";
-import AddLand from "./AddLand/AddLand";
 import Booking from "./Booking/Booking";
+import { CheckRole } from "../redux/authSlice";
+import Staff from "./StaffCompany/Staff";
+import SparePartItems from "./SparePart/SparePartItems";
+import MaintenanceServices from "./Service/MaintenanceServices";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -50,48 +49,51 @@ const Sidebar = () => {
   };
   const [id, setId] = useState("");
   const currentSidebarData =
-    userRole === "ADMIN" ? SidebarDataAdmin : SidebarDataCompany;
-  const sidebarComponentsAdmin = [
+    userRole === "CENTER" ? SidebarDataAdmin : SidebarDataCompany;
+  const sidebarComponentsCenter = [
     <MainDash />,
     <Staff />,
-    <AddLand />,
+    // <AddLand />,
     <Booking />,
+    <SparePartItems />,
+    <MaintenanceServices />,
     <Apply />,
     <ProfilePage />,
   ];
   const sidebarComponentsCompany = [
     <MainDash />,
-    <Position />,
-    <AddLand />,
+    // <Position />,
+    // <AddLand />,
     <Booking />,
     <Apply />,
     <ProfilePage />,
   ];
   const renderRightSide = () => {
-    if (userRole === "ADMIN") {
-      return selected < 7 && <RightSide />;
+    if (userRole === "CENTER") {
+      return selected < 7;
     } else if (userRole === "OWNER") {
-      // Add your logic to show RightSide component for COMPANY role
-      // For example:
       return selected === 1 && <RightSide />;
     } else {
-      return null; // If userRole is neither ADMIN nor COMPANY, don't show RightSide
+      return null;
     }
   };
+  // const { customercares, status, error } = useSelector((state) =>
+  //   GetListByCenter(state)
+  // );
+
   useEffect(() => {
-    // Kiểm tra nếu selected === 0 thì hiển thị "RightSide"
-    // var session = decodeToken(tokenFromSessionStorage);
     var code = decodeToken(tokenlocal);
     const role =
       code["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     const accountId = code.sub;
     localStorage.setItem("AccountId", accountId);
     localStorage.setItem("ROLE", role);
-    // localStorage.setItem();
+
     setUserRole(role);
-    // console.log(accountId);
-    // console.log(role);
-    // setShowRightSide(selected < 7);
+    CheckRole(tokenlocal, role);
+    if (role === "CLIENT") {
+      navigate("/");
+    }
   }, [selected, userRole]);
 
   const handleSidebarItemClick = (index) => {
@@ -105,8 +107,8 @@ const Sidebar = () => {
     sessionStorage.clear();
     navigate("/");
   };
-  const ADMIN = "Admin";
-  const COMPANY = "Company";
+  // const ADMIN = "ADMIN";
+  // const COMPANY = "CENTER";
   console.log(window.innerWidth);
   return (
     <>
@@ -123,7 +125,7 @@ const Sidebar = () => {
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
         {/* logo */}
-        <div className="logo">
+        {/* <div className="logo">
           <img src={Logo} alt="logo" />
           <span>
             {userRole === "ADMIN" ? (
@@ -132,7 +134,7 @@ const Sidebar = () => {
               <span className="company">{COMPANY}</span>
             )}
           </span>
-        </div>
+        </div> */}
 
         <div className="menu">
           {currentSidebarData.map((item, index) => {
@@ -140,7 +142,7 @@ const Sidebar = () => {
               <div
                 className={selected === index ? "menuItem active" : "menuItem"}
                 key={index}
-                onClick={() => handleSidebarItemClick(index)} // Call the click handler with the index of the clicked item
+                onClick={() => handleSidebarItemClick(index)}
               >
                 <item.icon />
                 <span>{item.heading}</span>
@@ -154,8 +156,8 @@ const Sidebar = () => {
         </div>
       </motion.div>
 
-      {userRole === "ADMIN"
-        ? sidebarComponentsAdmin[selected]
+      {userRole === "CENTER"
+        ? sidebarComponentsCenter[selected]
         : sidebarComponentsCompany[selected]}
       {renderRightSide()}
     </>
