@@ -1,13 +1,17 @@
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { Link } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Container from "@mui/material/Container";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography"; // Import Typography
+import React from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {
+  TextField,
+  Button,
+  Link,
+  Container,
+  Typography,
+  CssBaseline,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { loginAsync } from "../../redux/authSlice";
 
 const theme = createTheme({
@@ -21,39 +25,42 @@ const theme = createTheme({
   },
 });
 
-export default function Login() {
-  const [error, setError] = useState();
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+const validationSchema = Yup.object({
+  email: Yup.string()
+    // .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(0, "Password should be at least 6 characters")
+    .required("Password is required"),
+});
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+export default function Login() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    try {
-      const login = await dispatch(loginAsync(formData));
-      if (login != null) {
-        console.log("Login successful! Token:", login);
-        navigate("/dashboard");
-      } else {
-        setError(login.message);
-        console.log(login.message);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values, { setSubmitting, setErrors }) => {
+      try {
+        const login = await dispatch(loginAsync(values));
+        if (login != null) {
+          console.log("Login successful! Token:", login);
+          navigate("/dashboard");
+        } else {
+          setErrors({ email: login.message, password: login.message });
+          console.log(login.message);
+        }
+      } catch (error) {
+        console.error("Login error:", error.response.data.Messages);
+        setErrors({ email: error.response.data.Messages });
       }
-    } catch (error) {
-      console.error("Login error:", error.response.data.Messages);
-      setError(error.response.data.Messages);
-    }
-  };
+      setSubmitting(false);
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,7 +86,6 @@ export default function Login() {
             overflow: "hidden",
           }}
         >
-          {/* Add animations here if desired */}
           <form
             style={{
               position: "absolute",
@@ -91,7 +97,7 @@ export default function Login() {
               display: "flex",
               flexDirection: "column",
             }}
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
           >
             <h2
               style={{
@@ -104,11 +110,14 @@ export default function Login() {
               Sign in
             </h2>
             <TextField
-              label="email"
+              label="Email"
               variant="outlined"
               name="email"
-              value={formData.email}
-              onChange={handleInputChange}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
               style={{ marginTop: "35px" }}
               fullWidth
               required
@@ -118,8 +127,13 @@ export default function Login() {
               variant="outlined"
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleInputChange}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.password && Boolean(formik.errors.password)
+              }
+              helperText={formik.touched.password && formik.errors.password}
               style={{ marginTop: "20px" }}
               fullWidth
               required
@@ -143,16 +157,17 @@ export default function Login() {
               variant="contained"
               color="primary"
               style={{ marginTop: "20px" }}
+              disabled={formik.isSubmitting}
             >
               Login
             </Button>
-            {error && (
+            {formik.errors.email && (
               <Typography
-                variant="body"
+                variant="body2"
                 color="error"
-                style={{ marginBottom: "10px" }}
+                style={{ marginTop: "10px" }}
               >
-                {error}
+                {formik.errors.email}
               </Typography>
             )}
           </form>

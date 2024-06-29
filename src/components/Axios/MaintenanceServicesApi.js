@@ -20,5 +20,25 @@ const MaintenanceServicesApi = {
   
       return axiosApi.get(url, config);
   },
+  addMaintenanceServicesItem(token, data) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/MaintenanceServices/Post";
+
+    return axiosApi
+      .post(url, data, config)
+      .then((response) => {
+        console.log("AddMaintenanceServices success:", response.data);
+        return response.data; 
+      })
+      .catch((error) => {
+        console.error("AddMaintenanceServices error:", error);
+        throw error; 
+      });
+  },
 };
 export default MaintenanceServicesApi;

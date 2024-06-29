@@ -6,7 +6,7 @@ import { SidebarDataCompany } from "../Data/Data";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import MainDash from "./MainDash/MainDash";
-import Apply from "./Scheduler/Scheduler";
+// import Apply from "./Scheduler/Scheduler";
 import { useNavigate } from "react-router-dom";
 import RightSide from "./RigtSide/RightSide";
 import jwt_decode from "jwt-decode";
@@ -57,7 +57,7 @@ const Sidebar = () => {
     <Booking />,
     <SparePartItems />,
     <MaintenanceServices />,
-    <Apply />,
+    // <Apply />,
     <ProfilePage />,
   ];
   const sidebarComponentsCompany = [
@@ -65,7 +65,7 @@ const Sidebar = () => {
     // <Position />,
     // <AddLand />,
     <Booking />,
-    <Apply />,
+    // <Apply />,
     <ProfilePage />,
   ];
   const renderRightSide = () => {

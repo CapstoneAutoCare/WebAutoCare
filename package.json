@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@devexpress/dx-react-scheduler-material-ui": "^4.0.5",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@iconscout/react-unicons": "^1.1.6",
@@ -14,10 +13,12 @@
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
     "apexcharts": "^3.35.0",
-    "axios": "^1.4.0",
+    "axios": "^1.7.2",
     "babel-preset-react-app": "^10.0.1",
     "buffer": "^6.0.3",
+    "formik": "^2.4.6",
     "framer-motion": "^6.2.9",
+    "i": "^0.3.7",
     "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
@@ -27,7 +28,8 @@
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.0",
     "redux": "^4.2.1",
-    "web-vitals": "^2.1.0"
+    "web-vitals": "^2.1.0",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

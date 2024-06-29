@@ -141,7 +141,17 @@ export default function Staff() {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell>
-                      <img src={account.logo} alt="Account Logo" />
+                        {account.logo ? (
+                          <img
+                            src={account.logo}
+                            alt="Item Logo"
+                            className="item-logo"
+                          />
+                        ) : (
+                          <div className="no-image-placeholder">
+                            No Image Available
+                          </div>
+                        )}
                     </TableCell>
                     <TableCell>{account.email}</TableCell>
                     <TableCell>{account.phone}</TableCell>

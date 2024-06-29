@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
+  Button,
   ButtonBase,
   Grid,
   MenuItem,
@@ -17,8 +18,12 @@ import {
   Tooltip,
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
-import { SparePartItemsByCenterId } from "../../redux/sparepartItemsSlice";
+import {
+  GetListByCenter,
+  SparePartItemsByCenterId,
+} from "../../redux/sparepartItemsSlice";
 import "../SparePart/sparepartItems.css";
+import { AddSparePartDialog } from "../../Data/DialogComponent";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCEPT") {
@@ -62,9 +67,19 @@ const statusOptions = ["ACTIVE", "INACTIVE", "ACCEPT", "REQUEST"];
 
 const SparePartItems = () => {
   const dispatch = useDispatch();
-  const { sparepartitems, status, error } = useSelector(
-    (state) => state.sparepartitem
-  );
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const {
+    sparepartitems = [],
+    status,
+    error,
+  } = useSelector((state) => state.sparepartitem);
+
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
 
@@ -73,6 +88,7 @@ const SparePartItems = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
+    // dispatch(GetListByCenter());
     dispatch(SparePartItemsByCenterId({ centerId: centerId, token: token }));
   }, [dispatch, token, centerId]);
 
@@ -85,28 +101,39 @@ const SparePartItems = () => {
   };
 
   return (
-    <div>
-      <Box>
-        <h3>List SparePartItems</h3>
-        <Grid>
-          <TableContainer
-            component={Paper}
-            style={{
-              boxShadow: "0px 13px 20px 0px #80808029",
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Avatar</TableCell>
-                  <TableCell>SparePart Name </TableCell>
-                  <TableCell>Created Date</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Details</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {sparepartitems
+    <Box>
+      <h3>List SparePartItems</h3>
+      <Button variant="contained" color="success" onClick={handleClickOpen}>
+        Add SparePartItems
+      </Button>
+      <AddSparePartDialog
+        open={open}
+        handleClose={handleClose}
+        centerId={centerId}
+        token={token}
+      />
+
+      <Grid>
+        <TableContainer
+          component={Paper}
+          style={{
+            boxShadow: "0px 13px 20px 0px #80808029",
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Avatar</TableCell>
+                <TableCell>SparePart Name </TableCell>
+                <TableCell>Created Date</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Details</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sparepartitems &&
+                sparepartitems.length > 0 &&
+                sparepartitems
                   .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                   .map((item) => (
                     <TableRow
@@ -127,7 +154,8 @@ const SparePartItems = () => {
                         )}
                       </TableCell>
                       <TableCell>{item.sparePartsItemName}</TableCell>
-                      <TableCell>{formatDate(item.createdDate)}</TableCell>
+                      {/* <TableCell>{formatDate(item.createdDate)}</TableCell> */}
+                      <TableCell>{item.createdDate}</TableCell>
                       <TableCell>
                         <Select
                           value={item.status}
@@ -156,20 +184,19 @@ const SparePartItems = () => {
                       </TableCell>
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Pagination
-            count={pageCount}
-            page={page}
-            onChange={handleChangePage}
-            variant="outlined"
-            shape="rounded"
-            style={{ marginTop: "20px" }}
-          />
-        </Grid>
-      </Box>
-    </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Pagination
+          count={pageCount}
+          page={page}
+          onChange={handleChangePage}
+          variant="outlined"
+          shape="rounded"
+          style={{ marginTop: "20px" }}
+        />
+      </Grid>
+    </Box>
   );
 };
 

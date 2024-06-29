@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
+  Button,
   ButtonBase,
   Grid,
   MenuItem,
@@ -17,9 +18,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
-import { SparePartItemsByCenterId } from "../../redux/sparepartItemsSlice";
 import "../SparePart/sparepartItems.css";
 import { MaintenanceServicesByCenterId } from "../../redux/mainserviceSlice";
+import { AddMaintenanceServiceDialog } from "../../Data/DialogComponent";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCEPT") {
@@ -63,13 +64,21 @@ const statusOptions = ["ACTIVE", "INACTIVE", "ACCEPT", "REQUEST"];
 
 const MaintenanceServices = () => {
   const dispatch = useDispatch();
-  const { maintenanceservices, status, error } = useSelector(
-    (state) => state.maintenanceservice
-  );
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const {
+    maintenanceservices = [],
+    status,
+    error,
+  } = useSelector((state) => state.maintenanceservice);
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
 
-  // Phân trang
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -91,6 +100,15 @@ const MaintenanceServices = () => {
     <div>
       <Box>
         <h3>List Maintenance Services</h3>
+        <Button variant="contained" color="success" onClick={handleClickOpen}>
+          Add Maintenance Services
+        </Button>
+        <AddMaintenanceServiceDialog
+          open={open}
+          handleClose={handleClose}
+          centerId={centerId}
+          token={token}
+        />
         <Grid>
           <TableContainer
             component={Paper}

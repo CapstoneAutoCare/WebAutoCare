@@ -6,6 +6,7 @@ const initialState = {
   status: "idle",
   error: null,
 };
+
 export const SparePartItemsAll = createAsyncThunk(
   "sparepartitem/GetAll",
   async (token) => {
@@ -29,6 +30,18 @@ export const SparePartItemsByCenterId = createAsyncThunk(
     }
   }
 );
+export const AddSparePartItemsByCenter = createAsyncThunk(
+  "sparepartitem/AddSparePartItemsByCenter",
+  async ({token, data}) => {
+    try {
+      const list = await SparePartItemsApi.addSpartPartItem(token, data);
+      console.log(list);
+      return list;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
 const sparepartitemsSlice = createSlice({
   name: "sparepartitem",
   initialState,
@@ -37,10 +50,10 @@ const sparepartitemsSlice = createSlice({
       state.sparepartitems = action.payload;
       state.error = null;
     },
-    // GetListByCenter: (state, { action }) => {
-    //   state.sparepartitems = action.payload;
-    //   state.error = null;
-    // },
+    GetListByCenter: (state, action) => {
+      state.sparepartitems = action.payload;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -66,9 +79,22 @@ const sparepartitemsSlice = createSlice({
       .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+
+      .addCase(AddSparePartItemsByCenter.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.sparepartitems = action.payload;
+        console.log("payload", state.sparepartitems);
+      })
+      .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       });
   },
 });
-export const { GetAll } = sparepartitemsSlice.actions;
+export const { GetAll, GetListByCenter } = sparepartitemsSlice.actions;
 
 export default sparepartitemsSlice.reducer;

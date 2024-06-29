@@ -32,6 +32,18 @@ export const MaintenanceServicesByCenterId = createAsyncThunk(
     }
   }
 );
+export const AddMaintenanceServiceByCenter = createAsyncThunk(
+  "maintenanceservice/AddMaintenanceServiceByCenter",
+  async ({token, data}) => {
+    try {
+      const list = await MaintenanceServicesApi.addMaintenanceServicesItem(token, data);
+      console.log(list);
+      return list;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
 const mainserviceSlice = createSlice({
   name: "maintenanceservice",
   initialState,
