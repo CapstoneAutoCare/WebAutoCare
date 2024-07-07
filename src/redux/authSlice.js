@@ -1,13 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AuthenApi from "../components/Axios/AuthenApi";
 import AccountApi from "../components/Axios/AccountApi";
+import { useNavigate } from "react-router-dom";
 
 export const loginAsync = createAsyncThunk("auth/login", async (formData) => {
   try {
     const response = await AuthenApi.Login(formData);
+    console.log(response);
     return response;
   } catch (error) {
-    throw new Error(error.Messages);
+    throw new Error(error.Exception);
   }
 });
 
@@ -22,7 +24,6 @@ const authSlice = createSlice({
       state.login = null;
       state.error = null;
     },
-
   },
   extraReducers: (builder) => {
     builder
@@ -33,11 +34,11 @@ const authSlice = createSlice({
         localStorage.setItem("localtoken", state.login.token);
       })
       .addCase(loginAsync.rejected, (state, action) => {
-        state.login = null;
-        state.error = action;
+        state.login = action.payload;
+        state.error = action.payload;
         state.status = "failed";
-
-      })
+        // alert("Sai password");
+      });
   },
 });
 

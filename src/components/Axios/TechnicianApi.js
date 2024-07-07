@@ -1,30 +1,26 @@
 import axiosApi from "./AxiosApi";
 
-const BookingApi = {
-  getAll() {
-    const url = "/Bookings/GetAll";
-    return axiosApi.get(url);
-  },
-  getById(token, bookingId) {
+const TechinicanApi = {
+  getAll(token) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/Bookings/GetById?id=" + bookingId;
+    const url = "/Technicians/GetAll";
     return axiosApi.get(url, config);
   },
-  getListByCenter({ token }) {
+  getListByCenter({ centerId, token }) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/Bookings/GetListByCenter";
+    const url = "/Technicians/GetListByCenter?centerId=" + centerId;
 
     return axiosApi.get(url, config);
   },
 };
-export default BookingApi;
+export default TechinicanApi;

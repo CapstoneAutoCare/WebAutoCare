@@ -11,14 +11,14 @@ const MaintenanceServicesApi = {
   },
   getListByCenter({ token, centerId }) {
     const config = {
-        headers: {
-          accept: "text/plain",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const url = "/MaintenanceServices/GetListByCenter?centerId=" + centerId;
-  
-      return axiosApi.get(url, config);
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/MaintenanceServices/GetListByCenter";
+
+    return axiosApi.get(url, config);
   },
   addMaintenanceServicesItem(token, data) {
     const config = {
@@ -33,11 +33,11 @@ const MaintenanceServicesApi = {
       .post(url, data, config)
       .then((response) => {
         console.log("AddMaintenanceServices success:", response.data);
-        return response.data; 
+        return response.data;
       })
       .catch((error) => {
         console.error("AddMaintenanceServices error:", error);
-        throw error; 
+        throw error;
       });
   },
 };

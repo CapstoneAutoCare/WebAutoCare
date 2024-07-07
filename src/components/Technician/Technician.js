@@ -23,11 +23,10 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import "../StaffCompany/Staff.css";
-import AccountApi from "../Axios/AccountApi";
+import "./Technician.css";
 import usePagination, { formatDate } from "../../Data/Pagination";
 import { useDispatch, useSelector } from "react-redux";
-import { CustomerCareByCenterId } from "../../redux/customercareSlice";
+import { TechinicanByCenterId } from "../../redux/techinicansSlice";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCPET") {
@@ -67,16 +66,16 @@ const makeRole = (role) => {
 };
 const statusOptions = ["ACTIVE", "INACTIVE", "ACCEPT", "REQUEST"];
 
-export default function Staff() {
+export default function Technician() {
   const dispatch = useDispatch();
-  const { customercares, status, error } = useSelector(
-    (state) => state.customercare
+  const { technicians, status, error } = useSelector(
+    (state) => state.technician
   );
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
   useEffect(() => {
-    dispatch(CustomerCareByCenterId({ centerId, token }));
-    console.log("da call", customercares);
+    dispatch(TechinicanByCenterId({ centerId, token }));
+    console.log("da call", technicians);
   }, [dispatch, centerId, token]);
 
   const [open, setOpen] = useState(false);
@@ -98,8 +97,8 @@ export default function Staff() {
   };
   let [page, setPage] = useState(1);
   const PER_PAGE = 7;
-  const count = Math.ceil(customercares.length / PER_PAGE);
-  const sortDate = [...customercares].sort(
+  const count = Math.ceil(technicians.length / PER_PAGE);
+  const sortDate = [...technicians].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
   const _Data = usePagination(sortDate, PER_PAGE);
@@ -135,23 +134,23 @@ export default function Staff() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {customercares.map((account) => (
+                {technicians.map((account) => (
                   <TableRow
-                    key={account.customerCareId}
+                    key={account.technicianId}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell>
-                        {account.logo ? (
-                          <img
-                            src={account.logo}
-                            alt="Item Logo"
-                            className="item-logo"
-                          />
-                        ) : (
-                          <div className="no-image-placeholder">
-                            No Image Available
-                          </div>
-                        )}
+                      {account.logo ? (
+                        <img
+                          src={account.logo}
+                          alt="Item Logo"
+                          className="item-logo"
+                        />
+                      ) : (
+                        <div className="no-image-placeholder">
+                          No Image Available
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>{account.email}</TableCell>
                     <TableCell>{account.phone}</TableCell>

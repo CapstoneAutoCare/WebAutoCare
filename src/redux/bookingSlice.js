@@ -5,6 +5,7 @@ const initialState = {
   bookings: [],
   status: "idle",
   error: null,
+  booking: null,
 };
 export const BookingAll = createAsyncThunk("booking/GetAll", async (token) => {
   try {
@@ -14,6 +15,17 @@ export const BookingAll = createAsyncThunk("booking/GetAll", async (token) => {
     throw new Error(error.Messages);
   }
 });
+export const BookingById = createAsyncThunk(
+  "booking/GetById",
+  async ({ token, id }) => {
+    try {
+      const list = await BookingApi.getById(token, id);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
 export const BookingByCenter = createAsyncThunk(
   "booking/GetListByCenter",
   async (token) => {
@@ -49,6 +61,14 @@ const bookingSlice = createSlice({
         state.bookings = action.payload;
       })
       .addCase(BookingAll.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(BookingById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.booking = action.payload;
+      })
+      .addCase(BookingById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })

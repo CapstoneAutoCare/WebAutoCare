@@ -16,7 +16,7 @@ const SparePartItemsApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/SparePartItem/GetListByCenter?centerId=" + centerId;
+    const url = "/SparePartItem/GetListByCenter";
 
     return axiosApi.get(url, config);
   },

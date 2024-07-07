@@ -5,6 +5,9 @@ import customercareReducer from "./customercareSlice";
 import sparepartitemsReducer from "./sparepartItemsSlice";
 import maintenanceservicesReducer from "./mainserviceSlice";
 import bookingReducer from "./bookingSlice";
+import sparepartsReducer from "./sparepartsSlice";
+import technicianReducer from "./techinicansSlice";
+import maintenanceInformationsReducer from "./maintenanceInformationsSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +17,9 @@ const store = configureStore({
     sparepartitem: sparepartitemsReducer,
     maintenanceservice: maintenanceservicesReducer,
     booking: bookingReducer,
+    spareparts:sparepartsReducer,
+    technician :technicianReducer,
+    maintenanceInformation: maintenanceInformationsReducer
   },
 });
 

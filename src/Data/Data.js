@@ -25,14 +25,18 @@ import img3 from "../imgs/img3.png";
 import { useState } from "react";
 
 // Sidebar Data
-export const SidebarDataAdmin = [
+export const SidebarDataCenter = [
   {
     icon: UilEstate,
     heading: "Dashboard",
   },
   {
     icon: UilUsersAlt,
-    heading: "Managers Staff",
+    heading: "Managers CustomerCare",
+  },
+  {
+    icon: UilUsersAlt,
+    heading: "Managers Technician",
   },
   {
     icon: UilClipboardAlt,
@@ -47,27 +51,23 @@ export const SidebarDataAdmin = [
     heading: "Services",
   },
   {
-    icon: UilUser,
-    heading: "Profile",
+    icon: UilChart,
+    heading: "Cost",
   },
   {
     icon: UilPackage,
-    heading: "Analytics",
+    heading: "Maintenance Informations",
   },
   {
-    icon: UilChart,
-    heading: "Analytics",
-  },
-  {
-    icon: UilChart,
-    heading: "Analytics",
+    icon: UilUser,
+    heading: "Profile",
   },
   {
     icon: UilChart,
     heading: "Analytics",
   },
 ];
-export const SidebarDataCompany = [
+export const SidebarDataAdmin = [
   {
     icon: UilEstate,
     heading: "Dashboard",

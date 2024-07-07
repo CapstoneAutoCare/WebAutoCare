@@ -15,96 +15,64 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
 } from "@mui/material";
-import { formatDate } from "../../Data/Pagination";
-import {
-  GetListByCenter,
-  SparePartItemsByCenterId,
-} from "../../redux/sparepartItemsSlice";
-import "../SparePart/sparepartItems.css";
+import "./sparepartItems.css";
 import { AddSparePartDialog } from "../../Data/DialogComponent";
+import { SparePartItemsByCenterId } from "../../redux/sparepartItemsSlice";
 
 const makeStyle = (status) => {
-  if (status === "ACTIVE" || status === "ACCEPT") {
-    return {
-      background: "rgb(145 254 159 / 47%)",
-      color: "green",
-    };
-  } else if (status === "REQUEST" || status === "INACTIVE") {
-    return {
-      background: "#ffadad8f",
-      color: "red",
-    };
-  } else {
-    return {
-      background: "#59bfff",
-      color: "white",
-    };
-  }
-};
-
-const makeRole = (role) => {
-  if (role === "ADMIN") {
-    return {
-      background: "#ffadad8f",
-      color: "red",
-    };
-  } else if (role === "COMPANY") {
-    return {
-      background: "#59bfff",
-      color: "blue",
-    };
-  } else if (role === "CANDIDATE") {
-    return {
-      background: "rgb(145 254 159 / 47%)",
-      color: "green",
-    };
+  switch (status) {
+    case "ACTIVE":
+    case "ACCEPT":
+      return { background: "rgb(145 254 159 / 47%)", color: "green" };
+    case "REQUEST":
+    case "INACTIVE":
+      return { background: "#ffadad8f", color: "red" };
+    default:
+      return { background: "#59bfff", color: "white" };
   }
 };
 
 const statusOptions = ["ACTIVE", "INACTIVE", "ACCEPT", "REQUEST"];
 
-const SparePartItems = () => {
+const SparePartItems = ({ setShowRightSide }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const {
-    sparepartitems = [],
-    status,
-    error,
-  } = useSelector((state) => state.sparepartitem);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const { sparepartitems = [] } = useSelector((state) => state.sparepartitem);
 
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
 
-  // Phân trang
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 5;
-
   useEffect(() => {
-    // dispatch(GetListByCenter());
-    dispatch(SparePartItemsByCenterId({ centerId: centerId, token: token }));
-  }, [dispatch, token, centerId]);
+    dispatch(SparePartItemsByCenterId({ centerId, token }));
+  }, [dispatch, centerId, token]);
 
-  // Tổng số trang
   const pageCount = Math.ceil(sparepartitems.length / itemsPerPage);
 
-  // Xử lý khi chuyển trang
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClickShow = () => {
+    setShowRightSide((prev) => !prev);
+  };
+
   return (
     <Box>
-      <h3>List SparePartItems</h3>
+      <h3>List Spare Part Items</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
-        Add SparePartItems
+        Add Spare Part Items
       </Button>
       <AddSparePartDialog
         open={open}
@@ -112,78 +80,69 @@ const SparePartItems = () => {
         centerId={centerId}
         token={token}
       />
-
       <Grid>
         <TableContainer
           component={Paper}
-          style={{
-            boxShadow: "0px 13px 20px 0px #80808029",
-          }}
+          style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
         >
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Avatar</TableCell>
-                <TableCell>SparePart Name </TableCell>
+                <TableCell>Spare Part Name</TableCell>
                 <TableCell>Created Date</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Details</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sparepartitems &&
-                sparepartitems.length > 0 &&
-                sparepartitems
-                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                  .map((item) => (
-                    <TableRow
-                      key={item.sparePartsItemId}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt="Item Logo"
-                            className="item-logo"
-                          />
-                        ) : (
-                          <div className="no-image-placeholder">
-                            No Image Available
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>{item.sparePartsItemName}</TableCell>
-                      {/* <TableCell>{formatDate(item.createdDate)}</TableCell> */}
-                      <TableCell>{item.createdDate}</TableCell>
-                      <TableCell>
-                        <Select
-                          value={item.status}
-                          onChange={(event) => {
-                            const newStatus = event.target.value;
-                            // handleStatusChange(item.itemId, newStatus);
-                          }}
-                          className="status"
-                          style={{
-                            ...makeStyle(item.status),
-                            borderRadius: "10px",
-                            width: "121px",
-                            fontSize: "12px",
-                            height: "50px",
-                          }}
-                        >
-                          {statusOptions.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {status}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </TableCell>
-                      <TableCell className="Details">
-                        <ButtonBase>SHOW</ButtonBase>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+              {sparepartitems
+                .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                .map((item) => (
+                  <TableRow key={item.sparePartsItemId}>
+                    <TableCell>
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt="Item Logo"
+                          className="item-logo"
+                        />
+                      ) : (
+                        <div className="no-image-placeholder">
+                          No Image Available
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>{item.sparePartsItemName}</TableCell>
+                    <TableCell>{item.createdDate}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={item.status}
+                        onChange={(event) => {
+                          const newStatus = event.target.value;
+                          // handleStatusChange(item.itemId, newStatus);
+                        }}
+                        className="status"
+                        style={{
+                          ...makeStyle(item.status),
+                          borderRadius: "10px",
+                          width: "121px",
+                          fontSize: "12px",
+                          height: "50px",
+                        }}
+                      >
+                        {statusOptions.map((status) => (
+                          <MenuItem key={status} value={status}>
+                            {status}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell className="Details">
+                      <ButtonBase onClick={handleClickShow}>SHOW</ButtonBase>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

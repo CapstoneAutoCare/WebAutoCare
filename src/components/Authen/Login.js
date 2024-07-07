@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -37,7 +37,7 @@ const validationSchema = Yup.object({
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { login } = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -46,8 +46,9 @@ export default function Login() {
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        const login = await dispatch(loginAsync(values));
-        if (login != null) {
+        await dispatch(loginAsync(values));
+        const tokenlocal = localStorage.getItem("localtoken");
+        if (tokenlocal != null) {
           console.log("Login successful! Token:", login);
           navigate("/dashboard");
         } else {
@@ -130,9 +131,7 @@ export default function Login() {
               value={formik.values.password}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={
-                formik.touched.password && Boolean(formik.errors.password)
-              }
+              error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
               style={{ marginTop: "20px" }}
               fullWidth

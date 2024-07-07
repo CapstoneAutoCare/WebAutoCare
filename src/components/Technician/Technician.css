@@ -1,0 +1,14 @@
+.item-logo {
+    width: 100px; /* Điều chỉnh kích thước chiều rộng */
+    height: auto; /* Giữ tỷ lệ khung hình */
+  }
+  
+  .no-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px; /* Điều chỉnh kích thước */
+    height: 100px; /* Điều chỉnh kích thước */
+    background-color: #f0f0f0; /* Màu nền */
+    color: #888; /* Màu văn bản */
+  }

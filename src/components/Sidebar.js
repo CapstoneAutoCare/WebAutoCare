@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
 import { UilSignOutAlt } from "@iconscout/react-unicons";
-import { SidebarDataAdmin } from "../Data/Data";
-import { SidebarDataCompany } from "../Data/Data";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import MainDash from "./MainDash/MainDash";
@@ -14,9 +12,14 @@ import ProfilePage from "./Updates/ProfilePage";
 
 import Booking from "./Booking/Booking";
 import { CheckRole } from "../redux/authSlice";
-import Staff from "./StaffCompany/Staff";
+import CustomerCare from "./CustomerCare/CustomerCare";
 import SparePartItems from "./SparePart/SparePartItems";
 import MaintenanceServices from "./Service/MaintenanceServices";
+import ProfileCardWidget from "./Updates/ProfileCardWidget";
+import { SidebarDataAdmin, SidebarDataCenter } from "../Data/Data";
+import Technician from "./Technician/Technician";
+import MaintenanceInformations from "./MaintenanceInformations/MaintenanceInformations";
+import HorizontalNonLinearStepper from "./MaintenanceInformations/HorizontalNon";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -47,20 +50,24 @@ const Sidebar = () => {
       return null;
     }
   };
+
   const [id, setId] = useState("");
   const currentSidebarData =
-    userRole === "CENTER" ? SidebarDataAdmin : SidebarDataCompany;
+    userRole === "CENTER" ? SidebarDataCenter : SidebarDataAdmin;
+
   const sidebarComponentsCenter = [
     <MainDash />,
-    <Staff />,
-    // <AddLand />,
+    <CustomerCare />,
+    <Technician />,
     <Booking />,
-    <SparePartItems />,
+    <SparePartItems setShowRightSide={setShowRightSide} />,
     <MaintenanceServices />,
     // <Apply />,
     <ProfilePage />,
+    <MaintenanceInformations/>,
+    <HorizontalNonLinearStepper/>
   ];
-  const sidebarComponentsCompany = [
+  const sidebarComponentsAdmin = [
     <MainDash />,
     // <Position />,
     // <AddLand />,
@@ -68,19 +75,8 @@ const Sidebar = () => {
     // <Apply />,
     <ProfilePage />,
   ];
-  const renderRightSide = () => {
-    if (userRole === "CENTER") {
-      return selected < 7;
-    } else if (userRole === "OWNER") {
-      return selected === 1 && <RightSide />;
-    } else {
-      return null;
-    }
-  };
-  // const { customercares, status, error } = useSelector((state) =>
-  //   GetListByCenter(state)
-  // );
 
+  
   useEffect(() => {
     var code = decodeToken(tokenlocal);
     const role =
@@ -91,7 +87,7 @@ const Sidebar = () => {
 
     setUserRole(role);
     CheckRole(tokenlocal, role);
-    if (role === "CLIENT") {
+    if (role === "CLIENT" || role === "TECHNICIAN" || role === "CUSTOMERCARE") {
       navigate("/");
     }
   }, [selected, userRole]);
@@ -158,8 +154,13 @@ const Sidebar = () => {
 
       {userRole === "CENTER"
         ? sidebarComponentsCenter[selected]
-        : sidebarComponentsCompany[selected]}
-      {renderRightSide()}
+        : sidebarComponentsAdmin[selected]}
+
+      {showRightSide && (
+        <div className="right-side-section">
+          <ProfileCardWidget />
+        </div>
+      )}
     </>
   );
 };

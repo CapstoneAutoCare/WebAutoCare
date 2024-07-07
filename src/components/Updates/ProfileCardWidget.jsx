@@ -52,7 +52,7 @@ const ProfileCardWidget = () => {
     <CustomCard>
       <ProfileCover image={Imgg} />
 
-      <UserAvatar src={Imgg} alt="Neil Portrait" />
+      {/* <UserAvatar src={Imgg} alt="Neil Portrait" /> */}
 
       <CardContentWrapper>
         <Typography variant="h5" component="h2">
@@ -72,7 +72,42 @@ const ProfileCardWidget = () => {
           New York, USA
         </Typography>
       </CardContentWrapper>
-
+      <CardContentWrapper>
+        <Typography variant="h5" component="h2">
+          Neil Sims
+        </Typography>
+        <Typography color="textSecondary">Senior Software Engineer</Typography>
+        <Typography variant="body2" color="textSecondary">
+          New York, USA
+        </Typography>
+      </CardContentWrapper>
+      <CardContentWrapper>
+        <Typography variant="h5" component="h2">
+          Neil Sims
+        </Typography>
+        <Typography color="textSecondary">Senior Software Engineer</Typography>
+        <Typography variant="body2" color="textSecondary">
+          New York, USA
+        </Typography>
+      </CardContentWrapper>
+      <CardContentWrapper>
+        <Typography variant="h5" component="h2">
+          Neil Sims
+        </Typography>
+        <Typography color="textSecondary">Senior Software Engineer</Typography>
+        <Typography variant="body2" color="textSecondary">
+          New York, USA
+        </Typography>
+      </CardContentWrapper>
+      <CardContentWrapper>
+        <Typography variant="h5" component="h2">
+          Neil Sims
+        </Typography>
+        <Typography color="textSecondary">Senior Software Engineer</Typography>
+        <Typography variant="body2" color="textSecondary">
+          New York, USA
+        </Typography>
+      </CardContentWrapper>
       <CardActionsWrapper>
         <Button variant="contained" color="primary">
           Connect
