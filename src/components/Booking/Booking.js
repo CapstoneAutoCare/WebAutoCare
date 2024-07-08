@@ -133,7 +133,7 @@ const Booking = () => {
                       </TableCell>
                       <TableCell>{formatDate(item.bookingDate)}</TableCell>
                       <TableCell>{item.responseVehicles.odo}</TableCell>
-                      <TableCell>{item.responseVehicles.note}</TableCell>
+                      <TableCell>{item.note}</TableCell>
                       <TableCell>{item.responseClient.email}</TableCell>
                       <TableCell>
                         <Select

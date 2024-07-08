@@ -3,8 +3,8 @@ import MaintenanceInformationsApi from "../components/Axios/MaintenanceInformati
 
 const initialState = {
   maintenanceInformations: [],
-  status: "idle",
-  error: null,
+  statusmi: "idle",
+  errormi: null,
   main: null,
 };
 
@@ -77,47 +77,47 @@ const maintenanceInformationsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(MaintenanceInformationsAll.pending, (state) => {
-        state.status = "loading";
+        state.statusmi = "loading";
       })
       .addCase(MaintenanceInformationsAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusmi = "succeeded";
         state.maintenanceInformations = action.payload;
       })
       .addCase(MaintenanceInformationsAll.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statusmi = "failed";
+        state.errormi = action.error.message;
       })
       .addCase(MaintenanceInformationsByCenterId.pending, (state) => {
-        state.status = "loading";
+        state.statusmi = "loading";
       })
       .addCase(MaintenanceInformationsByCenterId.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusmi = "succeeded";
         state.maintenanceInformations = action.payload;
         console.log("payload", state.maintenanceInformations);
       })
       .addCase(MaintenanceInformationById.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusmi = "succeeded";
         state.main = action.payload;
         console.log("Get By Id", state.main);
       })
       .addCase(MaintenanceInformationsByCenterId.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statusmi = "failed";
+        state.errormi = action.error.message;
       })
       .addCase(AddmaintenanceInformationsByCenter.pending, (state) => {
-        state.status = "loading";
+        state.statusmi = "loading";
       })
       .addCase(
         AddmaintenanceInformationsByCenter.fulfilled,
         (state, action) => {
-          state.status = "succeeded";
+          state.statusmi = "succeeded";
           state.maintenanceInformations = action.payload;
           console.log("payload", state.maintenanceInformations);
         }
       )
       .addCase(AddmaintenanceInformationsByCenter.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statusmi = "failed";
+        state.errormi = action.error.message;
       });
   },
 });

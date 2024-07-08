@@ -204,14 +204,16 @@ export const MaintenanceInformationsDetailDialog = ({
   item,
 }) => {
   const dispatch = useDispatch();
-  const { main, status, error } = useSelector(
+  const { main, statusmi, errormi } = useSelector(
     (state) => state.maintenanceInformation
   );
-  // const { bookings, booking } = useSelector((state) => state.booking);
+  const { bookings, booking, statusbooking, errorbooking } = useSelector(
+    (state) => state.booking
+  );
   console.log("Logging bookingId:", item);
   useEffect(() => {
     if (item) {
-      // dispatch(BookingById({ token: token, id: item.bookingId }));
+      dispatch(BookingById({ token: token, id: item.bookingId }));
       dispatch(
         MaintenanceInformationById({
           miId: item.informationMaintenanceId,
@@ -223,7 +225,7 @@ export const MaintenanceInformationsDetailDialog = ({
 
   // console.log("BookingById", booking);
   console.log("MaintenanceInformationById", main);
-
+  console.log("BookingById", booking);
 
   return (
     <Dialog
@@ -243,105 +245,22 @@ export const MaintenanceInformationsDetailDialog = ({
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
         Maintenance Information Detail
       </DialogTitle>
-      {status === "loading" && (
+      {statusmi === "loading" && statusbooking === "loading" && (
         <DialogContent dividers>
           <CircularProgress />
         </DialogContent>
       )}
-      {status === "succeeded" && main && (
-        <>
-          <HorizontalLinearStepper
-            bookingData={main}
-          />
-          {/* <DialogContent dividers>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Maintenance Information
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Information ID: {main.informationMaintenanceId}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Name: {main.informationMaintenanceName}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Created Date: {new Date(main.createdDate).toLocaleString()}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Finished Date: {new Date(main.finishedDate).toLocaleString()}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Total Price: {main.totalPrice} VND
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Note: {main.note}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Vehicle Information
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Brand: {main.vehiclesBrandName}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Model: {main.vehicleModelName}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Color: {main.color}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                License Plate: {main.licensePlate}
-              </Typography>
-            </Box>
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Center Information
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Name: {main.maintenanceCenterName}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Address: {main.address}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                City: {main.city}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Phone: {main.phone}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                Client Information
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Name: {main.firstName} {main.lastName}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Email: {main.email}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Address: {main.address}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Phone: {main.phone}
-              </Typography>
-            </Box>
-          </DialogContent> */}
-        </>
-      )}
-      {status === "failed" && (
+      {statusmi === "succeeded" &&
+        statusbooking === "succeeded" &&
+        booking &&
+        main && (
+          <>
+            <HorizontalLinearStepper mainData={main} bookingData={booking} />
+          </>
+        )}
+      {statusmi === "failed" && (
         <DialogContent dividers>
-          <Typography>Error: {error}</Typography>
+          <Typography>Error: {errormi}</Typography>
         </DialogContent>
       )}
       <DialogActions>

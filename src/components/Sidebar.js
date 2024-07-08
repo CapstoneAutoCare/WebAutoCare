@@ -56,7 +56,8 @@ const Sidebar = () => {
     userRole === "CENTER" ? SidebarDataCenter : SidebarDataAdmin;
 
   const sidebarComponentsCenter = [
-    <MainDash />,
+    <></>,
+    // <MainDash />,
     <CustomerCare />,
     <Technician />,
     <Booking />,

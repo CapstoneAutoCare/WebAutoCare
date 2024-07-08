@@ -5,9 +5,9 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import OutlinedCard from "./OutlinedCard";
+import { OutlinedCardBooking, OutlinedCardMain } from "./OutlinedCard";
 
-export default function HorizontalLinearStepper({ bookingData }) {
+export default function HorizontalLinearStepper({ mainData,bookingData }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
 
@@ -51,7 +51,7 @@ export default function HorizontalLinearStepper({ bookingData }) {
     setActiveStep(0);
   };
 
-  const stepLabels = bookingData.responseMaintenanceHistoryStatuses.map(
+  const stepLabels = mainData.responseMaintenanceHistoryStatuses.map(
     (step) => step.status
   );
 
@@ -109,7 +109,8 @@ export default function HorizontalLinearStepper({ bookingData }) {
               {activeStep === stepLabels.length - 1 ? "Finish" : "Next"}
             </Button>
           </Box>
-          {activeStep === 0 && <OutlinedCard data={bookingData} />}
+          {activeStep === 0 && <OutlinedCardBooking data={bookingData} />}
+          {activeStep === 1 && <OutlinedCardMain data={mainData} />}
         </React.Fragment>
       )}
     </Box>

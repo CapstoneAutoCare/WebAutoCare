@@ -3,7 +3,7 @@ import BookingApi from "../components/Axios/BookingApi";
 
 const initialState = {
   bookings: [],
-  status: "idle",
+  statusbooking: "idle",
   error: null,
   booking: null,
 };
@@ -54,34 +54,37 @@ const bookingSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(BookingAll.pending, (state) => {
-        state.status = "loading";
+        state.statusbooking = "loading";
       })
       .addCase(BookingAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusbooking = "succeeded";
         state.bookings = action.payload;
       })
       .addCase(BookingAll.rejected, (state, action) => {
-        state.status = "failed";
+        state.statusbooking = "failed";
         state.error = action.error.message;
       })
+      .addCase(BookingById.pending, (state, action) => {
+        state.statusbooking = "loading";
+      })
       .addCase(BookingById.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusbooking = "succeeded";
         state.booking = action.payload;
       })
       .addCase(BookingById.rejected, (state, action) => {
-        state.status = "failed";
+        state.statusbooking = "failed";
         state.error = action.error.message;
       })
       .addCase(BookingByCenter.pending, (state) => {
-        state.status = "loading";
+        state.statusbooking = "loading";
       })
       .addCase(BookingByCenter.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statusbooking = "succeeded";
         state.bookings = action.payload;
         console.log("payload", state.bookings);
       })
       .addCase(BookingByCenter.rejected, (state, action) => {
-        state.status = "failed";
+        state.statusbooking = "failed";
         state.error = action.error.message;
       });
   },

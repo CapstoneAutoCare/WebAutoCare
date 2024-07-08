@@ -108,7 +108,7 @@ const TableComponent = ({
   </StyledCard>
 );
 
-const BookingComponent = ({ data }) => (
+const MainComponent = ({ data }) => (
   <StyledCard>
     <CardContent>
       <Box display="flex" alignItems="center">
@@ -118,9 +118,6 @@ const BookingComponent = ({ data }) => (
             {data.informationMaintenanceName}
           </Typography>
           <Typography variant="h6">#{data.informationMaintenanceId}</Typography>
-          {/* <Typography variant="h6">{data.note}</Typography> */}
-          {/* <Typography variant="h6">{data.createdDate}</Typography> */}
-          {/* <Typography variant="h6">{data.finishedDate}</Typography> */}
         </ContentWrapper>
       </Box>
     </CardContent>
@@ -133,11 +130,37 @@ const BookingComponent = ({ data }) => (
     </Typography>
   </StyledCard>
 );
-export default function OutlinedCard({ data }) {
+const BookingComponent = ({ data }) => (
+  <StyledCard>
+    <CardContent>
+      <Box display="flex" alignItems="center">
+        <ImageBooking src={data.image} alt={data.image} />
+        <ContentWrapper>
+          <Typography variant="h5" style={{ fontWeight: "bold" }}>
+            Vehicle: {data.responseVehicles.vehiclesBrandName}{" "}
+            {data.responseVehicles.vehicleModelName}
+          </Typography>
+          <Typography variant="h5" style={{ fontWeight: "bold" }}>
+            {data.clientId}
+          </Typography>
+          <Typography variant="h6">#{data.informationMaintenanceId}</Typography>
+        </ContentWrapper>
+      </Box>
+    </CardContent>
+
+    <Typography
+      variant="h2"
+      style={{ paddingRight: "50px", fontWeight: "bold" }}
+    >
+      ${data.totalPrice}
+    </Typography>
+  </StyledCard>
+);
+export const OutlinedCardMain = ({ data }) => {
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
-        <BookingComponent data={data}></BookingComponent>
+        <MainComponent data={data}></MainComponent>
       </Card>
 
       {data.responseMaintenanceServiceInfos.map((item, index) => (
@@ -170,4 +193,56 @@ export default function OutlinedCard({ data }) {
       ))}
     </Box>
   );
-}
+};
+export const OutlinedCardBooking = ({ data }) => {
+  return (
+    <Box sx={{ minWidth: 275 }}>
+      <Card variant="outlined">
+        <TableBookingComponent data={data}></TableBookingComponent>
+      </Card>
+    </Box>
+  );
+};
+
+const TableBookingComponent = ({ data }) => (
+  <StyledCard>
+    <CardContent>
+      <Box display="flex" alignItems="center">
+        <Image src={data.image} alt={data.image} />
+        <ContentWrapper>
+          {/* <Typography variant="h5" style={{ fontWeight: "bold" }}>
+            {data.image}
+          </Typography> */}
+          <TableContainer>
+            <Table size="small">
+              <TableBody>
+                <TableRow>
+                  <TableCell>Booking Date:</TableCell>
+                  <TableCell>{data.bookingDate}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Vehicle:</TableCell>
+                  <TableCell>{data.responseVehicles.vehiclesBrandName} {" "} {data.responseVehicles.vehicleModelName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>License Plate:</TableCell>
+                  <TableCell>{data.responseVehicles.licensePlate}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Odo:</TableCell>
+                  <TableCell>{data.responseVehicles.odo} Km</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </ContentWrapper>
+      </Box>
+    </CardContent>
+    <Box style={{ paddingRight: "50px" }}>
+      <Typography variant="h6">{data.status}</Typography>
+      {/* <Typography variant="h6" style={{ fontWeight: "bold" }}>
+        ${money}
+      </Typography> */}
+    </Box>
+  </StyledCard>
+);
