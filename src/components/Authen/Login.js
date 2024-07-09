@@ -46,11 +46,11 @@ export default function Login() {
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        await dispatch(loginAsync(values));
+        dispatch(loginAsync(values));
         const tokenlocal = localStorage.getItem("localtoken");
         if (tokenlocal != null) {
           console.log("Login successful! Token:", login);
-          navigate("/dashboard");
+          // navigate("/dashboard");
         } else {
           setErrors({ email: login.message, password: login.message });
           console.log(login.message);

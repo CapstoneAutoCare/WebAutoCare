@@ -6,19 +6,20 @@ import { useNavigate } from "react-router-dom";
 export const loginAsync = createAsyncThunk("auth/login", async (formData) => {
   try {
     const response = await AuthenApi.Login(formData);
-    console.log(response);
-    return response;
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     throw new Error(error.Exception);
   }
 });
-
+const initialState = {
+  status: "idle",
+  login: null,
+  error: null,
+};
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    login: null,
-    error: null,
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.login = null;
