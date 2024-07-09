@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export const loginAsync = createAsyncThunk("auth/login", async (formData) => {
   try {
-    const response = await AuthenApi.Login(formData);
+    const response = await AuthenApi.Authen(formData);
     console.log(response.data);
     return response.data;
   } catch (error) {

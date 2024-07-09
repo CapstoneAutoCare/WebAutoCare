@@ -46,7 +46,7 @@ export default function Login() {
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        dispatch(loginAsync(values));
+        await dispatch(loginAsync(values));
         const tokenlocal = localStorage.getItem("localtoken");
         if (tokenlocal != null) {
           console.log("Login successful! Token:", login);
