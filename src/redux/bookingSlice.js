@@ -10,7 +10,7 @@ const initialState = {
 export const BookingAll = createAsyncThunk("booking/GetAll", async (token) => {
   try {
     const list = await BookingApi.getAll(token);
-    return list;
+    return list.data;
   } catch (error) {
     throw new Error(error.Messages);
   }
@@ -38,14 +38,32 @@ export const BookingByCenter = createAsyncThunk(
     }
   }
 );
+export const PatchStatusBookingByCenter = createAsyncThunk(
+  "booking/PatchStatusBookingCenter",
+  async ({ bookingId, status, token }, { rejectWithValue }) => {
+    try {
+      const response = await BookingApi.patchStatus({
+        bookingId: bookingId,
+        status: status,
+        token: token,
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log("ERROr",error);
+      return rejectWithValue("ERROR");
+    }
+  }
+);
+
 const bookingSlice = createSlice({
   name: "booking",
   initialState,
   reducers: {
-    GetAll: (state, action) => {
-      state.maintenanceservices = action.payload;
-      state.error = null;
-    },
+    // GetAll: (state, action) => {
+    //   state.maintenanceservices = action.payload;
+    //   state.error = null;
+    // },
     // GetListByCenter: (state, { action }) => {
     //   state.MaintenanceServices = action.payload;
     //   state.error = null;
@@ -86,6 +104,18 @@ const bookingSlice = createSlice({
       .addCase(BookingByCenter.rejected, (state, action) => {
         state.statusbooking = "failed";
         state.error = action.error.message;
+      })
+      .addCase(PatchStatusBookingByCenter.pending, (state) => {
+        state.statusbooking = "loading";
+      })
+      .addCase(PatchStatusBookingByCenter.fulfilled, (state, action) => {
+        state.statusbooking = "succeeded";
+        state.booking = action.payload;
+        console.log("payload", state.booking);
+      })
+      .addCase(PatchStatusBookingByCenter.rejected, (state, action) => {
+        state.statusbooking = "failed";
+        state.error = action.payload || "Failed to update booking status."; // Set error message
       });
   },
 });

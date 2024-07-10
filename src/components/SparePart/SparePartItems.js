@@ -15,10 +15,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 import "./sparepartItems.css";
 import { AddSparePartDialog } from "../../Data/DialogComponent";
-import { SparePartItemsByCenterId } from "../../redux/sparepartItemsSlice";
+import {
+  SparePartItemsByCenterId,
+  UpdateSparePartItemByCenter,
+} from "../../redux/sparepartItemsSlice";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -39,6 +45,9 @@ const SparePartItems = ({ setShowRightSide }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [editingItem, setEditingItem] = useState(null); // Define editingItem state
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const itemsPerPage = 5;
 
   const { sparepartitems = [] } = useSelector((state) => state.sparepartitem);
@@ -68,6 +77,11 @@ const SparePartItems = ({ setShowRightSide }) => {
     setShowRightSide((prev) => !prev);
   };
 
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenDialog(true);
+    console.log("Selected Item: ", item);
+  };
   return (
     <Box>
       <h3>List Spare Part Items</h3>
@@ -92,7 +106,8 @@ const SparePartItems = ({ setShowRightSide }) => {
                 <TableCell>Spare Part Name</TableCell>
                 <TableCell>Created Date</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Details</TableCell>
+                <TableCell>Edit</TableCell>
+                <TableCell>Shows</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -118,10 +133,10 @@ const SparePartItems = ({ setShowRightSide }) => {
                     <TableCell>
                       <Select
                         value={item.status}
-                        onChange={(event) => {
-                          const newStatus = event.target.value;
-                          // handleStatusChange(item.itemId, newStatus);
-                        }}
+                        // onChange={(event) => {
+                        //   const newStatus = event.target.value;
+                        //   handleStatusChange(item.sparePartsItemId, newStatus);
+                        // }}
                         className="status"
                         style={{
                           ...makeStyle(item.status),
@@ -139,7 +154,12 @@ const SparePartItems = ({ setShowRightSide }) => {
                       </Select>
                     </TableCell>
                     <TableCell className="Details">
-                      <ButtonBase onClick={handleClickShow}>SHOW</ButtonBase>
+                      <ButtonBase onClick={() => handleEdit(item)}>
+                        Edit
+                      </ButtonBase>
+                    </TableCell>
+                    <TableCell className="Details">
+                      <ButtonBase onClick={handleClickShow}>Show</ButtonBase>
                     </TableCell>
                   </TableRow>
                 ))}

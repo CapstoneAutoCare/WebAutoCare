@@ -33,11 +33,28 @@ const SparePartItemsApi = {
       .post(url, data, config)
       .then((response) => {
         console.log("AddSpartPartItem success:", response.data);
-        return response.data; 
+        return response.data;
       })
       .catch((error) => {
         console.error("AddSpartPartItem error:", error);
-        throw error; 
+        throw error;
+      });
+  },
+  updateSparePartItem(token, id, data) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/api/SparePartItem/Update/${id}`;
+    return axiosApi
+      .put(url, data, config)
+      .then((response) => {
+        console.log("Update SparePartItem success:", response.data);
+      })
+      .catch((error) => {
+        console.error("Update SparePartItem error:", error);
       });
   },
 };

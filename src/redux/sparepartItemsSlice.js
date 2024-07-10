@@ -5,6 +5,7 @@ const initialState = {
   sparepartitems: [],
   status: "idle",
   error: null,
+  sparepartitem:null
 };
 
 export const SparePartItemsAll = createAsyncThunk(
@@ -32,9 +33,21 @@ export const SparePartItemsByCenterId = createAsyncThunk(
 );
 export const AddSparePartItemsByCenter = createAsyncThunk(
   "sparepartitem/AddSparePartItemsByCenter",
-  async ({token, data}) => {
+  async ({ token, data }) => {
     try {
       const list = await SparePartItemsApi.addSpartPartItem(token, data);
+      console.log(list);
+      return list;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+export const UpdateSparePartItemByCenter = createAsyncThunk(
+  "sparepartitem/UpdateSparePartItemByCenter",
+  async ({ token, id, data }) => {
+    try {
+      const list = await SparePartItemsApi.updateSparePartItem(token, id, data);
       console.log(list);
       return list;
     } catch (error) {
@@ -90,6 +103,18 @@ const sparepartitemsSlice = createSlice({
         console.log("payload", state.sparepartitems);
       })
       .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(UpdateSparePartItemByCenter.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(UpdateSparePartItemByCenter.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.sparepartitem = action.payload;
+        console.log("payload", state.sparepartitem);
+      })
+      .addCase(UpdateSparePartItemByCenter.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

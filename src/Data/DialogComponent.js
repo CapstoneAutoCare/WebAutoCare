@@ -269,3 +269,78 @@ export const MaintenanceInformationsDetailDialog = ({
     </Dialog>
   );
 };
+
+
+
+export const UpdateSparePartItemDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+}) => {
+  const dispatch = useDispatch();
+  const { main, statusmi, errormi } = useSelector(
+    (state) => state.maintenanceInformation
+  );
+  const { bookings, booking, statusbooking, errorbooking } = useSelector(
+    (state) => state.booking
+  );
+  console.log("Logging bookingId:", item);
+  useEffect(() => {
+    if (item) {
+      dispatch(BookingById({ token: token, id: item.bookingId }));
+      dispatch(
+        MaintenanceInformationById({
+          miId: item.informationMaintenanceId,
+          token: token,
+        })
+      );
+    }
+  }, [dispatch, item, token]);
+
+  // console.log("BookingById", booking);
+  console.log("MaintenanceInformationById", main);
+  console.log("BookingById", booking);
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Maintenance Information Detail
+      </DialogTitle>
+      {statusmi === "loading" && statusbooking === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {statusmi === "succeeded" &&
+        statusbooking === "succeeded" &&
+        booking &&
+        main && (
+          <>
+            <HorizontalLinearStepper mainData={main} bookingData={booking} />
+          </>
+        )}
+      {statusmi === "failed" && (
+        <DialogContent dividers>
+          <Typography>Error: {errormi}</Typography>
+        </DialogContent>
+      )}
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};

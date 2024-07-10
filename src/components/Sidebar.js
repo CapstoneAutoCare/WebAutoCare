@@ -88,7 +88,7 @@ const Sidebar = () => {
 
     setUserRole(role);
     CheckRole(tokenlocal, role);
-    if (role === "CLIENT" || role === "TECHNICIAN" || role === "CUSTOMERCARE") {
+    if (role === "CUSTOMER" || role === "TECHNICIAN" || role === "CUSTOMERCARE") {
       navigate("/");
     }
   }, [selected, userRole]);

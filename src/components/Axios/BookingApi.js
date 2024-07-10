@@ -26,5 +26,17 @@ const BookingApi = {
 
     return axiosApi.get(url, config);
   },
+  patchStatus({ bookingId, status, token }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { bookingId, status },
+    };
+    const url = "/Bookings/UpdateStatus";
+
+    axiosApi.patch(url, null, config);
+  },
 };
 export default BookingApi;

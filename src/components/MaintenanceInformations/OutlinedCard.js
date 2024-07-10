@@ -26,7 +26,29 @@ const bull = (
     •
   </Box>
 );
-
+const makeStyle = (status) => {
+  if (status === "ACCEPTED") {
+    return {
+      background: "green",
+      color: "white",
+    };
+  } else if (status === "WAITING") {
+    return {
+      background: "#0099CC",
+      color: "white",
+    };
+  } else if (status === "CANCELLED" || status === "DENIED") {
+    return {
+      background: "#990000",
+      color: "white",
+    };
+  } else {
+    return {
+      background: "#0099CC",
+      color: "white",
+    };
+  }
+};
 const StyledCard = styled(Card)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
@@ -55,6 +77,7 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   marginLeft: theme.spacing(2),
 }));
+const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
 
 const TableComponent = ({
   image,
@@ -100,8 +123,30 @@ const TableComponent = ({
       </Box>
     </CardContent>
     <Box style={{ paddingRight: "50px" }}>
-      <Typography variant="h6">{status}</Typography>
-      <Typography variant="h6" style={{ fontWeight: "bold" }}>
+      <Typography
+        variant="h6"
+        style={{
+          ...makeStyle(status),
+          borderRadius: "10px",
+          width: "125px",
+          fontSize: "15px",
+          height: "50px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {status}
+      </Typography>
+      <Typography
+        variant="h6"
+        style={{
+          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         ${money}
       </Typography>
     </Box>
@@ -222,7 +267,10 @@ const TableBookingComponent = ({ data }) => (
                 </TableRow>
                 <TableRow>
                   <TableCell>Vehicle:</TableCell>
-                  <TableCell>{data.responseVehicles.vehiclesBrandName} {" "} {data.responseVehicles.vehicleModelName}</TableCell>
+                  <TableCell>
+                    {data.responseVehicles.vehiclesBrandName}{" "}
+                    {data.responseVehicles.vehicleModelName}
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>License Plate:</TableCell>
@@ -239,7 +287,21 @@ const TableBookingComponent = ({ data }) => (
       </Box>
     </CardContent>
     <Box style={{ paddingRight: "50px" }}>
-      <Typography variant="h6">{data.status}</Typography>
+      <Typography
+        variant="h6"
+        style={{
+          ...makeStyle(data.status),
+          borderRadius: "10px",
+          width: "125px",
+          fontSize: "15px",
+          height: "50px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {data.status}
+      </Typography>
       {/* <Typography variant="h6" style={{ fontWeight: "bold" }}>
         ${money}
       </Typography> */}
