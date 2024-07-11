@@ -40,14 +40,14 @@ const SparePartItemsApi = {
         throw error;
       });
   },
-  updateSparePartItem(token, id, data) {
+  updateSparePartItem({ token, id, data }) {
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = `/api/SparePartItem/Update/${id}`;
+    const url = `/SparePartItem/Update?id=${id}`;
     return axiosApi
       .put(url, data, config)
       .then((response) => {

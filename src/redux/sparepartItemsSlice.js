@@ -3,9 +3,9 @@ import SparePartItemsApi from "../components/Axios/SparePartItemsApi";
 
 const initialState = {
   sparepartitems: [],
-  status: "idle",
-  error: null,
-  sparepartitem:null
+  statussparepartitem: "idle",
+  errorsparepartitem: null,
+  sparepartitem: null,
 };
 
 export const SparePartItemsAll = createAsyncThunk(
@@ -47,7 +47,11 @@ export const UpdateSparePartItemByCenter = createAsyncThunk(
   "sparepartitem/UpdateSparePartItemByCenter",
   async ({ token, id, data }) => {
     try {
-      const list = await SparePartItemsApi.updateSparePartItem(token, id, data);
+      const list = await SparePartItemsApi.updateSparePartItem({
+        token: token,
+        id: id,
+        data: data,
+      });
       console.log(list);
       return list;
     } catch (error) {
@@ -61,62 +65,62 @@ const sparepartitemsSlice = createSlice({
   reducers: {
     GetAll: (state, action) => {
       state.sparepartitems = action.payload;
-      state.error = null;
+      state.errorsparepartitem = null;
     },
     GetListByCenter: (state, action) => {
       state.sparepartitems = action.payload;
-      state.error = null;
+      state.errorsparepartitem = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(SparePartItemsAll.pending, (state) => {
-        state.status = "loading";
+        state.statussparepartitem = "loading";
       })
       .addCase(SparePartItemsAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statussparepartitem = "succeeded";
         state.sparepartitems = action.payload;
       })
       .addCase(SparePartItemsAll.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
       })
       .addCase(SparePartItemsByCenterId.pending, (state) => {
-        state.status = "loading";
+        state.statussparepartitem = "loading";
       })
       .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statussparepartitem = "succeeded";
         state.sparepartitems = action.payload;
         console.log("payload", state.sparepartitems);
       })
       .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
       })
 
       .addCase(AddSparePartItemsByCenter.pending, (state) => {
-        state.status = "loading";
+        state.statussparepartitem = "loading";
       })
       .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statussparepartitem = "succeeded";
         state.sparepartitems = action.payload;
         console.log("payload", state.sparepartitems);
       })
       .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
       })
       .addCase(UpdateSparePartItemByCenter.pending, (state) => {
-        state.status = "loading";
+        state.statussparepartitem = "loading";
       })
       .addCase(UpdateSparePartItemByCenter.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statussparepartitem = "succeeded";
         state.sparepartitem = action.payload;
         console.log("payload", state.sparepartitem);
       })
       .addCase(UpdateSparePartItemByCenter.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
       });
   },
 });

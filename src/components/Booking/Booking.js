@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   ButtonBase,
+  CircularProgress,
+  DialogContent,
   Grid,
   MenuItem,
   Pagination,
@@ -85,101 +87,99 @@ const Booking = () => {
   }, [dispatch, token]);
 
   return (
-    <div>
-      {statusbooking === "failed" && error && (
-        <Typography variant="body1" color="error">
-          {error}
-        </Typography>
+    <Box>
+      <h3>List Booking</h3>
+      {statusbooking === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
       )}
       {statusbooking === "succeeded" && (
-        <Box>
-          <h3>List Booking</h3>
-          <Grid>
-            <TableContainer
-              component={Paper}
-              style={{
-                boxShadow: "0px 13px 20px 0px #80808029",
-              }}
-            >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Booking Id</TableCell>
-                    <TableCell>Vehicles </TableCell>
-                    <TableCell>License Plate</TableCell>
-                    <TableCell>Booking Date</TableCell>
-                    <TableCell>Odo</TableCell>
-                    <TableCell>Note</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Details</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {bookings
-                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                    .map((item) => (
-                      <TableRow
-                        key={item.bookingId}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell>{item.bookingId}</TableCell>
-                        <TableCell>
-                          {item.responseVehicles.vehiclesBrandName}
-                          {item.responseVehicles.vehicleModelName}
-                        </TableCell>
-                        <TableCell>
-                          {item.responseVehicles.licensePlate}
-                        </TableCell>
-                        <TableCell>{formatDate(item.bookingDate)}</TableCell>
-                        <TableCell>{item.responseVehicles.odo}</TableCell>
-                        <TableCell>{item.note}</TableCell>
-                        <TableCell>{item.responseClient.email}</TableCell>
-                        <TableCell>
-                          <Select
-                            value={item.status}
-                            onChange={(event) => {
-                              const newStatus = event.target.value;
-                              handleStatusChange(item.bookingId, newStatus);
-                            }}
-                            className="status"
-                            style={{
-                              ...makeStyle(item.status),
-                              borderRadius: "10px",
-                              width: "125px",
-                              fontSize: "10px",
-                              height: "50px",
-                            }}
-                          >
-                            {statusOptions.map((status) => (
-                              <MenuItem key={status} value={status}>
-                                {status}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </TableCell>
-                        <TableCell className="Details">
-                          <ButtonBase>SHOW</ButtonBase>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Pagination
-              count={pageCount}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              shape="rounded"
-              style={{ marginTop: "20px" }}
-            />
-          </Grid>
-        </Box>
+        <Grid>
+          <TableContainer
+            component={Paper}
+            style={{
+              boxShadow: "0px 13px 20px 0px #80808029",
+            }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Booking Id</TableCell>
+                  <TableCell>Vehicles </TableCell>
+                  <TableCell>License Plate</TableCell>
+                  <TableCell>Booking Date</TableCell>
+                  <TableCell>Odo</TableCell>
+                  <TableCell>Note</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Details</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookings
+                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                  .map((item) => (
+                    <TableRow
+                      key={item.bookingId}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell>{item.bookingId}</TableCell>
+                      <TableCell>
+                        {item.responseVehicles.vehiclesBrandName}{" "}
+                        {item.responseVehicles.vehicleModelName}
+                      </TableCell>
+                      <TableCell>
+                        {item.responseVehicles.licensePlate}
+                      </TableCell>
+                      <TableCell>{formatDate(item.bookingDate)}</TableCell>
+                      <TableCell>{item.responseVehicles.odo}</TableCell>
+                      <TableCell>{item.note}</TableCell>
+                      <TableCell>{item.responseClient.email}</TableCell>
+                      <TableCell>
+                        <Select
+                          value={item.status}
+                          onChange={(event) => {
+                            const newStatus = event.target.value;
+                            handleStatusChange(item.bookingId, newStatus);
+                          }}
+                          className="status"
+                          style={{
+                            ...makeStyle(item.status),
+                            borderRadius: "10px",
+                            width: "125px",
+                            fontSize: "10px",
+                            height: "50px",
+                          }}
+                        >
+                          {statusOptions.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell className="Details">
+                        <ButtonBase>SHOW</ButtonBase>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={handleChangePage}
+            variant="outlined"
+            shape="rounded"
+            style={{ marginTop: "20px" }}
+          />
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 };
 

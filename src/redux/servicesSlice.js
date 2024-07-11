@@ -1,19 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import SparePartsApi from "../components/Axios/SparePartsApi";
+import ServicesApi from "../components/Axios/ServicesApi";
 
 const initialState = {
-  spareparts: [],
-  statussparepart: "idle",
-  errorsparepart: null,
-  sparepart: null,
+  services: [],
+  statusservices: "idle",
+  errorservices: null,
+  service: null,
 };
 
-export const SparePartsAll = createAsyncThunk(
-  "sparepart/GetAll",
+export const ServicesAll = createAsyncThunk(
+  "services/GetAll",
   async (token) => {
     try {
-      const list = await SparePartsApi.getAll(token);
-      console.log("sparepart/GetAll", list.data);
+      const list = await ServicesApi.getAll(token);
+      console.log("services/GetAll", list.data);
       return list.data;
     } catch (error) {
       throw new Error(error.Messages);
@@ -44,22 +44,22 @@ export const SparePartsAll = createAsyncThunk(
 //     }
 //   }
 // );
-const sparepartsSlice = createSlice({
-  name: "sparepart",
+const servicesSlice = createSlice({
+  name: "services",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(SparePartsAll.pending, (state) => {
-        state.status = "loading";
+      .addCase(ServicesAll.pending, (state) => {
+        state.statusservices = "loading";
       })
-      .addCase(SparePartsAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.spareparts = action.payload;
+      .addCase(ServicesAll.fulfilled, (state, action) => {
+        state.statusservices = "succeeded";
+        state.services = action.payload;
       })
-      .addCase(SparePartsAll.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+      .addCase(ServicesAll.rejected, (state, action) => {
+        state.statusservices = "failed";
+        state.errorservices = action.error.message;
       });
     //   .addCase(SparePartItemsByCenterId.pending, (state) => {
     //     state.status = "loading";
@@ -88,6 +88,6 @@ const sparepartsSlice = createSlice({
     //   })
   },
 });
-export const {} = sparepartsSlice.actions;
+export const {} = servicesSlice.actions;
 
-export default sparepartsSlice.reducer;
+export default servicesSlice.reducer;

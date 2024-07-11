@@ -4,6 +4,8 @@ import {
   Box,
   Button,
   ButtonBase,
+  CircularProgress,
+  DialogContent,
   Grid,
   Pagination,
   Paper,
@@ -23,9 +25,10 @@ const MaintenanceInformations = () => {
   const token = localStorage.getItem("localtoken");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const { maintenanceInformations = [] } = useSelector(
+  const { maintenanceInformations = [], statusmi } = useSelector(
     (state) => state.maintenanceInformation
   );
+  
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -56,62 +59,70 @@ const MaintenanceInformations = () => {
       <Button variant="contained" color="success">
         Add Maintenance Informations
       </Button>
+      {statusmi === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
 
-      <Grid>
-        <TableContainer
-          component={Paper}
-          style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>InformationMaintenance Id</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Created Date</TableCell>
-                <TableCell>Finished Date</TableCell>
-                <TableCell>Total Price</TableCell>
-                <TableCell>Note</TableCell>
-                <TableCell>Details</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {maintenanceInformations
-                .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                .map((item) => (
-                  <TableRow key={item.informationMaintenanceId}>
-                    <TableCell>{item.informationMaintenanceId}</TableCell>
-                    <TableCell>{item.informationMaintenanceName}</TableCell>
-                    <TableCell>{item.createdDate}</TableCell>
-                    <TableCell>{item.finishedDate}</TableCell>
-                    <TableCell
-                      style={{
-                        borderRadius: "10px",
-                        fontSize: "25px",
-                      }}
-                    >
-                      {item.totalPrice} VND
-                    </TableCell>
-                    <TableCell>{item.note}</TableCell>
-                    <TableCell className="Details">
-                      <ButtonBase onClick={() => handleClickOpen(item)}>
-                        SHOW
-                      </ButtonBase>
-                    </TableCell>
+      {statusmi === "succeeded" &&
+        maintenanceInformations &&
+        maintenanceInformations.length > 0 && (
+          <Grid>
+            <TableContainer
+              component={Paper}
+              style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>InformationMaintenance Id</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Created Date</TableCell>
+                    <TableCell>Finished Date</TableCell>
+                    <TableCell>Total Price</TableCell>
+                    <TableCell>Note</TableCell>
+                    <TableCell>Details</TableCell>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Pagination
-          count={pageCount}
-          page={page}
-          onChange={handleChangePage}
-          variant="outlined"
-          shape="rounded"
-          style={{ marginTop: "20px" }}
-        />
-      </Grid>
-
+                </TableHead>
+                <TableBody>
+                  {maintenanceInformations
+                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                    .map((item) => (
+                      <TableRow key={item.informationMaintenanceId}>
+                        <TableCell>{item.informationMaintenanceId}</TableCell>
+                        <TableCell>{item.informationMaintenanceName}</TableCell>
+                        <TableCell>{item.createdDate}</TableCell>
+                        <TableCell>{item.finishedDate}</TableCell>
+                        <TableCell
+                          style={{
+                            borderRadius: "10px",
+                            fontSize: "25px",
+                          }}
+                        >
+                          {item.totalPrice} VND
+                        </TableCell>
+                        <TableCell>{item.note}</TableCell>
+                        <TableCell className="Details">
+                          <ButtonBase onClick={() => handleClickOpen(item)}>
+                            SHOW
+                          </ButtonBase>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Pagination
+              count={pageCount}
+              page={page}
+              onChange={handleChangePage}
+              variant="outlined"
+              shape="rounded"
+              style={{ marginTop: "20px" }}
+            />
+          </Grid>
+        )}
       {selectedItem && (
         <MaintenanceInformationsDetailDialog
           open={openDialog}

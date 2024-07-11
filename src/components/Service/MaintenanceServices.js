@@ -18,59 +18,27 @@ import {
   Tooltip,
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
-import "../SparePart/sparepartItems.css";
 import { MaintenanceServicesByCenterId } from "../../redux/mainserviceSlice";
 import { AddMaintenanceServiceDialog } from "../../Data/DialogComponent";
 
 const makeStyle = (status) => {
-  if (status === "ACTIVE" || status === "ACCEPT") {
-    return {
-      background: "rgb(145 254 159 / 47%)",
-      color: "green",
-    };
-  } else if (status === "REQUEST" || status === "INACTIVE") {
-    return {
-      background: "#ffadad8f",
-      color: "red",
-    };
-  } else {
-    return {
-      background: "#59bfff",
-      color: "white",
-    };
+  switch (status) {
+    case "ACTIVE":
+    case "ACCEPT":
+      return { background: "rgb(145 254 159 / 47%)", color: "green" };
+    case "REQUEST":
+    case "INACTIVE":
+      return { background: "#ffadad8f", color: "red" };
+    default:
+      return { background: "#59bfff", color: "white" };
   }
 };
-
-const makeRole = (role) => {
-  if (role === "ADMIN") {
-    return {
-      background: "#ffadad8f",
-      color: "red",
-    };
-  } else if (role === "COMPANY") {
-    return {
-      background: "#59bfff",
-      color: "blue",
-    };
-  } else if (role === "CANDIDATE") {
-    return {
-      background: "rgb(145 254 159 / 47%)",
-      color: "green",
-    };
-  }
-};
-
-const statusOptions = ["ACTIVE", "INACTIVE", "ACCEPT", "REQUEST"];
-
 const MaintenanceServices = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const {
     maintenanceservices = [],
     status,
@@ -78,6 +46,7 @@ const MaintenanceServices = () => {
   } = useSelector((state) => state.maintenanceservice);
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
+  const [reload, setReload] = useState(false);
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
@@ -86,16 +55,32 @@ const MaintenanceServices = () => {
     dispatch(
       MaintenanceServicesByCenterId({ centerId: centerId, token: token })
     );
-  }, [dispatch, token, centerId]);
+  }, [dispatch, centerId, token, reload]);
 
-  // Tổng số trang
   const pageCount = Math.ceil(maintenanceservices.length / itemsPerPage);
 
-  // Xử lý khi chuyển trang
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
+  const handleClose = () => {
+    setOpen(false);
+    setReload(!reload);
+  };
+
+  const handleEditClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenDialog(false);
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenDialog(true);
+  };
   return (
     <div>
       <Box>
@@ -150,27 +135,16 @@ const MaintenanceServices = () => {
                       <TableCell>{item.maintenanceServiceName}</TableCell>
                       <TableCell>{formatDate(item.createdDate)}</TableCell>
                       <TableCell>
-                        <Select
-                          value={item.status}
-                          onChange={(event) => {
-                            const newStatus = event.target.value;
-                            // handleStatusChange(item.itemId, newStatus);
-                          }}
+                        <span
                           className="status"
                           style={{
                             ...makeStyle(item.status),
-                            borderRadius: "10px",
-                            width: "121px",
                             fontSize: "12px",
                             height: "50px",
                           }}
                         >
-                          {statusOptions.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {status}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                          {item.status}
+                        </span>
                       </TableCell>
                       <TableCell className="Details">
                         <ButtonBase>SHOW</ButtonBase>
