@@ -64,7 +64,7 @@ const Sidebar = () => {
     <SparePartItems setShowRightSide={setShowRightSide} />,
     <MaintenanceServices />,
     // <Apply />,
-    <ProfilePage />,
+    // <ProfilePage />,
     <MaintenanceInformations/>,
     <HorizontalNonLinearStepper/>
   ];

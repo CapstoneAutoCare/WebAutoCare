@@ -5,9 +5,22 @@ const SparePartItemsApi = {
     const url = "/SparePartItem/GetAll";
     return axiosApi.get(url);
   },
-  getById(id) {
-    const url = "/SparePartItem/GetById?id=" + id;
-    return axiosApi.get(url);
+  async getById({ token, id }) {
+    const url = `/SparePartItem/GetById?id=${id}`;
+
+    const config = {
+      headers: {
+        accept: "*/*",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axiosApi.get(url, config);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data by ID:", error);
+      throw error;
+    }
   },
   getListByCenter({ token, centerId }) {
     const config = {

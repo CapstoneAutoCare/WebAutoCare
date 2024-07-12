@@ -51,10 +51,6 @@ export const SidebarDataCenter = [
     heading: "Services",
   },
   {
-    icon: UilChart,
-    heading: "Cost",
-  },
-  {
     icon: UilPackage,
     heading: "Maintenance Informations",
   },

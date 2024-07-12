@@ -4,6 +4,8 @@ import {
   Box,
   Button,
   ButtonBase,
+  CircularProgress,
+  DialogContent,
   Grid,
   MenuItem,
   Pagination,
@@ -19,7 +21,10 @@ import {
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
 import { MaintenanceServicesByCenterId } from "../../redux/mainserviceSlice";
-import { AddMaintenanceServiceDialog } from "../../Data/DialogComponent";
+import {
+  AddMaintenanceServiceDialog,
+  UpdateMaintenanceServiceDialog,
+} from "../../Data/DialogComponent";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -41,7 +46,7 @@ const MaintenanceServices = () => {
 
   const {
     maintenanceservices = [],
-    status,
+    statusmaintenanceservices,
     error,
   } = useSelector((state) => state.maintenanceservice);
   const centerId = localStorage.getItem("CenterId");
@@ -94,75 +99,104 @@ const MaintenanceServices = () => {
           centerId={centerId}
           token={token}
         />
-        <Grid>
-          <TableContainer
-            component={Paper}
-            style={{
-              boxShadow: "0px 13px 20px 0px #80808029",
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Avatar</TableCell>
-                  <TableCell>Maintenance Service Name </TableCell>
-                  <TableCell>Created Date</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Details</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {maintenanceservices
-                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                  .map((item) => (
-                    <TableRow
-                      key={item.maintenanceServiceId}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt="Item Logo"
-                            className="item-logo"
-                          />
-                        ) : (
-                          <div className="no-image-placeholder">
-                            No Image Available
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>{item.maintenanceServiceName}</TableCell>
-                      <TableCell>{formatDate(item.createdDate)}</TableCell>
-                      <TableCell>
-                        <span
-                          className="status"
-                          style={{
-                            ...makeStyle(item.status),
-                            fontSize: "12px",
-                            height: "50px",
+        {statusmaintenanceservices === "loading" && (
+          <DialogContent dividers>
+            <CircularProgress />
+          </DialogContent>
+        )}
+        {statusmaintenanceservices === "succeeded" &&
+          maintenanceservices &&
+          maintenanceservices.length > 0 && (
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{
+                  boxShadow: "0px 13px 20px 0px #80808029",
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell>Maintenance Service Name </TableCell>
+                      <TableCell>Created Date</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Edit</TableCell>
+                      <TableCell>Shows</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {maintenanceservices
+                      .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                      .map((item) => (
+                        <TableRow
+                          key={item.maintenanceServiceId}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
                           }}
                         >
-                          {item.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="Details">
-                        <ButtonBase>SHOW</ButtonBase>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Pagination
-            count={pageCount}
-            page={page}
-            onChange={handleChangePage}
-            variant="outlined"
-            shape="rounded"
-            style={{ marginTop: "20px" }}
+                          <TableCell>
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt="Item Logo"
+                                className="item-logo"
+                                style={{ width: "90px", height: "90px" }}
+                              />
+                            ) : (
+                              <div
+                                className="no-image-placeholder"
+                                style={{ width: "90px", height: "90px" }}
+                              >
+                                No Image Available
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>{item.maintenanceServiceName}</TableCell>
+                          <TableCell>{formatDate(item.createdDate)}</TableCell>
+                          <TableCell>
+                            <span
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                fontSize: "12px",
+                                height: "50px",
+                              }}
+                            >
+                              {item.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase onClick={() => handleEdit(item)}>
+                              Edit
+                            </ButtonBase>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase>Show</ButtonBase>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Pagination
+                count={pageCount}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                shape="rounded"
+                style={{ marginTop: "20px" }}
+              />
+            </Grid>
+          )}
+        {selectedItem && (
+          <UpdateMaintenanceServiceDialog
+            open={openDialog}
+            handleClose={handleEditClose}
+            token={token}
+            item={selectedItem}
           />
-        </Grid>
+        )}
       </Box>
     </div>
   );

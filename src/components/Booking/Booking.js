@@ -25,7 +25,7 @@ import {
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
 
-const makeStyle = (status) => {
+export const makeStyle = (status) => {
   if (status === "ACCEPTED") {
     return {
       background: "green",
@@ -36,7 +36,7 @@ const makeStyle = (status) => {
       background: "#0099CC",
       color: "white",
     };
-  } else if (status === "CANCELLED" || status === "DENIED") {
+  } else if (status === "CANCELLED" || status === "DENIED" || status === "INACTIVE") {
     return {
       background: "#990000",
       color: "white",

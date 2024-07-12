@@ -1,15 +1,25 @@
 import {
   Button,
+  ButtonBase,
+  Card,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  Grid,
   IconButton,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -18,25 +28,33 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import {
   AddSparePartItemsByCenter,
+  ChangeStatusSparePartItemCostByCenter,
+  SparePartItemById,
   SparePartItemsByCenterId,
   UpdateSparePartItemByCenter,
 } from "../redux/sparepartItemsSlice";
 import {
   AddMaintenanceServiceByCenter,
   MaintenanceServicesByCenterId,
+  UpdateMaintenanceServiceByCenter,
 } from "../redux/mainserviceSlice";
 import { useEffect, useState } from "react";
 import { MaintenanceInformationById } from "../redux/maintenanceInformationsSlice";
 import OutlinedCard from "../components/MaintenanceInformations/OutlinedCard";
 import HorizontalNonLinearStepper from "../components/MaintenanceInformations/HorizontalNon";
 import HorizontalLinearStepper from "../components/MaintenanceInformations/HorizontalLinearStepper";
-import { BookingById } from "../redux/bookingSlice";
+import {
+  BookingByCenter,
+  BookingById,
+  PatchStatusBookingByCenter,
+} from "../redux/bookingSlice";
 import { storage } from "./firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { SparePartsAll } from "../redux/sparepartsSlice";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ServicesAll } from "../redux/servicesSlice";
-
+import { CardCostComponent } from "../components/MaintenanceInformations/OutlinedCard";
+import { makeStyle } from "../components/Booking/Booking";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -180,9 +198,7 @@ export const AddMaintenanceServiceDialog = ({
   token,
 }) => {
   const dispatch = useDispatch();
-  const { services, statusservices } = useSelector(
-    (state) => state.services
-  );
+  const { services, statusservices } = useSelector((state) => state.services);
   const formik = useFormik({
     initialValues: {
       maintenanceServiceName: "",
@@ -239,7 +255,10 @@ export const AddMaintenanceServiceDialog = ({
               }
             >
               {services.map((option) => (
-                <MenuItem key={option.serviceCareId} value={option.serviceCareId}>
+                <MenuItem
+                  key={option.serviceCareId}
+                  value={option.serviceCareId}
+                >
                   {option.maintananceScheduleName} {option.serviceCareName}
                 </MenuItem>
               ))}
@@ -528,6 +547,292 @@ export const UpdateSparePartItemDialog = ({
                 <Button onClick={handleClose}>Close</Button>
               </DialogActions>
             </form>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  );
+};
+export const UpdateMaintenanceServiceDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        status: item.status || "ACTIVE",
+        maintenanceServiceName: item.maintenanceServiceName || "",
+        image: item.image || "",
+      });
+    }
+  }, [item]);
+
+  const formik = useFormik({
+    initialValues: {
+      status: item?.status || "ACTIVE",
+      maintenanceServiceName: item?.maintenanceServiceName || "",
+      image: item?.image || "",
+    },
+    validationSchema: Yup.object({
+      status: Yup.string().required("Status is required"),
+      maintenanceServiceName: Yup.string().required(
+        "Spare Part Item Name is required"
+      ),
+    }),
+    onSubmit: async (values) => {
+      try {
+        let imageUrl = values.image;
+
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        dispatch(
+          UpdateMaintenanceServiceByCenter({
+            token: token,
+            id: item.maintenanceServiceId,
+            data: { ...values, image: imageUrl },
+          })
+        );
+
+        handleClose();
+      } catch (error) {
+        console.error("Failed to update spare part item", error);
+      }
+    },
+  });
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Edit Maintenance Service Items
+      </DialogTitle>
+
+      {item && (
+        <>
+          <DialogContent dividers>
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  label="Status"
+                  name="status"
+                  value={formik.values.status}
+                  onChange={formik.handleChange}
+                  error={formik.touched.status && Boolean(formik.errors.status)}
+                >
+                  {statusOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="Maintenance Service Name"
+                name="maintenanceServiceName"
+                value={formik.values.maintenanceServiceName}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.maintenanceServiceName &&
+                  Boolean(formik.errors.maintenanceServiceName)
+                }
+                helperText={
+                  formik.touched.maintenanceServiceName &&
+                  formik.errors.maintenanceServiceName
+                }
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Image"
+                name="image"
+                type="file"
+                onChange={handleFileChange}
+                error={formik.touched.image && Boolean(formik.errors.image)}
+                helperText={formik.touched.image && formik.errors.image}
+                fullWidth
+                margin="normal"
+              />
+              <DialogActions>
+                <Button type="submit" color="primary">
+                  Update
+                </Button>
+                <Button onClick={handleClose}>Close</Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  );
+};
+
+export const ViewSparePartItemsCostDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleStatusChange = async (sparePartsItemCostId, newStatus) => {
+    try {
+      await dispatch(
+        ChangeStatusSparePartItemCostByCenter({
+          token: token,
+          id: sparePartsItemCostId,
+          status: newStatus,
+        })
+      );
+    } catch (error) {
+      // console.error("Error updating status:", errors);
+    }
+  };
+  useEffect(() => {
+    if (item) {
+    }
+  }, [item]);
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      {item && (
+        <>
+          <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+            View List Cost Item
+            <Card>
+              <CardCostComponent data={item}></CardCostComponent>
+            </Card>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {/* <TableCell>Avatar</TableCell> */}
+                      <TableCell>Price</TableCell>
+                      <TableCell>Created Date</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Edit</TableCell>
+                      <TableCell>Shows</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {item.responseSparePartsItemCosts
+                      // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                      .map((item) => (
+                        <TableRow key={item.sparePartsItemCostId}>
+                          {/* <TableCell>
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt="Item Logo"
+                                className="item-logo"
+                                style={{ width: "90px", height: "90px" }}
+                              />
+                            ) : (
+                              <div
+                                className="no-image-placeholder"
+                                style={{ width: "90px", height: "90px" }}
+                              >
+                                No Image Available
+                              </div>
+                            )}
+                          </TableCell> */}
+                          <TableCell
+                            style={{ fontWeight: "bold", fontSize: "25px" }}
+                          >
+                            ${item.acturalCost}
+                          </TableCell>
+                          <TableCell>{item.dateTime}</TableCell>
+                          <TableCell>{item.note}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={item.status}
+                              onChange={(event) => {
+                                const newStatus = event.target.value;
+                                handleStatusChange(
+                                  item.sparePartsItemCostId,
+                                  newStatus
+                                );
+                              }}
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                borderRadius: "10px",
+                                width: "125px",
+                                fontSize: "10px",
+                                height: "50px",
+                              }}
+                            >
+                              {statusOptions.map((status) => (
+                                <MenuItem key={status} value={status}>
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase>Edit</ButtonBase>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase>Show</ButtonBase>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
           </DialogContent>
         </>
       )}

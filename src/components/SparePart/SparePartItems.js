@@ -22,6 +22,7 @@ import "./sparepartItems.css";
 import {
   AddSparePartDialog,
   UpdateSparePartItemDialog,
+  ViewSparePartItemsCostDialog,
 } from "../../Data/DialogComponent";
 import {
   SparePartItemsByCenterId,
@@ -43,13 +44,13 @@ const makeStyle = (status) => {
   }
 };
 
-
 const SparePartItems = ({ setShowRightSide }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [openView, setOpenView] = useState(null);
   const itemsPerPage = 5;
   const [reload, setReload] = useState(false);
 
@@ -86,9 +87,14 @@ const SparePartItems = ({ setShowRightSide }) => {
     setSelectedItem(null);
     setOpenDialog(false);
   };
-
-  const handleClickShow = () => {
-    setShowRightSide((prev) => !prev);
+  const handleViewClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenView(false);
+  };
+  const handleClickShow = (item) => {
+    setSelectedItem(item);
+    setOpenView(true);
   };
 
   const handleEdit = (item) => {
@@ -115,84 +121,94 @@ const SparePartItems = ({ setShowRightSide }) => {
       {statussparepartitem === "succeeded" &&
         sparepartitems &&
         sparepartitems.length > 0 && (
-          <Grid>
-            <TableContainer
-              component={Paper}
-              style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
-            >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Avatar</TableCell>
-                    <TableCell>Spare Part Name</TableCell>
-                    <TableCell>Created Date</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Edit</TableCell>
-                    <TableCell>Shows</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sparepartitems
-                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                    .map((item) => (
-                      <TableRow key={item.sparePartsItemId}>
-                        <TableCell>
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt="Item Logo"
-                              className="item-logo"
-                              style={{ width: "90px", height: "90px" }}
-                            />
-                          ) : (
-                            <div
-                              className="no-image-placeholder"
-                              style={{ width: "90px", height: "90px" }}
+          <DialogContent dividers>
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell>Spare Part Name</TableCell>
+                      <TableCell>Created Date</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Edit</TableCell>
+                      <TableCell>Shows</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sparepartitems
+                      .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                      .map((item) => (
+                        <TableRow key={item.sparePartsItemId}>
+                          <TableCell>
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt="Item Logo"
+                                className="item-logo"
+                                style={{ width: "90px", height: "90px" }}
+                              />
+                            ) : (
+                              <div
+                                className="no-image-placeholder"
+                                style={{ width: "90px", height: "90px" }}
+                              >
+                                No Image Available
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>{item.sparePartsItemName}</TableCell>
+                          <TableCell>{item.createdDate}</TableCell>
+                          <TableCell>
+                            <span
+                              className="status"
+                              style={makeStyle(item.status)}
                             >
-                              No Image Available
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell>{item.sparePartsItemName}</TableCell>
-                        <TableCell>{item.createdDate}</TableCell>
-                        <TableCell>
-                          <span
-                            className="status"
-                            style={makeStyle(item.status)}
-                          >
-                            {item.status}
-                          </span>
-                        </TableCell>
-                        <TableCell className="Details">
-                          <ButtonBase onClick={() => handleEdit(item)}>
-                            Edit
-                          </ButtonBase>
-                        </TableCell>
-                        <TableCell className="Details">
-                          <ButtonBase onClick={handleClickShow}>
-                            Show
-                          </ButtonBase>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Pagination
-              count={pageCount}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              shape="rounded"
-              style={{ marginTop: "20px" }}
-            />
-          </Grid>
+                              {item.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase onClick={() => handleEdit(item)}>
+                              Edit
+                            </ButtonBase>
+                          </TableCell>
+                          <TableCell className="Details">
+                            <ButtonBase onClick={() => handleClickShow(item)}>
+                              Show
+                            </ButtonBase>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Pagination
+                count={pageCount}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                shape="rounded"
+                style={{ marginTop: "20px" }}
+              />
+            </Grid>
+          </DialogContent>
         )}
 
       {selectedItem && (
         <UpdateSparePartItemDialog
           open={openDialog}
           handleClose={handleEditClose}
+          token={token}
+          item={selectedItem}
+        />
+      )}
+      {selectedItem && (
+        <ViewSparePartItemsCostDialog
+          open={openView}
+          handleClose={handleViewClose}
           token={token}
           item={selectedItem}
         />

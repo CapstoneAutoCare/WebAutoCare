@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import SparePartItemsApi from "../components/Axios/SparePartItemsApi";
+import CostItemApi from "../components/Axios/CostItemApi";
 
 const initialState = {
   sparepartitems: [],
   statussparepartitem: "idle",
   errorsparepartitem: null,
   sparepartitem: null,
+  sparepartitemscosts: [],
+  sparepartitemscost: null,
 };
 
 export const SparePartItemsAll = createAsyncThunk(
@@ -13,6 +16,17 @@ export const SparePartItemsAll = createAsyncThunk(
   async (token) => {
     try {
       const list = await SparePartItemsApi.getAll(token);
+      return list;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
+export const SparePartItemById = createAsyncThunk(
+  "sparepartitem/SparePartItemById",
+  async ({ token, id }) => {
+    try {
+      const list = await SparePartItemsApi.getById({ token: token, id: id });
       return list;
     } catch (error) {
       throw new Error(error.Messages);
@@ -51,6 +65,23 @@ export const UpdateSparePartItemByCenter = createAsyncThunk(
         token: token,
         id: id,
         data: data,
+      });
+      console.log(list);
+      return list;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+
+export const ChangeStatusSparePartItemCostByCenter = createAsyncThunk(
+  "sparepartitemCost/ChangeStatusSparePartItemCostByCenter",
+  async ({ token, id, status }) => {
+    try {
+      const list = await CostItemApi.changestatusCostSpartPartItem({
+        token: token,
+        id: id,
+        status: status,
       });
       console.log(list);
       return list;

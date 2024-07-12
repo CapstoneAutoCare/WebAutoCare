@@ -175,20 +175,21 @@ const MainComponent = ({ data }) => (
     </Typography>
   </StyledCard>
 );
-const BookingComponent = ({ data }) => (
+export const CardCostComponent = ({ data }) => (
   <StyledCard>
     <CardContent>
       <Box display="flex" alignItems="center">
         <ImageBooking src={data.image} alt={data.image} />
         <ContentWrapper>
           <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            Vehicle: {data.responseVehicles.vehiclesBrandName}{" "}
-            {data.responseVehicles.vehicleModelName}
+            Name: {data.sparePartsItemName}
           </Typography>
           <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            {data.clientId}
+            {data?.clientId}
           </Typography>
-          <Typography variant="h6">#{data.informationMaintenanceId}</Typography>
+          <Typography variant="h6">
+            #{data?.sparePartsItemId}
+          </Typography>
         </ContentWrapper>
       </Box>
     </CardContent>
@@ -197,10 +198,11 @@ const BookingComponent = ({ data }) => (
       variant="h2"
       style={{ paddingRight: "50px", fontWeight: "bold" }}
     >
-      ${data.totalPrice}
+      ${data?.totalPrice}
     </Typography>
   </StyledCard>
 );
+
 export const OutlinedCardMain = ({ data }) => {
   return (
     <Box sx={{ minWidth: 275 }}>
