@@ -1,13 +1,12 @@
 import axiosApi from "./AxiosApi";
 
-const CostItemApi = {
+const TaskApi = {
   getAll() {
-    const url = "/SparePart/GetAll";
+    const url = "/MaintenanceTasks/GetAll";
     return axiosApi.get(url);
   },
-  async getByIdSparePartActiveCost(token, id) {
-    const url = `/SparePartsItemCosts/GetByIdSparePartActive?id=${id}`;
-
+  async GetListByCenter(token) {
+    const url = `/MaintenanceTasks/GetListByCenter`;
     const config = {
       headers: {
         accept: "*/*",
@@ -63,4 +62,4 @@ const CostItemApi = {
     }
   },
 };
-export default CostItemApi;
+export default TaskApi;

@@ -90,6 +90,34 @@ export const ChangeStatusSparePartItemCostByCenter = createAsyncThunk(
     }
   }
 );
+
+export const GetByIdSparePartActiveCost = createAsyncThunk(
+  "sparepartitemCost/GetByIdSparePartActiveCost",
+  async ({ token, id }) => {
+    try {
+      const list = await CostItemApi.getByIdSparePartActiveCost(token, id);
+      console.log(list);
+      return list;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+export const AddSparePartItemCost = createAsyncThunk(
+  "sparepartitemCost/AddSparePartItemCost",
+  async ({ token, data }) => {
+    try {
+      const list = await CostItemApi.postSparePartItemCost({
+        token,
+        data: data,
+      });
+      console.log(list);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
 const sparepartitemsSlice = createSlice({
   name: "sparepartitem",
   initialState,
@@ -150,6 +178,30 @@ const sparepartitemsSlice = createSlice({
         console.log("payload", state.sparepartitem);
       })
       .addCase(UpdateSparePartItemByCenter.rejected, (state, action) => {
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
+      })
+      .addCase(GetByIdSparePartActiveCost.pending, (state) => {
+        state.sparepartitemscost = "loading";
+      })
+      .addCase(GetByIdSparePartActiveCost.fulfilled, (state, action) => {
+        state.statussparepartitem = "succeeded";
+        state.sparepartitemscost = action.payload;
+        console.log("payload", state.sparepartitemscost);
+      })
+      .addCase(GetByIdSparePartActiveCost.rejected, (state, action) => {
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.error.message;
+      })
+      .addCase(SparePartItemById.pending, (state) => {
+        state.statussparepartitem = "loading";
+      })
+      .addCase(SparePartItemById.fulfilled, (state, action) => {
+        state.statussparepartitem = "succeeded";
+        state.sparepartitem = action.payload;
+        // console.log("payload", state.sparepartitem);
+      })
+      .addCase(SparePartItemById.rejected, (state, action) => {
         state.statussparepartitem = "failed";
         state.errorsparepartitem = action.error.message;
       });

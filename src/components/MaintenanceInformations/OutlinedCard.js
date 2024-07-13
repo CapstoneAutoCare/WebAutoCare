@@ -175,34 +175,36 @@ const MainComponent = ({ data }) => (
     </Typography>
   </StyledCard>
 );
-export const CardCostComponent = ({ data }) => (
-  <StyledCard>
-    <CardContent>
-      <Box display="flex" alignItems="center">
-        <ImageBooking src={data.image} alt={data.image} />
-        <ContentWrapper>
-          <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            Name: {data.sparePartsItemName}
-          </Typography>
-          <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            {data?.clientId}
-          </Typography>
-          <Typography variant="h6">
-            #{data?.sparePartsItemId}
-          </Typography>
-        </ContentWrapper>
-      </Box>
-    </CardContent>
+export const CardCostComponent = ({ data, cost }) => {
+  return (
+    data &&
+    cost && (
+      <StyledCard>
+        <CardContent>
+          <Box display="flex" alignItems="center">
+            <ImageBooking src={data.image} alt={data.image} />
+            <ContentWrapper>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                Name: {data.sparePartsItemName}
+              </Typography>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                {data?.clientId}
+              </Typography>
+              <Typography variant="h6">#{data?.sparePartsItemId}</Typography>
+            </ContentWrapper>
+          </Box>
+        </CardContent>
 
-    <Typography
-      variant="h2"
-      style={{ paddingRight: "50px", fontWeight: "bold" }}
-    >
-      ${data?.totalPrice}
-    </Typography>
-  </StyledCard>
-);
-
+        <Typography
+          variant="h2"
+          style={{ paddingRight: "50px", fontWeight: "bold" }}
+        >
+          ${cost?.acturalCost}
+        </Typography>
+      </StyledCard>
+    )
+  );
+};
 export const OutlinedCardMain = ({ data }) => {
   return (
     <Box sx={{ minWidth: 275 }}>

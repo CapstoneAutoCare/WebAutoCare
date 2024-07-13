@@ -27,8 +27,10 @@ import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import {
+  AddSparePartItemCost,
   AddSparePartItemsByCenter,
   ChangeStatusSparePartItemCostByCenter,
+  GetByIdSparePartActiveCost,
   SparePartItemById,
   SparePartItemsByCenterId,
   UpdateSparePartItemByCenter,
@@ -702,6 +704,10 @@ export const ViewSparePartItemsCostDialog = ({
 }) => {
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
+  const { sparepartitemscost, sparepartitem, statussparepartitem } =
+    useSelector((state) => state.sparepartitem);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [reload, setReload] = useState(false);
 
   const handleStatusChange = async (sparePartsItemCostId, newStatus) => {
     try {
@@ -712,19 +718,32 @@ export const ViewSparePartItemsCostDialog = ({
           status: newStatus,
         })
       );
-    } catch (error) {
-      // console.error("Error updating status:", errors);
-    }
+      dispatch(
+        GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
+      );
+      setReload(!reload);
+    } catch (error) {}
   };
   useEffect(() => {
     if (item) {
+      dispatch(
+        GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
+      );
+      dispatch(SparePartItemById({ token, id: item.sparePartsItemId }));
     }
-  }, [item]);
+  }, [item, reload, dispatch]);
 
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
   };
+  const handleAddClickOpen = () => {
+    setOpenAdd(true);
+  };
 
+  const handleAddClose = () => {
+    setOpenAdd(false);
+    setReload(!reload);
+  };
   return (
     <Dialog
       open={open}
@@ -740,12 +759,35 @@ export const ViewSparePartItemsCostDialog = ({
         },
       }}
     >
-      {item && (
+      {statussparepartitem === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {sparepartitem && statussparepartitem === "succeeded" && (
         <>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-            View List Cost Item
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              View List Cost Item
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleAddClickOpen}
+              >
+                Add New Cost
+              </Button>
+            </div>
+            <AddSparePartItemsCostDialog
+              open={openAdd}
+              handleClose={handleAddClose}
+              sparePartsItemId={sparepartitem.sparePartsItemId}
+              token={token}
+            />
             <Card>
-              <CardCostComponent data={item}></CardCostComponent>
+              <CardCostComponent
+                data={sparepartitem}
+                cost={sparepartitemscost}
+              />
             </Card>
           </DialogTitle>
           <DialogContent dividers>
@@ -762,32 +804,13 @@ export const ViewSparePartItemsCostDialog = ({
                       <TableCell>Created Date</TableCell>
                       <TableCell>Note</TableCell>
                       <TableCell>Status</TableCell>
-                      <TableCell>Edit</TableCell>
-                      <TableCell>Shows</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {item.responseSparePartsItemCosts
+                    {sparepartitem.responseSparePartsItemCosts
                       // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                       .map((item) => (
                         <TableRow key={item.sparePartsItemCostId}>
-                          {/* <TableCell>
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt="Item Logo"
-                                className="item-logo"
-                                style={{ width: "90px", height: "90px" }}
-                              />
-                            ) : (
-                              <div
-                                className="no-image-placeholder"
-                                style={{ width: "90px", height: "90px" }}
-                              >
-                                No Image Available
-                              </div>
-                            )}
-                          </TableCell> */}
                           <TableCell
                             style={{ fontWeight: "bold", fontSize: "25px" }}
                           >
@@ -821,12 +844,6 @@ export const ViewSparePartItemsCostDialog = ({
                               ))}
                             </Select>
                           </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase>Edit</ButtonBase>
-                          </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase>Show</ButtonBase>
-                          </TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -836,6 +853,286 @@ export const ViewSparePartItemsCostDialog = ({
           </DialogContent>
         </>
       )}
+    </Dialog>
+  );
+};
+
+const validationSchemaSparePartItemsCost = Yup.object({
+  acturalCost: Yup.string().required("Name is required"),
+  sparePartsItemId: Yup.string().required("Name is required"),
+  note: Yup.string(),
+});
+
+export const AddSparePartItemsCostDialog = ({
+  open,
+  handleClose,
+  sparePartsItemId,
+  token,
+}) => {
+  const dispatch = useDispatch();
+  const { services, statusservices } = useSelector((state) => state.services);
+  const formik = useFormik({
+    initialValues: {
+      acturalCost: 0,
+      note: "",
+      sparePartsItemId: sparePartsItemId,
+    },
+    validationSchema: validationSchemaSparePartItemsCost,
+    onSubmit: (values, { resetForm }) => {
+      const data = {
+        acturalCost: values.acturalCost,
+        note: values.note,
+        sparePartsItemId: values.sparePartsItemId,
+      };
+      console.log(data);
+      dispatch(AddSparePartItemCost({ token: token, data: data }))
+        .then(() => {
+          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  // const handleClear = () => {
+  //   formik.setFieldValue("sparePartsItemId", "");
+  // };
+  useEffect(() => {
+    dispatch(ServicesAll(token));
+  }, [dispatch, token]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Add Spare Part Item</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          {/* <FormControl fullWidth margin="normal">
+            <InputLabel>SparePart Name</InputLabel>
+            <Select
+              label="Service Care Id"
+              name="serviceCareId"
+              value={formik.values.serviceCareId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                const selectedServices = services.find(
+                  (part) => part.serviceCareId === event.target.value
+                );
+                formik.setFieldValue(
+                  "maintenanceServiceName",
+                  selectedServices?.serviceCareName || ""
+                );
+              }}
+              error={
+                formik.touched.serviceCareId &&
+                Boolean(formik.errors.serviceCareId)
+              }
+            >
+              {services.map((option) => (
+                <MenuItem
+                  key={option.serviceCareId}
+                  value={option.serviceCareId}
+                >
+                  {option.maintananceScheduleName} {option.serviceCareName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl> */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="sparePartsItemId"
+              label="Spare Parts Item Id"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formik.values.sparePartsItemId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.sparePartsItemId &&
+                Boolean(formik.errors.sparePartsItemId)
+              }
+              disabled={formik.touched.sparePartsItemId}
+              helperText={
+                formik.touched.sparePartsItemId &&
+                formik.errors.sparePartsItemId
+              }
+            />
+          </div>
+
+          <TextField
+            margin="dense"
+            name="acturalCost"
+            label="Actural Cost"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.acturalCost}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.acturalCost && Boolean(formik.errors.acturalCost)
+            }
+            helperText={formik.touched.acturalCost && formik.errors.acturalCost}
+            inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+          />
+          <TextField
+            margin="dense"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.note}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.note && Boolean(formik.errors.note)}
+            helperText={formik.touched.note && formik.errors.note}
+          />
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const AddTaskDialog = ({
+  open,
+  handleClose,
+  token,
+}) => {
+  const dispatch = useDispatch();
+  const { services, statusservices } = useSelector((state) => state.services);
+  const formik = useFormik({
+    initialValues: {
+      acturalCost: 0,
+      note: "",
+    },
+    validationSchema: validationSchemaSparePartItemsCost,
+    onSubmit: (values, { resetForm }) => {
+      const data = {
+        acturalCost: values.acturalCost,
+        note: values.note,
+        sparePartsItemId: values.sparePartsItemId,
+      };
+      console.log(data);
+      dispatch(AddSparePartItemCost({ token: token, data: data }))
+        .then(() => {
+          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  // const handleClear = () => {
+  //   formik.setFieldValue("sparePartsItemId", "");
+  // };
+  useEffect(() => {
+    dispatch(ServicesAll(token));
+  }, [dispatch, token]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Add Spare Part Item</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          {/* <FormControl fullWidth margin="normal">
+            <InputLabel>SparePart Name</InputLabel>
+            <Select
+              label="Service Care Id"
+              name="serviceCareId"
+              value={formik.values.serviceCareId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                const selectedServices = services.find(
+                  (part) => part.serviceCareId === event.target.value
+                );
+                formik.setFieldValue(
+                  "maintenanceServiceName",
+                  selectedServices?.serviceCareName || ""
+                );
+              }}
+              error={
+                formik.touched.serviceCareId &&
+                Boolean(formik.errors.serviceCareId)
+              }
+            >
+              {services.map((option) => (
+                <MenuItem
+                  key={option.serviceCareId}
+                  value={option.serviceCareId}
+                >
+                  {option.maintananceScheduleName} {option.serviceCareName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl> */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="sparePartsItemId"
+              label="Spare Parts Item Id"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formik.values.sparePartsItemId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.sparePartsItemId &&
+                Boolean(formik.errors.sparePartsItemId)
+              }
+              disabled={formik.touched.sparePartsItemId}
+              helperText={
+                formik.touched.sparePartsItemId &&
+                formik.errors.sparePartsItemId
+              }
+            />
+          </div>
+
+          <TextField
+            margin="dense"
+            name="acturalCost"
+            label="Actural Cost"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.acturalCost}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.acturalCost && Boolean(formik.errors.acturalCost)
+            }
+            helperText={formik.touched.acturalCost && formik.errors.acturalCost}
+            inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+          />
+          <TextField
+            margin="dense"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.note}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.note && Boolean(formik.errors.note)}
+            helperText={formik.touched.note && formik.errors.note}
+          />
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

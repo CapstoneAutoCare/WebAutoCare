@@ -9,6 +9,7 @@ import sparepartsReducer from "./sparepartsSlice";
 import technicianReducer from "./techinicansSlice";
 import maintenanceInformationsReducer from "./maintenanceInformationsSlice";
 import servicesReducer from "./servicesSlice";
+import tasksReducer from "./tasksSlice";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     technician: technicianReducer,
     maintenanceInformation: maintenanceInformationsReducer,
     services: servicesReducer,
+    tasks:tasksReducer,
   },
 });
 

@@ -60,7 +60,7 @@ export const SidebarDataCenter = [
   },
   {
     icon: UilChart,
-    heading: "Analytics",
+    heading: "Tasks",
   },
 ];
 export const SidebarDataAdmin = [
