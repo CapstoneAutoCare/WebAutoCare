@@ -50,7 +50,7 @@ const SparePartItems = ({ setShowRightSide }) => {
   const [page, setPage] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [openView, setOpenView] = useState(null);
+  const [openView, setOpenView] = useState(false);
   const itemsPerPage = 5;
   const [reload, setReload] = useState(false);
 

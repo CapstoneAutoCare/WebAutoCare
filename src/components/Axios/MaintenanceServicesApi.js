@@ -5,9 +5,17 @@ const MaintenanceServicesApi = {
     const url = "/MaintenanceServices/GetAll";
     return await axiosApi.get(url);
   },
-  async getById(id) {
-    const url = "/MaintenanceServices/GetById?id=" + id;
-    return await axiosApi.get(url);
+  async GetById({ token, id }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id },
+    };
+    const url = "/MaintenanceServices/GetById";
+
+    return await axiosApi.get(url, config);
   },
   async getListByCenter({ token, centerId }) {
     const config = {
@@ -56,5 +64,6 @@ const MaintenanceServicesApi = {
         console.error("Update SparePartItem error:", error);
       });
   },
+  
 };
 export default MaintenanceServicesApi;

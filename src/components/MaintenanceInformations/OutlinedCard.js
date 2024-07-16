@@ -286,6 +286,36 @@ export const CardCostComponent = ({ data, cost }) => {
     )
   );
 };
+export const CardMainServiceCostComponent = ({ data, cost }) => {
+  return (
+    data &&
+    cost && (
+      <StyledCard>
+        <CardContent>
+          <Box display="flex" alignItems="center">
+            <ImageBooking src={data.image} alt={data.image} />
+            <ContentWrapper style={{ alignItems: "flex-start" }}>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                Name: {data.maintenanceServiceName}
+              </Typography>
+              {/* <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                {data?.clientId}
+              </Typography> */}
+              <Typography variant="h6">#{data?.maintenanceServiceId}</Typography>
+            </ContentWrapper>
+          </Box>
+        </CardContent>
+
+        <Typography
+          variant="h2"
+          style={{ paddingRight: "50px", fontWeight: "bold" }}
+        >
+          ${cost?.acturalCost}
+        </Typography>
+      </StyledCard>
+    )
+  );
+};
 export const OutlinedCardMain = ({ data, setReload }) => {
   useEffect(() => {}, [setReload]);
   return (

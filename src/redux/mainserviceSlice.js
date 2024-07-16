@@ -1,16 +1,32 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import MaintenanceServicesApi from "../components/Axios/MaintenanceServicesApi";
+import CostItemApi from "../components/Axios/CostItemApi";
 
 const initialState = {
   maintenanceservices: [],
   statusmaintenanceservices: "idle",
   errormaintenanceservices: null,
+  maintenanceservice: null,
+  maintenanceservicescost: [],
 };
 export const MaintenanceServicesAll = createAsyncThunk(
   "maintenanceservice/GetAll",
   async (token) => {
     try {
       const list = await MaintenanceServicesApi.getAll(token);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
+export const MaintenanceServicesById = createAsyncThunk(
+  "maintenanceservice/MaintenanceServicesById",
+  async ({ token, id }) => {
+    try {
+      const list = await MaintenanceServicesApi.GetById({ token, id });
+      console.log("maintenanceservice/MaintenanceServicesById", list.data);
+
       return list.data;
     } catch (error) {
       throw new Error(error.Messages);
@@ -57,6 +73,58 @@ export const UpdateMaintenanceServiceByCenter = createAsyncThunk(
         data: data,
       });
       console.log(list);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+export const AddMaintenanceServiceCost = createAsyncThunk(
+  "maintenanceservice/AddMaintenanceServiceCost",
+  async ({ token, data }) => {
+    try {
+      const list = await CostItemApi.postMaintenanceServiceCost({
+        token,
+        data,
+      });
+      console.log("maintenanceservice/AddMaintenanceServiceCost", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+export const ChangeStatusMaintenanceServiceCostByCenter = createAsyncThunk(
+  "maintenanceservice/ChangeStatusMaintenanceServiceCostByCenter",
+  async ({ token, id, status }) => {
+    try {
+      const list = await CostItemApi.changestatusCostMaintenanceService({
+        token,
+        id: id,
+        status: status,
+      });
+      console.log(
+        "maintenanceservice/ChangeStatusMaintenanceServiceCostByCenter",
+        list.data
+      );
+      return list.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+export const GetByIdMaintenanceServiceActiveCost = createAsyncThunk(
+  "maintenanceservice/getByIdMaintenanceServiceActiveCost",
+  async ({ token, id }) => {
+    try {
+      const list = await CostItemApi.getByIdMaintenanceServiceActiveCost({
+        token,
+        id,
+      });
+      console.log(
+        "maintenanceservice/getByIdMaintenanceServiceActiveCost",
+        list.data
+      );
       return list.data;
     } catch (error) {
       throw new Error(error.message);
@@ -112,7 +180,67 @@ const mainserviceSlice = createSlice({
       .addCase(UpdateMaintenanceServiceByCenter.rejected, (state, action) => {
         state.statusmaintenanceservices = "failed";
         state.errormaintenanceservices = action.error.message;
-      });
+      })
+      .addCase(MaintenanceServicesById.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+      })
+      .addCase(MaintenanceServicesById.fulfilled, (state, action) => {
+        state.statusmaintenanceservices = "succeeded";
+        state.maintenanceservice = action.payload;
+        console.log("payload", state.maintenanceservice);
+      })
+      .addCase(MaintenanceServicesById.rejected, (state, action) => {
+        state.statusmaintenanceservices = "failed";
+        state.errormaintenanceservices = action.error.message;
+      })
+      .addCase(ChangeStatusMaintenanceServiceCostByCenter.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+      })
+      .addCase(
+        ChangeStatusMaintenanceServiceCostByCenter.fulfilled,
+        (state, action) => {
+          state.statusmaintenanceservices = "succeeded";
+          state.maintenanceservicescost = action.payload;
+          console.log("payload", state.maintenanceservicescost);
+        }
+      )
+      .addCase(
+        ChangeStatusMaintenanceServiceCostByCenter.rejected,
+        (state, action) => {
+          state.statusmaintenanceservices = "failed";
+          state.errormaintenanceservices = action.error.message;
+        }
+      )
+      .addCase(AddMaintenanceServiceCost.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+      })
+      .addCase(AddMaintenanceServiceCost.fulfilled, (state, action) => {
+        state.statusmaintenanceservices = "succeeded";
+        state.maintenanceservicescost = action.payload;
+        console.log("payload", state.maintenanceservicescost);
+      })
+      .addCase(AddMaintenanceServiceCost.rejected, (state, action) => {
+        state.statusmaintenanceservices = "failed";
+        state.errormaintenanceservices = action.error.message;
+      })
+      .addCase(GetByIdMaintenanceServiceActiveCost.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+      })
+      .addCase(
+        GetByIdMaintenanceServiceActiveCost.fulfilled,
+        (state, action) => {
+          state.statusmaintenanceservices = "succeeded";
+          state.maintenanceservicescost = action.payload;
+          console.log("payload", state.maintenanceservicescost);
+        }
+      )
+      .addCase(
+        GetByIdMaintenanceServiceActiveCost.rejected,
+        (state, action) => {
+          state.statusmaintenanceservices = "failed";
+          state.errormaintenanceservices = action.error.message;
+        }
+      );
   },
 });
 export const { GetAll } = mainserviceSlice.actions;

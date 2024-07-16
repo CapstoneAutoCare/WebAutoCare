@@ -24,6 +24,7 @@ import { MaintenanceServicesByCenterId } from "../../redux/mainserviceSlice";
 import {
   AddMaintenanceServiceDialog,
   UpdateMaintenanceServiceDialog,
+  ViewMaintenanceServicesCostDialog,
 } from "../../Data/DialogComponent";
 
 const makeStyle = (status) => {
@@ -43,6 +44,7 @@ const MaintenanceServices = () => {
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [openView, setOpenView] = useState(false);
 
   const {
     maintenanceservices = [],
@@ -85,6 +87,16 @@ const MaintenanceServices = () => {
   const handleEdit = (item) => {
     setSelectedItem(item);
     setOpenDialog(true);
+  };
+
+  const handleViewClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenView(false);
+  };
+  const handleClickShow = (item) => {
+    setSelectedItem(item);
+    setOpenView(true);
   };
   return (
     <div>
@@ -172,7 +184,9 @@ const MaintenanceServices = () => {
                             </ButtonBase>
                           </TableCell>
                           <TableCell className="Details">
-                            <ButtonBase>Show</ButtonBase>
+                            <ButtonBase onClick={() => handleClickShow(item)}>
+                              Show
+                            </ButtonBase>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -197,6 +211,14 @@ const MaintenanceServices = () => {
             item={selectedItem}
           />
         )}
+        {selectedItem && (
+        <ViewMaintenanceServicesCostDialog
+          open={openView}
+          handleViewClose={handleViewClose}
+          token={token}
+          item={selectedItem}
+        />
+      )}
       </Box>
     </div>
   );
