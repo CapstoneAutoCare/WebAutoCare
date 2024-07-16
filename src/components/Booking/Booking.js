@@ -16,27 +16,29 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
-  Typography,
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
 import {
   BookingByCenter,
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
-
 export const makeStyle = (status) => {
-  if (status === "ACCEPTED") {
+  if (status === "ACCEPT") {
     return {
-      background: "green",
-      color: "white",
+      background: "rgb(145 254 159 / 47%)",
+      color: "green",
     };
   } else if (status === "WAITING") {
     return {
       background: "#0099CC",
       color: "white",
     };
-  } else if (status === "CANCELLED" || status === "DENIED" || status === "INACTIVE") {
+  } else if (
+    status === "CANCELLED" ||
+    status === "CANCEL" ||
+    status === "DENIED" ||
+    status === "INACTIVE"
+  ) {
     return {
       background: "#990000",
       color: "white",
@@ -49,13 +51,14 @@ export const makeStyle = (status) => {
   }
 };
 
-const statusOptions = ["WAITING", "DENIED", "ACCEPTED", "CANCELLED"];
+const statusOptions = ["WAITING", "DENIED", "ACCEPT", "CANCELLED"];
 
 const Booking = () => {
   const dispatch = useDispatch();
   const { bookings, statusbooking, error } = useSelector(
     (state) => state.booking
   );
+  const[ reload,setReload]=useState(false);
   const token = localStorage.getItem("localtoken");
 
   const [page, setPage] = useState(1);
@@ -77,6 +80,7 @@ const Booking = () => {
         })
       );
       dispatch(BookingByCenter({ token: token }));
+      setReload(true);
     } catch (error) {
       // console.error("Error updating status:", errors);
     }
@@ -84,7 +88,7 @@ const Booking = () => {
 
   useEffect(() => {
     dispatch(BookingByCenter({ token: token }));
-  }, [dispatch, token]);
+  }, [dispatch, token,reload]);
 
   return (
     <Box>
@@ -94,7 +98,7 @@ const Booking = () => {
           <CircularProgress />
         </DialogContent>
       )}
-      {statusbooking === "succeeded" && (
+      {statusbooking === "succeeded" && bookings && bookings.length > 0 && (
         <Grid>
           <TableContainer
             component={Paper}
@@ -139,28 +143,43 @@ const Booking = () => {
                       <TableCell>{item.note}</TableCell>
                       <TableCell>{item.responseClient.email}</TableCell>
                       <TableCell>
-                        <Select
-                          value={item.status}
-                          onChange={(event) => {
-                            const newStatus = event.target.value;
-                            handleStatusChange(item.bookingId, newStatus);
-                          }}
-                          className="status"
-                          style={{
-                            ...makeStyle(item.status),
-                            borderRadius: "10px",
-                            width: "125px",
-                            fontSize: "10px",
-                            height: "50px",
-                          }}
-                        >
-                          {statusOptions.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {status}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        {item.status === "WAITING" ? (
+                          <Select
+                            value={item.status}
+                            onChange={(event) => {
+                              const newStatus = event.target.value;
+                              handleStatusChange(item.bookingId, newStatus);
+                            }}
+                            style={{
+                              ...makeStyle(item.status),
+                              borderRadius: "10px",
+                              width: "125px",
+                              fontSize: "10px",
+                              height: "50px",
+                            }}
+                          >
+                            {statusOptions.map((status) => (
+                              <MenuItem key={status} value={status}>
+                                {status}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          <span
+                            className="status"
+                            style={{
+                              ...makeStyle(item.status),
+                              // borderRadius: "10px",
+                              // width: "125px",
+                              // fontSize: "10px",
+                              // height: "50px",
+                            }}
+                          >
+                            {item.status}
+                          </span>
+                        )}
                       </TableCell>
+
                       <TableCell className="Details">
                         <ButtonBase>SHOW</ButtonBase>
                       </TableCell>

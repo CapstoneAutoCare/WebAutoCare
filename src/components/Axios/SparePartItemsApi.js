@@ -1,9 +1,9 @@
 import axiosApi from "./AxiosApi";
 
 const SparePartItemsApi = {
-  getAll() {
+  async getAll() {
     const url = "/SparePartItem/GetAll";
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
   async getById({ token, id }) {
     const url = `/SparePartItem/GetById?id=${id}`;
@@ -16,13 +16,13 @@ const SparePartItemsApi = {
     };
     try {
       const response = await axiosApi.get(url, config);
-      return response.data;
+      return response;
     } catch (error) {
       console.error("Error fetching data by ID:", error);
       throw error;
     }
   },
-  getListByCenter({ token, centerId }) {
+  async getListByCenter({ token, centerId }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -31,9 +31,9 @@ const SparePartItemsApi = {
     };
     const url = "/SparePartItem/GetListByCenter";
 
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
-  addSpartPartItem(token, data) {
+  async addSpartPartItem(token, data) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -42,18 +42,17 @@ const SparePartItemsApi = {
     };
     const url = "/SparePartItem/Post";
 
-    return axiosApi
+    return await axiosApi
       .post(url, data, config)
       .then((response) => {
         console.log("AddSpartPartItem success:", response.data);
-        return response.data;
       })
       .catch((error) => {
         console.error("AddSpartPartItem error:", error);
         throw error;
       });
   },
-  updateSparePartItem({ token, id, data }) {
+  async updateSparePartItem({ token, id, data }) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +60,7 @@ const SparePartItemsApi = {
       },
     };
     const url = `/SparePartItem/Update?id=${id}`;
-    return axiosApi
+    return await axiosApi
       .put(url, data, config)
       .then((response) => {
         console.log("Update SparePartItem success:", response.data);

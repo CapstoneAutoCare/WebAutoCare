@@ -1,9 +1,25 @@
 import axiosApi from "./AxiosApi";
 
 const TaskApi = {
-  getAll() {
+  async getAll() {
     const url = "/MaintenanceTasks/GetAll";
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
+  },
+  async GetById({ token, id }) {
+    const url = `/MaintenanceTasks/GetById`;
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id },
+    };
+    try {
+      return await axiosApi.get(url, config);
+    } catch (error) {
+      console.error("Error fetching data by ID:", error);
+      throw error;
+    }
   },
   async GetListByCenter(token) {
     const url = `/MaintenanceTasks/GetListByCenter`;
@@ -15,13 +31,13 @@ const TaskApi = {
     };
     try {
       const response = await axiosApi.get(url, config);
-      return response.data;
+      return response;
     } catch (error) {
       console.error("Error fetching data by ID:", error);
       throw error;
     }
   },
-  postSparePartItemCost({ token, data }) {
+  async PostTask({ token, data }) {
     token = token || "";
     const config = {
       headers: {
@@ -29,10 +45,11 @@ const TaskApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/SparePartsItemCosts/Post";
-    return axiosApi.post(url, data, config);
+    const url = "/MaintenanceTasks/Post";
+    return await axiosApi.post(url, data, config);
   },
-  post(token, data) {
+
+  async Patch({ token, id, status }) {
     token = token || "";
     const config = {
       headers: {
@@ -40,22 +57,10 @@ const TaskApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/SparePart/Post";
-    return axiosApi.post(url, data, config);
-  },
-  async changestatusCostSpartPartItem({ token, id, status }) {
-    token = token || "";
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const url = `/SparePartsItemCosts/PatchStatus?id=${id}&status=${status}`;
+    const url = `/MaintenanceTasks/Patch?id=${id}&status=${status}`;
 
     try {
-      const response = await axiosApi.patch(url, null, config);
-      return response.data;
+      return await axiosApi.patch(url, null, config);
     } catch (error) {
       console.error("Error changing status:", error);
       throw error;

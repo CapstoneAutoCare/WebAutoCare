@@ -16,7 +16,7 @@ export const SparePartItemsAll = createAsyncThunk(
   async (token) => {
     try {
       const list = await SparePartItemsApi.getAll(token);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }
@@ -27,7 +27,7 @@ export const SparePartItemById = createAsyncThunk(
   async ({ token, id }) => {
     try {
       const list = await SparePartItemsApi.getById({ token: token, id: id });
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }
@@ -51,7 +51,7 @@ export const AddSparePartItemsByCenter = createAsyncThunk(
     try {
       const list = await SparePartItemsApi.addSpartPartItem(token, data);
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -67,7 +67,7 @@ export const UpdateSparePartItemByCenter = createAsyncThunk(
         data: data,
       });
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -84,7 +84,7 @@ export const ChangeStatusSparePartItemCostByCenter = createAsyncThunk(
         status: status,
       });
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -97,7 +97,7 @@ export const GetByIdSparePartActiveCost = createAsyncThunk(
     try {
       const list = await CostItemApi.getByIdSparePartActiveCost(token, id);
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }

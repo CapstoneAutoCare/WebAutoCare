@@ -1,7 +1,7 @@
 import axiosApi from "./AxiosApi";
 
 const AccountApi = {
-  getAllAccounts(token) {
+  async getAllAccounts(token) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -12,7 +12,7 @@ const AccountApi = {
     };
     const url = "/Accounts/GetAccounts";
 
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
   getAccountById: async (id, token) => {
     const config = {
@@ -22,7 +22,7 @@ const AccountApi = {
       },
     };
     const url = `/Accounts/GetAccountsById?id=${id}`;
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
   updateStatusAccount: async (form, token) => {
     const config = {
@@ -42,7 +42,7 @@ const AccountApi = {
       },
     };
     const url = `/Accounts/Profile`;
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
 };
 export default AccountApi;

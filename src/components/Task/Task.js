@@ -7,8 +7,10 @@ import {
   CircularProgress,
   DialogContent,
   Grid,
+  MenuItem,
   Pagination,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -16,9 +18,12 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { TasksByCenter } from "../../redux/tasksSlice";
+import { TaskPatchStatus, TasksByCenter } from "../../redux/tasksSlice";
 import { makeStyle } from "../Booking/Booking";
-import { AddTaskDialog } from "../../Data/DialogComponent";
+import { AddTaskDialog, ViewTaskDetailDialog } from "../../Data/DialogComponent";
+import { formatDate } from "../../Data/Pagination";
+
+const statusOptions = ["ACTIVE", "ACCEPT", "CANCEL"];
 
 const Task = () => {
   const dispatch = useDispatch();
@@ -28,7 +33,7 @@ const Task = () => {
   const [openAddDialog, setAddDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const { tasks = [], statustasks } = useSelector((state) => state.tasks);
-
+  const [reloadTaskDialog, setReloadTaskDialog] = useState(false);
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -38,16 +43,21 @@ const Task = () => {
     setPage(newPage);
   };
 
-  const handleClickOpen = (item) => {
+
+
+  const handleViewClose = () => {
+    setReloadTaskDialog(!reloadTaskDialog);
+    setSelectedItem(null);
+    setOpenDialog(false);
+  };
+
+  const handleClickShow = (item) => {
     setSelectedItem(item);
     setOpenDialog(true);
     console.log("Selected Item: ", item);
+
   };
 
-  const handleClose = () => {
-    setOpenDialog(false);
-    setSelectedItem(null);
-  };
 
   const handleClickOpenAdd = () => {
     setAddDialog(true);
@@ -56,10 +66,27 @@ const Task = () => {
 
   const handleAddClose = () => {
     setAddDialog(false);
+    setReloadTaskDialog(!reloadTaskDialog);
+  };
+  
+  const handleStatusChange = async (maintenanceTaskId, newStatus) => {
+    try {
+      await dispatch(
+        TaskPatchStatus({
+          token,
+          id: maintenanceTaskId,
+          status: newStatus,
+        })
+      );
+      // dispatch(BookingByCenter({ token: token }));
+      setReloadTaskDialog(!reloadTaskDialog);
+    } catch (error) {
+      // console.error("Error updating status:", errors);
+    }
   };
   useEffect(() => {
     dispatch(TasksByCenter(token));
-  }, [dispatch, centerId, token]);
+  }, [dispatch, centerId, token, reloadTaskDialog]);
 
   return (
     <Box>
@@ -76,6 +103,7 @@ const Task = () => {
         open={openAddDialog}
         handleClose={handleAddClose}
         token={token}
+        centerId={centerId}
       />
       {statustasks === "succeeded" && tasks && tasks.length > 0 && (
         <Grid>
@@ -87,6 +115,7 @@ const Task = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>TaskId</TableCell>
+                  <TableCell>InformationMaintenanceId</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Created Date</TableCell>
                   <TableCell>Status</TableCell>
@@ -100,17 +129,51 @@ const Task = () => {
                   .map((item) => (
                     <TableRow key={item.maintenanceTaskId}>
                       <TableCell>{item.maintenanceTaskId}</TableCell>
+                      <TableCell>{item.informationMaintenanceId}</TableCell>
                       <TableCell>{item.maintenanceTaskName}</TableCell>
-                      <TableCell>{item.createdDate}</TableCell>
+                      <TableCell>{formatDate(item.createdDate)}</TableCell>
                       <TableCell>
-                        <span className="status" style={makeStyle(item.status)}>
-                          {item.status}
-                        </span>
+                        {item.status === "ACTIVE" ? (
+                          <Select
+                            value={item.status}
+                            onChange={(event) => {
+                              const newStatus = event.target.value;
+                              handleStatusChange(item.maintenanceTaskId, newStatus);
+                            }}
+                            style={{
+                              ...makeStyle(item.status),
+                              borderRadius: "10px",
+                              width: "125px",
+                              fontSize: "10px",
+                              height: "50px",
+                            }}
+                            // disabled={item.status}
+                          >
+                            {statusOptions.map((status) => (
+                              <MenuItem key={status} value={status} disabled={status === item.status}>
+                                {status}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          <span
+                            className="status"
+                            style={{
+                              ...makeStyle(item.status),
+                              // borderRadius: "10px",
+                              // width: "125px",
+                              // fontSize: "10px",
+                              // height: "50px",
+                            }}
+                          >
+                            {item.status}
+                          </span>
+                        )}
                       </TableCell>
 
                       <TableCell>{item.technicianId}</TableCell>
                       <TableCell className="Details">
-                        <ButtonBase onClick={() => handleClickOpen(item)}>
+                        <ButtonBase onClick={() => handleClickShow(item)}>
                           SHOW
                         </ButtonBase>
                       </TableCell>
@@ -129,14 +192,14 @@ const Task = () => {
           />
         </Grid>
       )}
-      {/* {selectedItem && (
-        <MaintenanceInformationsDetailDialog
+      {selectedItem && (
+        <ViewTaskDetailDialog
           open={openDialog}
-          handleClose={handleClose}
+          handleViewClose={handleViewClose}
           token={token}
           item={selectedItem}
         />
-      )} */}
+      )}
     </Box>
   );
 };

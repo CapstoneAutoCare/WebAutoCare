@@ -8,53 +8,63 @@ const initialState = {
   task: null,
 };
 
-export const TasksAll = createAsyncThunk(
-  "tasks/GetAll",
-  async () => {
+export const TasksAll = createAsyncThunk("tasks/GetAll", async () => {
+  try {
+    const list = await TaskApi.getAll();
+    console.log("sparepart/GetAll", list.data);
+    return list.data;
+  } catch (error) {
+    throw new Error(error.Messages);
+  }
+});
+export const TasksByCenter = createAsyncThunk(
+  "tasks/TasksByCenter",
+  async (token) => {
     try {
-      const list = await TaskApi.getAll();
-      console.log("sparepart/GetAll", list.data);
+      const list = await TaskApi.GetListByCenter(token);
+      console.log("tasks/GetListByCenter", list.data);
       return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }
   }
 );
-export const TasksByCenter = createAsyncThunk(
-    "tasks/TasksByCenter",
-    async (token) => {
-      try {
-        const list = await TaskApi.GetListByCenter(token);
-        console.log("tasks/GetListByCenter", list);
-        return list;
-      } catch (error) {
-        throw new Error(error.Messages);
-      }
+export const TaskGetById = createAsyncThunk(
+  "tasks/TaskGetById",
+  async ({ token, id }) => {
+    try {
+      const list = await TaskApi.GetById({ token, id });
+      console.log("tasks/GetById", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
     }
-  );
-//   "sparepartitem/GetListByCenter",
-//   async (centerId, token) => {
-//     try {
-//       const list = await SparePartItemsApi.getListByCenter(centerId, token);
-//       console.log(list.data);
-//       return list.data;
-//     } catch (error) {
-//       throw new Error(error.message);
-//     }
-//   }
-// );
-// export const AddSparePartItemsByCenter = createAsyncThunk(
-//   "sparepartitem/AddSparePartItemsByCenter",
-//   async ({token, data}) => {
-//     try {
-//       const list = await SparePartItemsApi.addSpartPartItem(token, data);
-//       console.log(list);
-//       return list;
-//     } catch (error) {
-//       throw new Error(error.message);
-//     }
-//   }
-// );
+  }
+);
+export const TaskPatchStatus = createAsyncThunk(
+  "tasks/TaskPatchStatus",
+  async ({ token, id, status }) => {
+    try {
+      const list = await TaskApi.Patch({ token, id, status });
+      console.log("tasks/TaskPatchStatus", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
+export const AddTaskByCenter = createAsyncThunk(
+  "tasks/AddTaskByCenter",
+  async ({ token, data }) => {
+    try {
+      const list = await TaskApi.PostTask({ token, data });
+      console.log("tasks/AddTaskByCenter", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
@@ -83,32 +93,39 @@ const tasksSlice = createSlice({
         state.statustasks = "failed";
         state.error = action.error.message;
       })
-      ;
-    //   .addCase(SparePartItemsByCenterId.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
-
-    //   .addCase(AddSparePartItemsByCenter.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
+      .addCase(AddTaskByCenter.pending, (state) => {
+        state.statustasks = "loading";
+      })
+      .addCase(AddTaskByCenter.fulfilled, (state, action) => {
+        state.statustasks = "succeeded";
+        state.task = action.payload;
+      })
+      .addCase(AddTaskByCenter.rejected, (state, action) => {
+        state.statustasks = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(TaskPatchStatus.pending, (state) => {
+        state.statustasks = "loading";
+      })
+      .addCase(TaskPatchStatus.fulfilled, (state, action) => {
+        state.statustasks = "succeeded";
+        state.task = action.payload;
+      })
+      .addCase(TaskPatchStatus.rejected, (state, action) => {
+        state.statustasks = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(TaskGetById.pending, (state) => {
+        state.statustasks = "loading";
+      })
+      .addCase(TaskGetById.fulfilled, (state, action) => {
+        state.statustasks = "succeeded";
+        state.task = action.payload;
+      })
+      .addCase(TaskGetById.rejected, (state, action) => {
+        state.statustasks = "failed";
+        state.error = action.error.message;
+      });
   },
 });
 export const {} = tasksSlice.actions;

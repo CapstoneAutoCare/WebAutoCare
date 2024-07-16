@@ -1,11 +1,11 @@
 import axiosApi from "./AxiosApi";
 
 const BookingApi = {
-  getAll() {
+  async getAll() {
     const url = "/Bookings/GetAll";
     return axiosApi.get(url);
   },
-  getById(token, bookingId) {
+  async getById(token, bookingId) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -15,7 +15,7 @@ const BookingApi = {
     const url = "/Bookings/GetById?id=" + bookingId;
     return axiosApi.get(url, config);
   },
-  getListByCenter({ token }) {
+  async getListByCenter({ token }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -24,9 +24,9 @@ const BookingApi = {
     };
     const url = "/Bookings/GetListByCenter";
 
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
-  patchStatus({ bookingId, status, token }) {
+  async patchStatus({ bookingId, status, token }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -36,7 +36,7 @@ const BookingApi = {
     };
     const url = "/Bookings/UpdateStatus";
 
-    axiosApi.patch(url, null, config);
+   return await axiosApi.patch(url, null, config);
   },
 };
 export default BookingApi;

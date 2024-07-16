@@ -11,7 +11,7 @@ export const MaintenanceServicesAll = createAsyncThunk(
   async (token) => {
     try {
       const list = await MaintenanceServicesApi.getAll(token);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }
@@ -41,7 +41,7 @@ export const AddMaintenanceServiceByCenter = createAsyncThunk(
         data
       );
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -57,7 +57,7 @@ export const UpdateMaintenanceServiceByCenter = createAsyncThunk(
         data: data,
       });
       console.log(list);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.message);
     }

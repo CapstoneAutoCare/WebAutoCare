@@ -1,15 +1,15 @@
 import axiosApi from "./AxiosApi";
 
 const MaintenanceServicesApi = {
-  getAll() {
+  async getAll() {
     const url = "/MaintenanceServices/GetAll";
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
-  getById(id) {
+  async getById(id) {
     const url = "/MaintenanceServices/GetById?id=" + id;
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
-  getListByCenter({ token, centerId }) {
+  async getListByCenter({ token, centerId }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -18,9 +18,9 @@ const MaintenanceServicesApi = {
     };
     const url = "/MaintenanceServices/GetListByCenter";
 
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
-  addMaintenanceServicesItem(token, data) {
+  async addMaintenanceServicesItem(token, data) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -29,18 +29,17 @@ const MaintenanceServicesApi = {
     };
     const url = "/MaintenanceServices/Post";
 
-    return axiosApi
+    return await axiosApi
       .post(url, data, config)
       .then((response) => {
         console.log("AddMaintenanceServices success:", response.data);
-        return response.data;
       })
       .catch((error) => {
         console.error("AddMaintenanceServices error:", error);
         throw error;
       });
   },
-  updateMaintenanceServicesItem({ token, id, data }) {
+  async updateMaintenanceServicesItem({ token, id, data }) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +47,7 @@ const MaintenanceServicesApi = {
       },
     };
     const url = `/MaintenanceServices/Update?id=${id}`;
-    return axiosApi
+    return await axiosApi
       .put(url, data, config)
       .then((response) => {
         console.log("Update SparePartItem success:", response.data);

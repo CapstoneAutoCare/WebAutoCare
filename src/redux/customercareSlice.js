@@ -11,7 +11,7 @@ export const CustomerCareAll = createAsyncThunk(
   async (token) => {
     try {
       const list = await CustomerCareApi.getAll(token);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }

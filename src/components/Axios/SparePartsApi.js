@@ -1,13 +1,13 @@
 import axiosApi from "./AxiosApi";
 
 const SparePartsApi = {
-  getAll() {
+ async getAll() {
     const url = "/SparePart/GetAll";
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
-  getById(id) {
+ async getById(id) {
     const url = "/SparePart/GetById?id=" + id;
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
   //   getListByCenter({ token, centerId }) {
   //     const config = {
@@ -20,7 +20,7 @@ const SparePartsApi = {
 
   //     return axiosApi.get(url, config);
   //   },
-  post(token, data) {
+ async post(token, data) {
     token = token || "";
     const config = {
       headers: {
@@ -29,7 +29,7 @@ const SparePartsApi = {
       },
     };
     const url = "/SparePart/Post";
-    return axiosApi.post(url, data, config);
+    return await axiosApi.post(url, data, config);
   },
 };
 export default SparePartsApi;

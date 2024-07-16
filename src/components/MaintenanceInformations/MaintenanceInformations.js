@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { MaintenanceInformationsByCenterId } from "../../redux/maintenanceInformationsSlice";
 import { MaintenanceInformationsDetailDialog } from "../../Data/DialogComponent";
+import { makeStyle } from "../Booking/Booking";
 
 const MaintenanceInformations = () => {
   const dispatch = useDispatch();
@@ -28,7 +29,8 @@ const MaintenanceInformations = () => {
   const { maintenanceInformations = [], statusmi } = useSelector(
     (state) => state.maintenanceInformation
   );
-  
+  const [reload, setReload] = useState(false);
+
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -46,12 +48,13 @@ const MaintenanceInformations = () => {
 
   const handleClose = () => {
     setOpenDialog(false);
+    setReload(!reload);
     setSelectedItem(null);
   };
 
   useEffect(() => {
     dispatch(MaintenanceInformationsByCenterId({ centerId, token }));
-  }, [dispatch, centerId, token]);
+  }, [dispatch, centerId, token,reload]);
 
   return (
     <Box>
@@ -80,6 +83,7 @@ const MaintenanceInformations = () => {
                     <TableCell>Name</TableCell>
                     <TableCell>Created Date</TableCell>
                     <TableCell>Finished Date</TableCell>
+                    <TableCell>Status</TableCell>
                     <TableCell>Total Price</TableCell>
                     <TableCell>Note</TableCell>
                     <TableCell>Details</TableCell>
@@ -94,6 +98,14 @@ const MaintenanceInformations = () => {
                         <TableCell>{item.informationMaintenanceName}</TableCell>
                         <TableCell>{item.createdDate}</TableCell>
                         <TableCell>{item.finishedDate}</TableCell>
+                        <TableCell>
+                          <span
+                            className="status"
+                            style={makeStyle(item.status)}
+                          >
+                            {item.status}
+                          </span>
+                        </TableCell>
                         <TableCell
                           style={{
                             borderRadius: "10px",

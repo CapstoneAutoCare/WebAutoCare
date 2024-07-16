@@ -208,7 +208,7 @@ const SparePartItems = ({ setShowRightSide }) => {
       {selectedItem && (
         <ViewSparePartItemsCostDialog
           open={openView}
-          handleClose={handleViewClose}
+          handleViewClose={handleViewClose}
           token={token}
           item={selectedItem}
         />

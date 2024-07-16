@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -8,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import {
   ButtonBase,
   makeStyles,
+  MenuItem,
   Select,
   styled,
   Table,
@@ -17,6 +17,13 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { makeStyle } from "../Booking/Booking";
+import { useDispatch, useSelector } from "react-redux";
+import { ChangeStatusMi } from "../../redux/maintenanceInformationsSlice";
+import { useEffect } from "react";
+import { formatDate } from "../../Data/Pagination";
+
+const token = localStorage.getItem("localtoken");
 
 const bull = (
   <Box
@@ -26,29 +33,29 @@ const bull = (
     •
   </Box>
 );
-const makeStyle = (status) => {
-  if (status === "ACCEPTED") {
-    return {
-      background: "green",
-      color: "white",
-    };
-  } else if (status === "WAITING") {
-    return {
-      background: "#0099CC",
-      color: "white",
-    };
-  } else if (status === "CANCELLED" || status === "DENIED") {
-    return {
-      background: "#990000",
-      color: "white",
-    };
-  } else {
-    return {
-      background: "#0099CC",
-      color: "white",
-    };
-  }
-};
+// const makeStyle = (status) => {
+//   if (status === "ACCEPTED") {
+//     return {
+//       background: "green",
+//       color: "white",
+//     };
+//   } else if (status === "WAITING") {
+//     return {
+//       background: "#0099CC",
+//       color: "white",
+//     };
+//   } else if (status === "CANCELLED" || status === "DENIED") {
+//     return {
+//       background: "#990000",
+//       color: "white",
+//     };
+//   } else {
+//     return {
+//       background: "#0099CC",
+//       color: "white",
+//     };
+//   }
+// };
 const StyledCard = styled(Card)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
@@ -56,10 +63,16 @@ const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),
   // width: "100%",
 }));
-
 const Image = styled("img")(({ theme }) => ({
   width: 150,
   height: 150,
+  objectFit: "cover",
+  marginRight: theme.spacing(2),
+  borderRadius: "8px",
+}));
+export const ImageMainTask = styled("img")(({ theme }) => ({
+  width: 100,
+  height: 100,
   objectFit: "cover",
   marginRight: theme.spacing(2),
   borderRadius: "8px",
@@ -78,6 +91,7 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),
 }));
 const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
+const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
 
 const TableComponent = ({
   image,
@@ -153,28 +167,95 @@ const TableComponent = ({
   </StyledCard>
 );
 
-const MainComponent = ({ data }) => (
-  <StyledCard>
-    <CardContent>
-      <Box display="flex" alignItems="center">
-        <ImageBooking src={data.image} alt={data.image} />
-        <ContentWrapper>
-          <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            {data.informationMaintenanceName}
+export const MainComponent = ({ data, setReload }) => {
+  const dispatch = useDispatch();
+  const handleStatusChange = async ({ id, status }) => {
+    try {
+      await dispatch(
+        ChangeStatusMi({
+          token,
+          id: id,
+          status,
+        })
+      );
+      setReload((p) => !p);
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+  useEffect(() => {}, [dispatch, setReload]);
+  return (
+    <StyledCard>
+      <CardContent>
+        <Box display="flex" alignItems="center">
+          <ImageBooking src={data.image} alt={data.image} />
+          <ContentWrapper>
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              {data.informationMaintenanceName}
+            </Typography>
+            <Typography variant="h6">
+              #{data.informationMaintenanceId}
+            </Typography>
+          </ContentWrapper>
+        </Box>
+      </CardContent>
+      <div>
+        {data.status === "WAITINGBYCAR" ? (
+          <Typography>
+            <Select
+              value={data.status}
+              onChange={(event) => {
+                const newStatus = event.target.value;
+                handleStatusChange({
+                  id: data.informationMaintenanceId,
+                  status: newStatus,
+                });
+              }}
+              className="status"
+              style={{
+                ...makeStyle(data.status),
+                borderRadius: "10px",
+                width: "125px",
+                fontSize: "10px",
+                height: "50px",
+              }}
+            >
+              {statusOptionMi.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
           </Typography>
-          <Typography variant="h6">#{data.informationMaintenanceId}</Typography>
-        </ContentWrapper>
-      </Box>
-    </CardContent>
+        ) : (
+          <span
+            className="status"
+            style={{
+              ...makeStyle(data.status),
+              borderRadius: "10px",
+              width: "125px",
+              fontSize: "20px",
+              height: "50px",
+            }}
+          >
+            {data.status}
+          </span>
+        )}
 
-    <Typography
-      variant="h2"
-      style={{ paddingRight: "50px", fontWeight: "bold" }}
-    >
-      ${data.totalPrice}
-    </Typography>
-  </StyledCard>
-);
+        <Typography
+          variant="h2"
+          style={{
+            paddingTop: "10px",
+            paddingRight: "50px",
+            fontWeight: "bold",
+          }}
+        >
+          ${data.totalPrice}
+        </Typography>
+      </div>
+    </StyledCard>
+  );
+};
 export const CardCostComponent = ({ data, cost }) => {
   return (
     data &&
@@ -183,7 +264,7 @@ export const CardCostComponent = ({ data, cost }) => {
         <CardContent>
           <Box display="flex" alignItems="center">
             <ImageBooking src={data.image} alt={data.image} />
-            <ContentWrapper>
+            <ContentWrapper style={{ alignItems: "flex-start" }}>
               <Typography variant="h5" style={{ fontWeight: "bold" }}>
                 Name: {data.sparePartsItemName}
               </Typography>
@@ -205,11 +286,12 @@ export const CardCostComponent = ({ data, cost }) => {
     )
   );
 };
-export const OutlinedCardMain = ({ data }) => {
+export const OutlinedCardMain = ({ data, setReload }) => {
+  useEffect(() => {}, [setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
-        <MainComponent data={data}></MainComponent>
+        <MainComponent data={data} setReload={setReload}></MainComponent>
       </Card>
 
       {data.responseMaintenanceServiceInfos.map((item, index) => (
@@ -312,3 +394,43 @@ const TableBookingComponent = ({ data }) => (
     </Box>
   </StyledCard>
 );
+
+export const TaskDetailComponent = ({ data }) => {
+  return (
+    data && (
+      <StyledCard>
+        <CardContent>
+          <Box display="flex" alignItems="center">
+            <ImageBooking src={data.image} alt={data.image} />
+            <ContentWrapper style={{ alignItems: "flex-start" }}>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                Name: {data.maintenanceTaskName}
+              </Typography>
+              <Typography variant="h6">#{data.maintenanceTaskId}</Typography>
+              <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                Date: {formatDate(data.createdDate)}
+              </Typography>
+            </ContentWrapper>
+          </Box>
+        </CardContent>
+        <Box style={{ paddingRight: "50px" }}>
+          <Typography
+            variant="h6"
+            style={{
+              ...makeStyle(data.status),
+              borderRadius: "10px",
+              width: "125px",
+              fontSize: "15px",
+              height: "50px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {data.status}
+          </Typography>
+        </Box>
+      </StyledCard>
+    )
+  );
+};

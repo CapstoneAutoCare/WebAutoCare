@@ -1,11 +1,11 @@
 import axiosApi from "./AxiosApi";
 
 const MaintenanceInformationsApi = {
-  getAll() {
+  async getAll() {
     const url = "/MaintenanceInformations/GetAll";
-    return axiosApi.get(url);
+    return await axiosApi.get(url);
   },
-  getById(token,id) {
+  async getById(token, id) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -13,20 +13,44 @@ const MaintenanceInformationsApi = {
       },
     };
     const url = "/MaintenanceInformations/GetById?id=" + id;
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
-  getListByCenter({ token, centerId }) {
+  async getListByCenter({ token, centerId }) {
     const config = {
-        headers: {
-          accept: "text/plain",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const url = "/MaintenanceInformations/GetListByCenter";
-  
-      return axiosApi.get(url, config);
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/MaintenanceInformations/GetListByCenter";
+
+    return await axiosApi.get(url, config);
   },
-  addMaintenanceInformationsItem(token, data) {
+  async getListByCenterAndStatus({ token, status }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { status },
+    };
+    const url = "/MaintenanceInformations/GetListByCenter";
+
+    return await axiosApi.get(url, config);
+  },
+  async GetListByCenterAndStatusCheckinAndTaskInactive({ token }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    
+    };
+    const url = "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskInactive";
+
+    return await axiosApi.get(url, config);
+  },
+  async addMaintenanceInformationsItem(token, data) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -35,16 +59,28 @@ const MaintenanceInformationsApi = {
     };
     const url = "/MaintenanceInformations/Post";
 
-    return axiosApi
+    return await axiosApi
       .post(url, data, config)
       .then((response) => {
         console.log("AddMaintenanceInformations success:", response.data);
-        return response.data; 
       })
       .catch((error) => {
         console.error("AddMaintenanceInformations error:", error);
-        throw error; 
+        throw error;
       });
   },
+  async changeStatus({ token, id, status }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "MaintenanceInformations/CHANGESTATUS";
+
+    return await axiosApi.patch(url, null, config);
+  },
 };
+
 export default MaintenanceInformationsApi;

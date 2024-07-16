@@ -1,7 +1,7 @@
 import axiosApi from "./AxiosApi";
 
 const CustomerCareApi = {
-  getAll(token) {
+  async  getAll(token) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -9,9 +9,9 @@ const CustomerCareApi = {
       },
     };
     const url = "/CustomerCares/GetAll";
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
-  getListByCenter({ centerId, token }) {
+  async getListByCenter({ centerId, token }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -20,7 +20,7 @@ const CustomerCareApi = {
     };
     const url = "/CustomerCares/GetListByCenter?centerId=" + centerId;
 
-    return axiosApi.get(url, config);
+    return await axiosApi.get(url, config);
   },
 };
 export default CustomerCareApi;

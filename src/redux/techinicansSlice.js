@@ -3,7 +3,7 @@ import TechinicanApi from "../components/Axios/TechnicianApi";
 
 const initialState = {
   technicians: [],
-  status: "idle",
+  statustech: "idle",
   error: null,
 };
 export const TechinicanAll = createAsyncThunk(
@@ -11,7 +11,7 @@ export const TechinicanAll = createAsyncThunk(
   async (token) => {
     try {
       const list = await TechinicanApi.getAll(token);
-      return list;
+      return list.data;
     } catch (error) {
       throw new Error(error.Messages);
     }
@@ -22,7 +22,7 @@ export const TechinicanByCenterId = createAsyncThunk(
   async (centerId, token) => {
     try {
       const list = await TechinicanApi.getListByCenter(centerId, token);
-      console.log(list.data);
+      console.log("technician/GetListByCenter", list.data);
       return list.data;
     } catch (error) {
       throw new Error(error.message);
@@ -45,26 +45,26 @@ const techinicansSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(TechinicanAll.pending, (state) => {
-        state.status = "loading";
+        state.statustech = "loading";
       })
       .addCase(TechinicanAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statustech = "succeeded";
         state.technicians = action.payload;
       })
       .addCase(TechinicanAll.rejected, (state, action) => {
-        state.status = "failed";
+        state.statustech = "failed";
         state.error = action.error.message;
       })
       .addCase(TechinicanByCenterId.pending, (state) => {
-        state.status = "loading";
+        state.statustech = "loading";
       })
       .addCase(TechinicanByCenterId.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statustech = "succeeded";
         state.technicians = action.payload;
         console.log("payload", state.technicians);
       })
       .addCase(TechinicanByCenterId.rejected, (state, action) => {
-        state.status = "failed";
+        state.statustech = "failed";
         state.error = action.error.message;
       });
   },

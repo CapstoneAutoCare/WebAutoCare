@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonBase,
   Card,
@@ -14,6 +15,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  Tab,
   Table,
   TableBody,
   TableCell,
@@ -41,8 +43,15 @@ import {
   UpdateMaintenanceServiceByCenter,
 } from "../redux/mainserviceSlice";
 import { useEffect, useState } from "react";
-import { MaintenanceInformationById } from "../redux/maintenanceInformationsSlice";
-import OutlinedCard from "../components/MaintenanceInformations/OutlinedCard";
+import {
+  GetListByCenterAndStatus,
+  GetListByCenterAndStatusCheckinAndTaskInactive,
+  MaintenanceInformationById,
+} from "../redux/maintenanceInformationsSlice";
+import OutlinedCard, {
+  ImageMainTask,
+  TaskDetailComponent,
+} from "../components/MaintenanceInformations/OutlinedCard";
 import HorizontalNonLinearStepper from "../components/MaintenanceInformations/HorizontalNon";
 import HorizontalLinearStepper from "../components/MaintenanceInformations/HorizontalLinearStepper";
 import {
@@ -57,6 +66,9 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { ServicesAll } from "../redux/servicesSlice";
 import { CardCostComponent } from "../components/MaintenanceInformations/OutlinedCard";
 import { makeStyle } from "../components/Booking/Booking";
+import { AddTaskByCenter, TaskGetById } from "../redux/tasksSlice";
+import { TechinicanByCenterId } from "../redux/techinicansSlice";
+import { formatDate } from "./Pagination";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -79,13 +91,13 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
       sparePartsId: "",
     },
     validationSchema: validationSchemaSparePart,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       const data = {
         sparePartsItemName: values.sparePartsItemName,
         sparePartsId: values.sparePartsId ? values.sparePartsId : null,
       };
 
-      dispatch(AddSparePartItemsByCenter({ data, token }))
+      await dispatch(AddSparePartItemsByCenter({ data, token }))
         .then(() => {
           dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
@@ -207,13 +219,13 @@ export const AddMaintenanceServiceDialog = ({
       serviceCareId: "",
     },
     validationSchema: validationSchemaService,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       const data = {
         maintenanceServiceName: values.maintenanceServiceName,
         serviceCareId: values.serviceCareId ? values.serviceCareId : null,
       };
 
-      dispatch(AddMaintenanceServiceByCenter({ data, token }))
+      await dispatch(AddMaintenanceServiceByCenter({ data, token }))
         .then(() => {
           dispatch(MaintenanceServicesByCenterId({ centerId, token }));
           resetForm();
@@ -338,6 +350,9 @@ export const MaintenanceInformationsDetailDialog = ({
     (state) => state.booking
   );
   console.log("Logging bookingId:", item);
+
+  const [reload, setReload] = useState(false);
+
   useEffect(() => {
     if (item) {
       dispatch(BookingById({ token: token, id: item.bookingId }));
@@ -348,7 +363,7 @@ export const MaintenanceInformationsDetailDialog = ({
         })
       );
     }
-  }, [dispatch, item, token]);
+  }, [dispatch, item, token, reload]);
 
   // console.log("BookingById", booking);
   console.log("MaintenanceInformationById", main);
@@ -372,18 +387,20 @@ export const MaintenanceInformationsDetailDialog = ({
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
         Maintenance Information Detail
       </DialogTitle>
-      {statusmi === "loading" && statusbooking === "loading" && (
+      {(statusmi === "loading" || statusbooking === "loading") && (
         <DialogContent dividers>
           <CircularProgress />
         </DialogContent>
       )}
       {statusmi === "succeeded" &&
         statusbooking === "succeeded" &&
-        booking &&
-        main && (
-          <>
-            <HorizontalLinearStepper mainData={main} bookingData={booking} />
-          </>
+        main &&
+        booking && (
+          <HorizontalLinearStepper
+            mainData={main}
+            bookingData={booking}
+            setReload={setReload}
+          />
         )}
       {statusmi === "failed" && (
         <DialogContent dividers>
@@ -698,7 +715,7 @@ export const UpdateMaintenanceServiceDialog = ({
 
 export const ViewSparePartItemsCostDialog = ({
   open,
-  handleClose,
+  handleViewClose,
   token,
   item,
 }) => {
@@ -718,7 +735,7 @@ export const ViewSparePartItemsCostDialog = ({
           status: newStatus,
         })
       );
-      dispatch(
+      await dispatch(
         GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
       );
       setReload(!reload);
@@ -747,7 +764,7 @@ export const ViewSparePartItemsCostDialog = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleViewClose}
       maxWidth="md"
       fullWidth
       PaperProps={{
@@ -779,7 +796,7 @@ export const ViewSparePartItemsCostDialog = ({
             </div>
             <AddSparePartItemsCostDialog
               open={openAdd}
-              handleClose={handleAddClose}
+              handleAddClose={handleAddClose}
               sparePartsItemId={sparepartitem.sparePartsItemId}
               token={token}
             />
@@ -853,6 +870,9 @@ export const ViewSparePartItemsCostDialog = ({
           </DialogContent>
         </>
       )}
+      <DialogActions>
+        <Button onClick={handleViewClose}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
 };
@@ -865,7 +885,7 @@ const validationSchemaSparePartItemsCost = Yup.object({
 
 export const AddSparePartItemsCostDialog = ({
   open,
-  handleClose,
+  handleAddClose,
   sparePartsItemId,
   token,
 }) => {
@@ -878,22 +898,20 @@ export const AddSparePartItemsCostDialog = ({
       sparePartsItemId: sparePartsItemId,
     },
     validationSchema: validationSchemaSparePartItemsCost,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       const data = {
         acturalCost: values.acturalCost,
         note: values.note,
         sparePartsItemId: values.sparePartsItemId,
       };
       console.log(data);
-      dispatch(AddSparePartItemCost({ token: token, data: data }))
-        .then(() => {
-          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
-          resetForm();
-          handleClose();
-        })
-        .catch((error) => {
-          console.error("Failed to add item:", error);
-        });
+      try {
+        await dispatch(AddSparePartItemCost({ token, data }));
+        resetForm();
+        handleAddClose();
+      } catch (error) {
+        console.error("Failed to add item:", error);
+      }
     },
   });
   // const handleClear = () => {
@@ -903,7 +921,7 @@ export const AddSparePartItemsCostDialog = ({
     dispatch(ServicesAll(token));
   }, [dispatch, token]);
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Spare Part Item</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
@@ -954,7 +972,7 @@ export const AddSparePartItemsCostDialog = ({
                 formik.touched.sparePartsItemId &&
                 Boolean(formik.errors.sparePartsItemId)
               }
-              disabled={formik.touched.sparePartsItemId}
+              disabled={formik.values.sparePartsItemId}
               helperText={
                 formik.touched.sparePartsItemId &&
                 formik.errors.sparePartsItemId
@@ -991,6 +1009,179 @@ export const AddSparePartItemsCostDialog = ({
             error={formik.touched.note && Boolean(formik.errors.note)}
             helperText={formik.touched.note && formik.errors.note}
           />
+          <DialogActions>
+            <Button onClick={handleAddClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+const validationSchemaTaskByCenter = Yup.object({
+  technicianId: Yup.string().required("technicianId is required"),
+  informationMaintenanceId: Yup.string().required(
+    "informationMaintenanceId is required"
+  ),
+});
+export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
+  const dispatch = useDispatch();
+
+  const { maintenanceInformations, statusmi } = useSelector(
+    (state) => state.maintenanceInformation
+  );
+  const { technicians, statustech } = useSelector((state) => state.technician);
+  const { reloadAdd, setReloadAdd } = useState(false);
+  const formik = useFormik({
+    initialValues: {
+      informationMaintenanceId: "",
+      technicianId: "",
+    },
+    validationSchema: validationSchemaTaskByCenter,
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        informationMaintenanceId: values.informationMaintenanceId,
+        technicianId: values.technicianId,
+      };
+      console.log(data);
+      await dispatch(AddTaskByCenter({ token: token, data: data }))
+        .then(() => {
+          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+      await dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
+      await dispatch(TechinicanByCenterId({ centerId, token }));
+
+      setReloadAdd(!reloadAdd);
+    },
+  });
+
+  useEffect(() => {
+    dispatch(TechinicanByCenterId({ centerId, token }));
+    dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
+  }, [dispatch, token, centerId, reloadAdd]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Add Task</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Technician Id</InputLabel>
+            <Select
+              label="TechnicianId"
+              name="technicianId"
+              value={formik.values.technicianId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                // const selectedtechnicianId = technicians.find(
+                //   (part) => part.technicianId === event.target.value
+                // );
+                // formik.setFieldValue(
+                //   "maintenanceServiceName",
+                //   selectedtechnicianId?.serviceCareName || ""
+                // );
+              }}
+              error={
+                formik.touched.technicianId &&
+                Boolean(formik.errors.technicianId)
+              }
+            >
+              {technicians.map((option) => (
+                <MenuItem key={option.technicianId} value={option.technicianId}>
+                  {option.firstName} {option.email}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="technicianId"
+              label="Technician Id"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formik.values.technicianId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.technicianId &&
+                Boolean(formik.errors.technicianId)
+              }
+              disabled={formik.touched.technicianId}
+              helperText={
+                formik.touched.technicianId && formik.errors.technicianId
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </div>
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Information Id</InputLabel>
+            <Select
+              label="Information Id"
+              name="informationMaintenanceId"
+              value={formik.values.informationMaintenanceId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                // const selectedtechnicianId = technicians.find(
+                //   (part) => part.technicianId === event.target.value
+                // );
+                // formik.setFieldValue(
+                //   "maintenanceServiceName",
+                //   selectedtechnicianId?.serviceCareName || ""
+                // );
+              }}
+              error={
+                formik.touched.informationMaintenanceId &&
+                Boolean(formik.errors.informationMaintenanceId)
+              }
+            >
+              {maintenanceInformations.map((option) => (
+                <MenuItem
+                  key={option.informationMaintenanceId}
+                  value={option.informationMaintenanceId}
+                >
+                  {"Note: "}
+                  {option.note} {"- TotalPrice: "}
+                  {option.totalPrice} VND
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="informationMaintenanceId"
+              label="Information MaintenanceId"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formik.values.informationMaintenanceId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.informationMaintenanceId &&
+                Boolean(formik.errors.informationMaintenanceId)
+              }
+              disabled={formik.touched.informationMaintenanceId}
+              helperText={
+                formik.touched.informationMaintenanceId &&
+                formik.errors.informationMaintenanceId
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </div>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
             <Button type="submit">Add</Button>
@@ -1001,138 +1192,246 @@ export const AddSparePartItemsCostDialog = ({
   );
 };
 
-export const AddTaskDialog = ({
+export const ViewTaskDetailDialog = ({
   open,
-  handleClose,
+  handleViewClose,
   token,
+  item,
 }) => {
   const dispatch = useDispatch();
-  const { services, statusservices } = useSelector((state) => state.services);
-  const formik = useFormik({
-    initialValues: {
-      acturalCost: 0,
-      note: "",
-    },
-    validationSchema: validationSchemaSparePartItemsCost,
-    onSubmit: (values, { resetForm }) => {
-      const data = {
-        acturalCost: values.acturalCost,
-        note: values.note,
-        sparePartsItemId: values.sparePartsItemId,
-      };
-      console.log(data);
-      dispatch(AddSparePartItemCost({ token: token, data: data }))
-        .then(() => {
-          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
-          resetForm();
-          handleClose();
-        })
-        .catch((error) => {
-          console.error("Failed to add item:", error);
-        });
-    },
-  });
-  // const handleClear = () => {
-  //   formik.setFieldValue("sparePartsItemId", "");
-  // };
-  useEffect(() => {
-    dispatch(ServicesAll(token));
-  }, [dispatch, token]);
-  return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Spare Part Item</DialogTitle>
-      <DialogContent>
-        <form onSubmit={formik.handleSubmit}>
-          {/* <FormControl fullWidth margin="normal">
-            <InputLabel>SparePart Name</InputLabel>
-            <Select
-              label="Service Care Id"
-              name="serviceCareId"
-              value={formik.values.serviceCareId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedServices = services.find(
-                  (part) => part.serviceCareId === event.target.value
-                );
-                formik.setFieldValue(
-                  "maintenanceServiceName",
-                  selectedServices?.serviceCareName || ""
-                );
-              }}
-              error={
-                formik.touched.serviceCareId &&
-                Boolean(formik.errors.serviceCareId)
-              }
-            >
-              {services.map((option) => (
-                <MenuItem
-                  key={option.serviceCareId}
-                  value={option.serviceCareId}
-                >
-                  {option.maintananceScheduleName} {option.serviceCareName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="sparePartsItemId"
-              label="Spare Parts Item Id"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formik.values.sparePartsItemId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.sparePartsItemId &&
-                Boolean(formik.errors.sparePartsItemId)
-              }
-              disabled={formik.touched.sparePartsItemId}
-              helperText={
-                formik.touched.sparePartsItemId &&
-                formik.errors.sparePartsItemId
-              }
-            />
-          </div>
+  const [imageFile, setImageFile] = useState(null);
+  const { task, statustasks } = useSelector((state) => state.tasks);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [reload, setReload] = useState(false);
 
-          <TextField
-            margin="dense"
-            name="acturalCost"
-            label="Actural Cost"
-            type="number"
-            fullWidth
-            variant="standard"
-            value={formik.values.acturalCost}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.acturalCost && Boolean(formik.errors.acturalCost)
-            }
-            helperText={formik.touched.acturalCost && formik.errors.acturalCost}
-            inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-          <TextField
-            margin="dense"
-            name="note"
-            label="Note"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formik.values.note}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.note && Boolean(formik.errors.note)}
-            helperText={formik.touched.note && formik.errors.note}
-          />
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
+  const handleStatusChange = async (sparePartsItemCostId, newStatus) => {
+    try {
+      await dispatch(
+        ChangeStatusSparePartItemCostByCenter({
+          token: token,
+          id: sparePartsItemCostId,
+          status: newStatus,
+        })
+      );
+      await dispatch(
+        GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
+      );
+      setReload(!reload);
+    } catch (error) {}
+  };
+  useEffect(() => {
+    if (item) {
+      dispatch(TaskGetById({ token, id: item.maintenanceTaskId }));
+      // dispatch(SparePartItemById({ token, id: item.sparePartsItemId }));
+    }
+  }, [item, reload, dispatch]);
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+  const handleAddClickOpen = () => {
+    setOpenAdd(true);
+  };
+
+  const handleAddClose = () => {
+    setOpenAdd(false);
+    setReload(!reload);
+  };
+  return (
+    <Dialog
+      open={open}
+      onClose={handleViewClose}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "80%",
+          height: "65%",
+          maxHeight: "80%",
+        },
+      }}
+    >
+      {statustasks === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {task && statustasks === "succeeded" && (
+        <>
+          <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              View List Task
+            </div>
+
+            <Card>
+              <TaskDetailComponent data={task} />
+            </Card>
+          </DialogTitle>
+
+          <DialogContent dividers>
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell>Maintenance SparePart Info Id</TableCell>
+                      <TableCell>SparePart Name</TableCell>
+                      <TableCell>Created Date</TableCell>
+
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {task.responseMainTaskSpareParts.map((item) => (
+                      <TableRow key={item.maintenanceTaskSparePartInfoId}>
+                        <TableCell>
+                          <ImageMainTask src={item.image} alt={item.image} />
+                        </TableCell>
+                        <TableCell
+                        // style={{ fontWeight: "bold", fontSize: "25px" }}
+                        >
+                          {item.maintenanceSparePartInfoId}
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{formatDate(item.createdDate)}</TableCell>
+                        <TableCell>
+                          {item.status === "ACTIVE" ? (
+                            <Select
+                              value={item.status}
+                              onChange={(event) => {
+                                const newStatus = event.target.value;
+                                handleStatusChange(
+                                  item.sparePartsItemCostId,
+                                  newStatus
+                                );
+                              }}
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                borderRadius: "10px",
+                                width: "125px",
+                                fontSize: "10px",
+                                height: "50px",
+                              }}
+                            >
+                              {statusOptions.map((status) => (
+                                <MenuItem key={status} value={status}>
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          ) : (
+                            <span
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                // borderRadius: "10px",
+                                // width: "125px",
+                                // fontSize: "10px",
+                                // height: "50px",
+                              }}
+                            >
+                              {item.status}
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+            {/* <Typography>View List Task Spart Part</Typography> */}
+          </DialogContent>
+          {task.responseMainTaskServices.length > 0 && (
+            <DialogContent dividers>
+              <Grid>
+                <TableContainer
+                  component={Paper}
+                  style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+                >
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Avatar</TableCell>
+                        <TableCell>Maintenance Service Info Id</TableCell>
+                        <TableCell>Service Name</TableCell>
+                        <TableCell>Created Date</TableCell>
+                        <TableCell>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {task.responseMainTaskServices.map((item) => (
+                        <TableRow key={item.maintenanceTaskServiceInfoId}>
+                          <TableCell>
+                            <ImageMainTask src={item.image} alt={item.image} />
+                          </TableCell>
+                          <TableCell
+                          // style={{ fontWeight: "bold", fontSize: "25px" }}
+                          >
+                            {item.maintenanceServiceInfoId}
+                          </TableCell>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell>{formatDate(item.createdDate)}</TableCell>
+                          <TableCell>
+                            {item.status === "ACTIVE" ? (
+                              <Select
+                                value={item.status}
+                                onChange={(event) => {
+                                  const newStatus = event.target.value;
+                                  handleStatusChange(
+                                    item.sparePartsItemCostId,
+                                    newStatus
+                                  );
+                                }}
+                                className="status"
+                                style={{
+                                  ...makeStyle(item.status),
+                                  borderRadius: "10px",
+                                  width: "125px",
+                                  fontSize: "10px",
+                                  height: "50px",
+                                }}
+                              >
+                                {statusOptions.map((status) => (
+                                  <MenuItem key={status} value={status}>
+                                    {status}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            ) : (
+                              <span
+                                className="status"
+                                style={{
+                                  ...makeStyle(item.status),
+                                  // borderRadius: "10px",
+                                  // width: "125px",
+                                  // fontSize: "10px",
+                                  // height: "50px",
+                                }}
+                              >
+                                {item.status}
+                              </span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </DialogContent>
+          )}
+        </>
+      )}
+      <DialogActions>
+        <Button onClick={handleViewClose}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
 };

@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { OutlinedCardBooking, OutlinedCardMain } from "./OutlinedCard";
 
-export default function HorizontalLinearStepper({ mainData,bookingData }) {
+export default function HorizontalLinearStepper({ mainData,bookingData,setReload }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
 
@@ -110,7 +110,8 @@ export default function HorizontalLinearStepper({ mainData,bookingData }) {
             </Button>
           </Box>
           {activeStep === 0 && <OutlinedCardBooking data={bookingData} />}
-          {activeStep === 1 && <OutlinedCardMain data={mainData} />}
+          {activeStep === 1 && <OutlinedCardMain data={mainData} setReload={setReload}/>}
+
         </React.Fragment>
       )}
     </Box>
