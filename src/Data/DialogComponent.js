@@ -829,46 +829,45 @@ export const ViewSparePartItemsCostDialog = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {
-                      sparepartitem.responseSparePartsItemCosts
-                        // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                        .map((item) => (
-                          <TableRow key={item.sparePartsItemCostId}>
-                            <TableCell
-                              style={{ fontWeight: "bold", fontSize: "25px" }}
+                    {sparepartitem.responseSparePartsItemCosts
+                      // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                      .map((item) => (
+                        <TableRow key={item.sparePartsItemCostId}>
+                          <TableCell
+                            style={{ fontWeight: "bold", fontSize: "25px" }}
+                          >
+                            ${item.acturalCost}
+                          </TableCell>
+                          <TableCell>{item.dateTime}</TableCell>
+                          <TableCell>{item.note}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={item.status}
+                              onChange={(event) => {
+                                const newStatus = event.target.value;
+                                handleStatusChange(
+                                  item.sparePartsItemCostId,
+                                  newStatus
+                                );
+                              }}
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                borderRadius: "10px",
+                                width: "125px",
+                                fontSize: "10px",
+                                height: "50px",
+                              }}
                             >
-                              ${item.acturalCost}
-                            </TableCell>
-                            <TableCell>{item.dateTime}</TableCell>
-                            <TableCell>{item.note}</TableCell>
-                            <TableCell>
-                              <Select
-                                value={item.status}
-                                onChange={(event) => {
-                                  const newStatus = event.target.value;
-                                  handleStatusChange(
-                                    item.sparePartsItemCostId,
-                                    newStatus
-                                  );
-                                }}
-                                className="status"
-                                style={{
-                                  ...makeStyle(item.status),
-                                  borderRadius: "10px",
-                                  width: "125px",
-                                  fontSize: "10px",
-                                  height: "50px",
-                                }}
-                              >
-                                {statusOptions.map((status) => (
-                                  <MenuItem key={status} value={status}>
-                                    {status}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              {statusOptions.map((status) => (
+                                <MenuItem key={status} value={status}>
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -1059,7 +1058,10 @@ export const ViewMaintenanceServicesCostDialog = ({
   useEffect(() => {
     if (item) {
       dispatch(
-        GetByIdMaintenanceServiceActiveCost({ token, id: item.maintenanceServiceId })
+        GetByIdMaintenanceServiceActiveCost({
+          token,
+          id: item.maintenanceServiceId,
+        })
       );
       dispatch(
         MaintenanceServicesById({ token, id: item.maintenanceServiceId })
@@ -1384,127 +1386,140 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Task</DialogTitle>
-      <DialogContent>
-        <form onSubmit={formik.handleSubmit}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Technician Id</InputLabel>
-            <Select
-              label="TechnicianId"
-              name="technicianId"
-              value={formik.values.technicianId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                // const selectedtechnicianId = technicians.find(
-                //   (part) => part.technicianId === event.target.value
-                // );
-                // formik.setFieldValue(
-                //   "maintenanceServiceName",
-                //   selectedtechnicianId?.serviceCareName || ""
-                // );
-              }}
-              error={
-                formik.touched.technicianId &&
-                Boolean(formik.errors.technicianId)
-              }
-            >
-              {technicians.map((option) => (
-                <MenuItem key={option.technicianId} value={option.technicianId}>
-                  {option.firstName} {option.email}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="technicianId"
-              label="Technician Id"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formik.values.technicianId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.technicianId &&
-                Boolean(formik.errors.technicianId)
-              }
-              disabled={formik.touched.technicianId}
-              helperText={
-                formik.touched.technicianId && formik.errors.technicianId
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </div>
-
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Information Id</InputLabel>
-            <Select
-              label="Information Id"
-              name="informationMaintenanceId"
-              value={formik.values.informationMaintenanceId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                // const selectedtechnicianId = technicians.find(
-                //   (part) => part.technicianId === event.target.value
-                // );
-                // formik.setFieldValue(
-                //   "maintenanceServiceName",
-                //   selectedtechnicianId?.serviceCareName || ""
-                // );
-              }}
-              error={
-                formik.touched.informationMaintenanceId &&
-                Boolean(formik.errors.informationMaintenanceId)
-              }
-            >
-              {maintenanceInformations.map((option) => (
-                <MenuItem
-                  key={option.informationMaintenanceId}
-                  value={option.informationMaintenanceId}
+      {statustech === "loading" && statusmi === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {statustech === "succeeded" &&
+        statusmi === "succeeded" &&
+        technicians &&
+        maintenanceInformations && (
+          <DialogContent>
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Technician Id</InputLabel>
+                <Select
+                  label="TechnicianId"
+                  name="technicianId"
+                  value={formik.values.technicianId}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    // const selectedtechnicianId = technicians.find(
+                    //   (part) => part.technicianId === event.target.value
+                    // );
+                    // formik.setFieldValue(
+                    //   "maintenanceServiceName",
+                    //   selectedtechnicianId?.serviceCareName || ""
+                    // );
+                  }}
+                  error={
+                    formik.touched.technicianId &&
+                    Boolean(formik.errors.technicianId)
+                  }
                 >
-                  {"Note: "}
-                  {option.note} {"- TotalPrice: "}
-                  {option.totalPrice} VND
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="informationMaintenanceId"
-              label="Information MaintenanceId"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formik.values.informationMaintenanceId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.informationMaintenanceId &&
-                Boolean(formik.errors.informationMaintenanceId)
-              }
-              disabled={formik.touched.informationMaintenanceId}
-              helperText={
-                formik.touched.informationMaintenanceId &&
-                formik.errors.informationMaintenanceId
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </div>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
+                  {technicians.map((option) => (
+                    <MenuItem
+                      key={option.technicianId}
+                      value={option.technicianId}
+                    >
+                      {option.firstName} {option.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="technicianId"
+                  label="Technician Id"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  value={formik.values.technicianId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.technicianId &&
+                    Boolean(formik.errors.technicianId)
+                  }
+                  disabled={formik.touched.technicianId}
+                  helperText={
+                    formik.touched.technicianId && formik.errors.technicianId
+                  }
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </div>
+
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Information Id</InputLabel>
+                <Select
+                  label="Information Id"
+                  name="informationMaintenanceId"
+                  value={formik.values.informationMaintenanceId}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    // const selectedtechnicianId = technicians.find(
+                    //   (part) => part.technicianId === event.target.value
+                    // );
+                    // formik.setFieldValue(
+                    //   "maintenanceServiceName",
+                    //   selectedtechnicianId?.serviceCareName || ""
+                    // );
+                  }}
+                  error={
+                    formik.touched.informationMaintenanceId &&
+                    Boolean(formik.errors.informationMaintenanceId)
+                  }
+                >
+                  {maintenanceInformations.map((option) => (
+                    <MenuItem
+                      key={option.informationMaintenanceId}
+                      value={option.informationMaintenanceId}
+                    >
+                      {"Note: "}
+                      {option.note} {"- TotalPrice: "}
+                      {option.totalPrice} VND
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="informationMaintenanceId"
+                  label="Information MaintenanceId"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  value={formik.values.informationMaintenanceId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.informationMaintenanceId &&
+                    Boolean(formik.errors.informationMaintenanceId)
+                  }
+                  disabled={formik.touched.informationMaintenanceId}
+                  helperText={
+                    formik.touched.informationMaintenanceId &&
+                    formik.errors.informationMaintenanceId
+                  }
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </div>
+              <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button type="submit">Add</Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        )}
     </Dialog>
   );
 };

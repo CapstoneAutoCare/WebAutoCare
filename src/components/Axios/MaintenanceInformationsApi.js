@@ -46,7 +46,7 @@ const MaintenanceInformationsApi = {
       },
     
     };
-    const url = "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskInactive";
+    const url = "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskCancel";
 
     return await axiosApi.get(url, config);
   },
