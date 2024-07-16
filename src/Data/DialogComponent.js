@@ -141,7 +141,10 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
               }
             >
               {spareparts.map((option) => (
-                <MenuItem key={option.sparePartId} value={option.sparePartId}>
+                <MenuItem
+                  key={option.sparePartId}
+                  value={option.sparePartId}
+                >
                   {option.maintananceScheduleName} {option.sparePartName}
                 </MenuItem>
               ))}
@@ -163,7 +166,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
                 formik.touched.sparePartsId &&
                 Boolean(formik.errors.sparePartsId)
               }
-              disabled={formik.touched.sparePartsId}
+              disabled={formik.values.sparePartsId}
               helperText={
                 formik.touched.sparePartsId && formik.errors.sparePartsId
               }
