@@ -20,8 +20,9 @@ import {
 import { makeStyle } from "../Booking/Booking";
 import { useDispatch, useSelector } from "react-redux";
 import { ChangeStatusMi } from "../../redux/maintenanceInformationsSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatDate } from "../../Data/Pagination";
+import { TaskGetById, TaskPatchStatus } from "../../redux/tasksSlice";
 
 const token = localStorage.getItem("localtoken");
 
@@ -92,6 +93,7 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
 }));
 const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
 const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
+const statusTask = ["ACCEPTED", "DONE"];
 
 const TableComponent = ({
   image,
@@ -301,7 +303,9 @@ export const CardMainServiceCostComponent = ({ data, cost }) => {
               {/* <Typography variant="h5" style={{ fontWeight: "bold" }}>
                 {data?.clientId}
               </Typography> */}
-              <Typography variant="h6">#{data?.maintenanceServiceId}</Typography>
+              <Typography variant="h6">
+                #{data?.maintenanceServiceId}
+              </Typography>
             </ContentWrapper>
           </Box>
         </CardContent>
@@ -425,7 +429,24 @@ const TableBookingComponent = ({ data }) => (
   </StyledCard>
 );
 
-export const TaskDetailComponent = ({ data }) => {
+export const TaskDetailComponent = ({ data, setReload }) => {
+  const dispatch = useDispatch();
+
+  const handleStatusChange = async (taskid, newStatus) => {
+    try {
+      await dispatch(
+        TaskPatchStatus({
+          token,
+          id: taskid,
+          status: newStatus,
+        })
+      );
+      // dispatch(BookingByCenter({ token: token }));
+      setReload((p) => !p);
+    } catch (error) {
+      // console.error("Error updating status:", errors);
+    }
+  };
   return (
     data && (
       <StyledCard>
@@ -444,23 +465,89 @@ export const TaskDetailComponent = ({ data }) => {
           </Box>
         </CardContent>
         <Box style={{ paddingRight: "50px" }}>
-          <Typography
-            variant="h6"
-            style={{
-              ...makeStyle(data.status),
-              borderRadius: "10px",
-              width: "125px",
-              fontSize: "15px",
-              height: "50px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {data.status}
-          </Typography>
+          {data.status === "ACCEPTED" ? (
+            <Select
+              value={data.status}
+              onChange={(event) => {
+                const newStatus = event.target.value;
+                handleStatusChange(data.maintenanceTaskId, newStatus);
+              }}
+              style={{
+                ...makeStyle(data.status),
+                borderRadius: "10px",
+                width: "125px",
+                fontSize: "10px",
+                height: "50px",
+              }}
+            >
+              {statusTask.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
+          ) : (
+            <Typography
+              variant="h6"
+              style={{
+                ...makeStyle(data.status),
+                borderRadius: "10px",
+                width: "125px",
+                fontSize: "15px",
+                height: "50px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {data.status}
+            </Typography>
+          )}
         </Box>
       </StyledCard>
     )
+  );
+};
+
+export const OutlinedCardReceipt = ({ data, setReload }) => {
+  useEffect(() => {}, [setReload]);
+  return (
+    <Box sx={{ minWidth: 275 }}>
+      <Card variant="outlined">
+        <MainComponent data={data} setReload={setReload}></MainComponent>
+      </Card>
+      <Card variant="outlined">
+        <MainComponent data={data} setReload={setReload}></MainComponent>
+      </Card>
+
+      {data.responseMaintenanceServiceInfos.map((item, index) => (
+        <Card variant="outlined" key={index}>
+          <TableComponent
+            image={item.image}
+            name={item.maintenanceServiceInfoName}
+            date={item.createdDate}
+            note={item.note}
+            quantity={item.quantity}
+            actualCost={item.actualCost}
+            status={item.status}
+            money={item.totalCost}
+          />
+        </Card>
+      ))}
+      {data.responseMaintenanceSparePartInfos.map((item, index) => (
+        <Card variant="outlined" key={index}>
+          <TableComponent
+            image={item.image}
+            name={item.maintenanceSparePartInfoName}
+            date={item.createdDate}
+            note={item.note}
+            quantity={item.quantity}
+            actualCost={item.actualCost}
+            status={item.status}
+            money={item.totalCost}
+          />
+        </Card>
+      ))}
+    </Box>
   );
 };

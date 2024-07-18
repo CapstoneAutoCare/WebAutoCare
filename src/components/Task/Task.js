@@ -23,7 +23,7 @@ import { makeStyle } from "../Booking/Booking";
 import { AddTaskDialog, ViewTaskDetailDialog } from "../../Data/DialogComponent";
 import { formatDate } from "../../Data/Pagination";
 
-const statusOptions = ["ACTIVE", "ACCEPT", "CANCEL"];
+const statusOptions = ["ACTIVE", "ACCEPTED", "CANCELLED"];
 
 const Task = () => {
   const dispatch = useDispatch();

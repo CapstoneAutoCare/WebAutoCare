@@ -23,21 +23,69 @@ import {
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
 export const makeStyle = (status) => {
-  if (status === "ACCEPT") {
+  if (status === "INACTIVE") {
     return {
-      background: "rgb(145 254 159 / 47%)",
-      color: "green",
+      background: "#d3d3d3",
+      color: "black",
     };
-  } else if (status === "WAITING") {
+  } else if (status === "ACTIVE") {
     return {
-      background: "#0099CC",
+      background: "#007bff",
+      color: "white",
+    };
+  } else if (status === "ACCEPTED") {
+    return {
+      background: "#17a2b8", 
+      color: "white",
+    };
+  } else if (status === "DONE") {
+    return {
+      background: "#4CAF50",
+      color: "white",
+    };
+  } else if (status === "CREATEDBYClIENT") {
+    return {
+      background: "#ffc107",
+      color: "black",
+    };
+  } else if (status === "CREATEDBYCUSTOMERCARE") {
+    return {
+      background: "#fd7e14",
+      color: "white",
+    };
+  } else if (status === "WAITINGBYCAR") {
+    return {
+      background: "#ff8800",
+      color: "white",
+    };
+  } else if (status === "CHECKIN") {
+    return {
+      background: "#17a2b8",
+      color: "white",
+    };
+  } else if (status === "REPAIRING") {
+    return {
+      background: "#0056b3",
+      color: "white",
+    };
+  } else if (status === "PAYMENT") {
+    return {
+      background: "#6f42c1",
+      color: "white",
+    };
+  } else if (status === "YETPAID") {
+    return {
+      background: "#dc3545",
+      color: "white",
+    };
+  } else if (status === "PAID") {
+    return {
+      background: "#28a745",
       color: "white",
     };
   } else if (
     status === "CANCELLED" ||
-    status === "CANCEL" ||
-    status === "DENIED" ||
-    status === "INACTIVE"
+    status === "DENIED"
   ) {
     return {
       background: "#990000",
@@ -51,7 +99,8 @@ export const makeStyle = (status) => {
   }
 };
 
-const statusOptions = ["WAITING", "DENIED", "ACCEPT", "CANCELLED"];
+
+const statusOptions = ["WAITING", "DENIED", "ACCEPTED", "CANCELLED"];
 
 const Booking = () => {
   const dispatch = useDispatch();

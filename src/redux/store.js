@@ -10,6 +10,7 @@ import technicianReducer from "./techinicansSlice";
 import maintenanceInformationsReducer from "./maintenanceInformationsSlice";
 import servicesReducer from "./servicesSlice";
 import tasksReducer from "./tasksSlice";
+import receiptSlice from "./receiptSlice";
 
 const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ const store = configureStore({
     maintenanceInformation: maintenanceInformationsReducer,
     services: servicesReducer,
     tasks:tasksReducer,
+    receipts:receiptSlice,
   },
 });
 

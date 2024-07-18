@@ -382,10 +382,10 @@ export const MaintenanceInformationsDetailDialog = ({
       fullWidth
       PaperProps={{
         style: {
-          width: "65%",
-          maxWidth: "65%",
-          height: "65%",
-          maxHeight: "auto",
+          width: "80%",
+          maxWidth: "80%",
+          height: "80%",
+          maxHeight: "100%",
         },
       }}
     >
@@ -401,11 +401,13 @@ export const MaintenanceInformationsDetailDialog = ({
         statusbooking === "succeeded" &&
         main &&
         booking && (
-          <HorizontalLinearStepper
-            mainData={main}
-            bookingData={booking}
-            setReload={setReload}
-          />
+          <DialogContent dividers>
+            <HorizontalLinearStepper
+              mainData={main}
+              bookingData={booking}
+              setReload={setReload}
+            />
+          </DialogContent>
         )}
       {statusmi === "failed" && (
         <DialogContent dividers>
@@ -787,7 +789,7 @@ export const ViewSparePartItemsCostDialog = ({
         </DialogContent>
       )}
       {sparepartitem && statussparepartitem === "succeeded" && (
-        <>
+        <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               View List Cost Item
@@ -873,7 +875,7 @@ export const ViewSparePartItemsCostDialog = ({
               </TableContainer>
             </Grid>
           </DialogContent>
-        </>
+        </DialogContent>
       )}
       <DialogActions>
         <Button onClick={handleViewClose}>Close</Button>
@@ -1101,7 +1103,7 @@ export const ViewMaintenanceServicesCostDialog = ({
         </DialogContent>
       )}
       {maintenanceservice && statusmaintenanceservices === "succeeded" && (
-        <>
+        <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               View List Cost Item
@@ -1187,7 +1189,7 @@ export const ViewMaintenanceServicesCostDialog = ({
               </TableContainer>
             </Grid>
           </DialogContent>
-        </>
+        </DialogContent>
       )}
       <DialogActions>
         <Button onClick={handleViewClose}>Close</Button>
@@ -1208,7 +1210,6 @@ export const AddSparePartItemsCostDialog = ({
   token,
 }) => {
   const dispatch = useDispatch();
-  const { services, statusservices } = useSelector((state) => state.services);
   const formik = useFormik({
     initialValues: {
       acturalCost: 0,
@@ -1232,48 +1233,15 @@ export const AddSparePartItemsCostDialog = ({
       }
     },
   });
-  // const handleClear = () => {
-  //   formik.setFieldValue("sparePartsItemId", "");
-  // };
+
   useEffect(() => {
     dispatch(ServicesAll(token));
-  }, [dispatch, token]);
+  }, [dispatch, token, open]);
   return (
     <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Spare Part Item</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          {/* <FormControl fullWidth margin="normal">
-            <InputLabel>SparePart Name</InputLabel>
-            <Select
-              label="Service Care Id"
-              name="serviceCareId"
-              value={formik.values.serviceCareId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedServices = services.find(
-                  (part) => part.serviceCareId === event.target.value
-                );
-                formik.setFieldValue(
-                  "maintenanceServiceName",
-                  selectedServices?.serviceCareName || ""
-                );
-              }}
-              error={
-                formik.touched.serviceCareId &&
-                Boolean(formik.errors.serviceCareId)
-              }
-            >
-              {services.map((option) => (
-                <MenuItem
-                  key={option.serviceCareId}
-                  value={option.serviceCareId}
-                >
-                  {option.maintananceScheduleName} {option.serviceCareName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
@@ -1382,7 +1350,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   useEffect(() => {
     dispatch(TechinicanByCenterId({ centerId, token }));
     dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
-  }, [dispatch, token, centerId, reloadAdd]);
+  }, [dispatch, token, centerId, reloadAdd, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Task</DialogTitle>
@@ -1524,6 +1492,8 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   );
 };
 
+const statusTask = ["ACTIVE", "DONE", "CANCELLED"];
+
 export const ViewTaskDetailDialog = ({
   open,
   handleViewClose,
@@ -1577,10 +1547,10 @@ export const ViewTaskDetailDialog = ({
       fullWidth
       PaperProps={{
         style: {
-          width: "65%",
+          width: "80%",
           maxWidth: "80%",
-          height: "65%",
-          maxHeight: "80%",
+          height: "80%",
+          maxHeight: "100%",
         },
       }}
     >
@@ -1597,7 +1567,7 @@ export const ViewTaskDetailDialog = ({
             </div>
 
             <Card>
-              <TaskDetailComponent data={task} />
+              <TaskDetailComponent data={task} setReload={setReload} />
             </Card>
           </DialogTitle>
 
@@ -1651,8 +1621,12 @@ export const ViewTaskDetailDialog = ({
                                 height: "50px",
                               }}
                             >
-                              {statusOptions.map((status) => (
-                                <MenuItem key={status} value={status}>
+                              {statusTask.map((status) => (
+                                <MenuItem
+                                  key={status}
+                                  value={status}
+                                  disabled={status === item.status}
+                                >
                                   {status}
                                 </MenuItem>
                               ))}
@@ -1730,8 +1704,12 @@ export const ViewTaskDetailDialog = ({
                                   height: "50px",
                                 }}
                               >
-                                {statusOptions.map((status) => (
-                                  <MenuItem key={status} value={status}>
+                                {statusTask.map((status) => (
+                                  <MenuItem
+                                    key={status}
+                                    value={status}
+                                    disabled={status === item.status}
+                                  >
                                     {status}
                                   </MenuItem>
                                 ))}

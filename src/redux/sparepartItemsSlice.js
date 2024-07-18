@@ -135,6 +135,16 @@ const sparepartitemsSlice = createSlice({
     builder
       .addCase(SparePartItemsAll.pending, (state) => {
         state.statussparepartitem = "loading";
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
       })
       .addCase(SparePartItemsAll.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -146,6 +156,11 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(SparePartItemsByCenterId.pending, (state) => {
         state.statussparepartitem = "loading";
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
       })
       .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -159,6 +174,11 @@ const sparepartitemsSlice = createSlice({
 
       .addCase(AddSparePartItemsByCenter.pending, (state) => {
         state.statussparepartitem = "loading";
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
       })
       .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -171,6 +191,11 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(UpdateSparePartItemByCenter.pending, (state) => {
         state.statussparepartitem = "loading";
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
       })
       .addCase(UpdateSparePartItemByCenter.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -195,6 +220,11 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(SparePartItemById.pending, (state) => {
         state.statussparepartitem = "loading";
+        state.sparepartitem=null;
+        state.sparepartitems=[];
+        state.sparepartitemscost=null;
+        state.sparepartitemscosts=[];
+        state.statussparepartitem=null;
       })
       .addCase(SparePartItemById.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";

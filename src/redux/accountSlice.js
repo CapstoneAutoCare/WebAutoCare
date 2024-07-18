@@ -26,6 +26,8 @@ const profileSlice = createSlice({
     builder
       .addCase(Profile.pending, (state) => {
         state.status = "loading";
+        state.profile = null;
+        state.error = null;
       })
       .addCase(Profile.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -33,7 +35,8 @@ const profileSlice = createSlice({
       })
       .addCase(Profile.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
+        state.profile = null;
       });
   },
 });
