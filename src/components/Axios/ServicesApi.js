@@ -1,11 +1,17 @@
 import axiosApi from "./AxiosApi";
 
 const ServicesApi = {
- async getAll() {
+  async getAll({ token }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     const url = "/Services/GetAll";
-    return await axiosApi.get(url);
+    return await axiosApi.get(url, config);
   },
- async getById(id) {
+  async getById(id) {
     const url = "/Services/GetById?id=" + id;
     return await axiosApi.get(url);
   },
@@ -20,7 +26,7 @@ const ServicesApi = {
 
   //     return axiosApi.get(url, config);
   //   },
- async post(token, data) {
+  async post(token, data) {
     token = token || "";
     const config = {
       headers: {

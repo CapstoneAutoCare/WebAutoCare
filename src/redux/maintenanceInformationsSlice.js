@@ -36,50 +36,50 @@ export const MaintenanceInformationsByCenterId = createAsyncThunk(
 );
 export const MaintenanceInformationById = createAsyncThunk(
   "maintenanceInformation/GetById",
-  async ({ miId, token }) => {
+  async ({ miId, token }, { rejectWithValue }) => {
     try {
       const list = await MaintenanceInformationsApi.getById(token, miId);
       console.log("Get by iD", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const AddmaintenanceInformationsByCenter = createAsyncThunk(
   "maintenanceInformation/AddmaintenanceInformationsByCenter",
-  async ({ token, data }) => {
+  async ({ token, data }, { rejectWithValue }) => {
     try {
-      const list = await MaintenanceInformationsApi.addSpartPartItem(
+      const list = await MaintenanceInformationsApi.addSpartPartItem({
         token,
-        data
-      );
+        data,
+      });
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const ChangeStatusMi = createAsyncThunk(
   "maintenanceInformation/ChangeStatusMi",
-  async (token, id, status) => {
+  async ({ token, id, status }, { rejectWithValue }) => {
     try {
-      const list = await MaintenanceInformationsApi.changeStatus(
+      const list = await MaintenanceInformationsApi.changeStatus({
         token,
         id,
-        status
-      );
+        status,
+      });
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const GetListByCenterAndStatus = createAsyncThunk(
   "maintenanceInformation/GetListByCenterAndStatus",
-  async (token) => {
+  async ({ token }, { rejectWithValue }) => {
     try {
       const list = await MaintenanceInformationsApi.getListByCenterAndStatus({
         token,
@@ -88,19 +88,17 @@ export const GetListByCenterAndStatus = createAsyncThunk(
       console.log("maintenanceInformation/GetListByCenterAndStatus", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const GetListByCenterAndStatusCheckinAndTaskInactive = createAsyncThunk(
   "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",
-  async (token) => {
+  async (token, { rejectWithValue }) => {
     try {
       const list =
         await MaintenanceInformationsApi.GetListByCenterAndStatusCheckinAndTaskInactive(
-          {
-            token,
-          }
+          token
         );
       console.log(
         "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",
@@ -108,7 +106,7 @@ export const GetListByCenterAndStatusCheckinAndTaskInactive = createAsyncThunk(
       );
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
@@ -120,9 +118,9 @@ const maintenanceInformationsSlice = createSlice({
     builder
       .addCase(MaintenanceInformationsAll.pending, (state) => {
         state.statusmi = "loading";
-        state.maintenanceInformations=[];
-        state.main=null;
-        state.errormi=null;
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
       })
       .addCase(MaintenanceInformationsAll.fulfilled, (state, action) => {
         state.statusmi = "succeeded";
@@ -134,9 +132,9 @@ const maintenanceInformationsSlice = createSlice({
       })
       .addCase(MaintenanceInformationsByCenterId.pending, (state) => {
         state.statusmi = "loading";
-        state.maintenanceInformations=[];
-        state.main=null;
-        state.errormi=null;
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
       })
       .addCase(MaintenanceInformationsByCenterId.fulfilled, (state, action) => {
         state.statusmi = "succeeded";
@@ -150,13 +148,13 @@ const maintenanceInformationsSlice = createSlice({
       })
       .addCase(MaintenanceInformationsByCenterId.rejected, (state, action) => {
         state.statusmi = "failed";
-        state.errormi = action.error.message;
+        state.errormi = action.payload;
       })
       .addCase(AddmaintenanceInformationsByCenter.pending, (state) => {
         state.statusmi = "loading";
-        state.maintenanceInformations=[];
-        state.main=null;
-        state.errormi=null;
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
       })
       .addCase(
         AddmaintenanceInformationsByCenter.fulfilled,
@@ -168,13 +166,13 @@ const maintenanceInformationsSlice = createSlice({
       )
       .addCase(AddmaintenanceInformationsByCenter.rejected, (state, action) => {
         state.statusmi = "failed";
-        state.errormi = action.error.message;
+        state.errormi = action.payload;
       })
       .addCase(ChangeStatusMi.pending, (state) => {
         state.statusmi = "loading";
-        state.maintenanceInformations=[];
-        state.main=null;
-        state.errormi=null;
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
       })
       .addCase(ChangeStatusMi.fulfilled, (state, action) => {
         state.statusmi = "succeeded";
@@ -183,13 +181,13 @@ const maintenanceInformationsSlice = createSlice({
       })
       .addCase(ChangeStatusMi.rejected, (state, action) => {
         state.statusmi = "failed";
-        state.errormi = action.error.message;
+        state.errormi = action.payload;
       })
       .addCase(GetListByCenterAndStatus.pending, (state) => {
         state.statusmi = "loading";
-        state.maintenanceInformations=[];
-        state.main=null;
-        state.errormi=null;
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
       })
       .addCase(GetListByCenterAndStatus.fulfilled, (state, action) => {
         state.statusmi = "succeeded";
@@ -198,15 +196,15 @@ const maintenanceInformationsSlice = createSlice({
       })
       .addCase(GetListByCenterAndStatus.rejected, (state, action) => {
         state.statusmi = "failed";
-        state.errormi = action.error.message;
+        state.errormi = action.payload;
       })
       .addCase(
         GetListByCenterAndStatusCheckinAndTaskInactive.pending,
         (state) => {
           state.statusmi = "loading";
-          state.maintenanceInformations=[];
-          state.main=null;
-          state.errormi=null;
+          state.maintenanceInformations = [];
+          state.main = null;
+          state.errormi = null;
         }
       )
       .addCase(
@@ -221,7 +219,7 @@ const maintenanceInformationsSlice = createSlice({
         GetListByCenterAndStatusCheckinAndTaskInactive.rejected,
         (state, action) => {
           state.statusmi = "failed";
-          state.errormi = action.error.message;
+          state.errormi = action.payload;
         }
       );
   },

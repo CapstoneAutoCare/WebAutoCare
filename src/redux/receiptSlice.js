@@ -37,13 +37,16 @@ export const ReceiptByInforId = createAsyncThunk(
 
 export const CreateReceipt = createAsyncThunk(
   "receipt/CreateReceipt",
-  async ({ token, data }) => {
+  async ({ token, data }, { rejectWithValue }) => {
     try {
-      const list = await ReceiptApi.post({ token, data });
+      const list = await ReceiptApi.CreateReceiptPost({
+        token: token,
+        data: data,
+      });
       console.log("receipt/CreateReceipt", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
@@ -58,7 +61,7 @@ const receiptSlice = createSlice({
         state.statusreceipt = "loading";
         state.errorreceipt = null;
         state.receipt = null;
-        state.receipts=[]
+        state.receipts = [];
       })
       .addCase(ReceiptById.fulfilled, (state, action) => {
         state.statusreceipt = "succeeded";
@@ -72,7 +75,7 @@ const receiptSlice = createSlice({
         state.statusreceipt = "loading";
         state.errorreceipt = null;
         state.receipt = null;
-        state.receipts=[]
+        state.receipts = [];
       })
       .addCase(CreateReceipt.fulfilled, (state, action) => {
         state.statusreceipt = "succeeded";
@@ -87,7 +90,7 @@ const receiptSlice = createSlice({
         state.statusreceipt = "loading";
         state.errorreceipt = null;
         state.receipt = null;
-        state.receipts=[]
+        state.receipts = [];
       })
       .addCase(ReceiptByInforId.fulfilled, (state, action) => {
         state.statusreceipt = "succeeded";

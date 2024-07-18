@@ -38,15 +38,15 @@ const MaintenanceInformationsApi = {
 
     return await axiosApi.get(url, config);
   },
-  async GetListByCenterAndStatusCheckinAndTaskInactive({ token }) {
+  async GetListByCenterAndStatusCheckinAndTaskInactive(token) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
-    
     };
-    const url = "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskCancel";
+    const url =
+      "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskCancel";
 
     return await axiosApi.get(url, config);
   },

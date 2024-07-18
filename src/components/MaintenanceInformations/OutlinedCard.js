@@ -94,6 +94,7 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
 const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
 const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
 const statusTask = ["ACCEPTED", "DONE"];
+const statusPayment = ["YETPAID", "PAID"];
 
 const TableComponent = ({
   image,
@@ -201,7 +202,14 @@ export const MainComponent = ({ data, setReload }) => {
           </ContentWrapper>
         </Box>
       </CardContent>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         {data.status === "WAITINGBYCAR" ? (
           <Typography>
             <Select
@@ -235,9 +243,7 @@ export const MainComponent = ({ data, setReload }) => {
             style={{
               ...makeStyle(data.status),
               borderRadius: "10px",
-              width: "125px",
               fontSize: "20px",
-              height: "50px",
             }}
           >
             {data.status}
@@ -247,8 +253,6 @@ export const MainComponent = ({ data, setReload }) => {
         <Typography
           variant="h2"
           style={{
-            paddingTop: "10px",
-            paddingRight: "50px",
             fontWeight: "bold",
           }}
         >
@@ -508,19 +512,149 @@ export const TaskDetailComponent = ({ data, setReload }) => {
     )
   );
 };
+const TableReceiptComponent = ({ data }) => (
+  <StyledCard>
+    <CardContent>
+      <Box display="flex" alignItems="center">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/codeui-node.appspot.com/o/images%2Fimage.png?alt=media&token=2ade0f8b-d89b-436f-898c-23ebf51587af"
+          alt={data.image}
+        />
+        <ContentWrapper>
+          <Typography variant="h5" style={{ fontWeight: "bold" }}>
+            {data.receiptName}
+          </Typography>
+          <Typography variant="h6">#{data.receiptId}</Typography>
+          <TableContainer>
+            <Table size="small">
+              <TableBody key={data.receiptId}>
+                <TableRow>
+                  <TableCell>CreatedDate:</TableCell>
+                  <TableCell>{formatDate(data.createdDate)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Description :</TableCell>
+                  <TableCell>{data.description}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>VAT :</TableCell>
+                  <TableCell>{data.vat}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>SubTotal :</TableCell>
+                  <TableCell>${data.subTotal}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>TotalAmount :</TableCell>
+                  <TableCell>${data.totalAmount}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </ContentWrapper>
+      </Box>
+    </CardContent>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {data.status === "YETPAID" ? (
+        <Typography>
+          <Select
+            value={data.status}
+            onChange={(event) => {
+              const newStatus = event.target.value;
+              // handleStatusChange({
+              //   id: data.informationMaintenanceId,
+              //   status: newStatus,
+              // });
+            }}
+            className="status"
+            style={{
+              ...makeStyle(data.status),
+              borderRadius: "10px",
+              width: "125px",
+              fontSize: "10px",
+              height: "50px",
+            }}
+          >
+            {statusPayment.map((status) => (
+              <MenuItem key={status} value={status}>
+                {status}
+              </MenuItem>
+            ))}
+          </Select>
+        </Typography>
+      ) : (
+        <Typography
+          className="status"
+          style={{
+            ...makeStyle(data.status),
+            borderRadius: "10px",
+            fontSize: "20px",
+          }}
+        >
+          {data.status}
+        </Typography>
+      )}
 
-export const OutlinedCardReceipt = ({ data, setReload }) => {
-  useEffect(() => {}, [setReload]);
+      <Typography
+        variant="h2"
+        style={{
+          // paddingTop: "10px",
+          // paddingRight: "50px",
+          fontWeight: "bold",
+        }}
+      >
+        ${data.totalAmount}
+      </Typography>
+    </div>
+  </StyledCard>
+);
+export const ReceiptComponent = ({ data, setReload }) => {
+  const dispatch = useDispatch();
+  const handleStatusChange = async ({ id, status }) => {
+    // try {
+    //   await dispatch(
+    //     ChangeStatusMi({
+    //       token,
+    //       id: id,
+    //       status,
+    //     })
+    //   );
+    //   setReload((p) => !p);
+    // } catch (error) {
+    //   console.error("Error updating status:", error);
+    // }
+  };
+  useEffect(() => {}, [dispatch, setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
-        <MainComponent data={data} setReload={setReload}></MainComponent>
+        <TableReceiptComponent data={data}></TableReceiptComponent>
       </Card>
-      <Card variant="outlined">
-        <MainComponent data={data} setReload={setReload}></MainComponent>
-      </Card>
+    </Box>
+  );
+};
 
-      {data.responseMaintenanceServiceInfos.map((item, index) => (
+export const OutlinedCardReceipt = ({ data, setReload, main }) => {
+  useEffect(() => {
+    console.log("OutlinedCardReceipt", data);
+  }, [data, setReload, main]);
+  return (
+    <Box sx={{ minWidth: 275 }}>
+      <Card variant="outlined">
+        <ReceiptComponent data={data} setReload={setReload}></ReceiptComponent>
+      </Card>
+      {/* <Card variant="outlined">
+        <MainComponent data={data} setReload={setReload}></MainComponent>
+      </Card> */}
+
+      {main.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableComponent
             image={item.image}
@@ -534,7 +668,7 @@ export const OutlinedCardReceipt = ({ data, setReload }) => {
           />
         </Card>
       ))}
-      {data.responseMaintenanceSparePartInfos.map((item, index) => (
+      {main.responseMaintenanceSparePartInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableComponent
             image={item.image}

@@ -33,7 +33,7 @@ const SparePartItemsApi = {
 
     return await axiosApi.get(url, config);
   },
-  async addSpartPartItem(token, data) {
+  async addSpartPartItem({ token, data }) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -42,15 +42,7 @@ const SparePartItemsApi = {
     };
     const url = "/SparePartItem/Post";
 
-    return await axiosApi
-      .post(url, data, config)
-      .then((response) => {
-        console.log("AddSpartPartItem success:", response.data);
-      })
-      .catch((error) => {
-        console.error("AddSpartPartItem error:", error);
-        throw error;
-      });
+    return await axiosApi.post(url, data, config);
   },
   async updateSparePartItem({ token, id, data }) {
     const config = {
@@ -60,14 +52,7 @@ const SparePartItemsApi = {
       },
     };
     const url = `/SparePartItem/Update?id=${id}`;
-    return await axiosApi
-      .put(url, data, config)
-      .then((response) => {
-        console.log("Update SparePartItem success:", response.data);
-      })
-      .catch((error) => {
-        console.error("Update SparePartItem error:", error);
-      });
+    return await axiosApi.put(url, data, config);
   },
 };
 export default SparePartItemsApi;

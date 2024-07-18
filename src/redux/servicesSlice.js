@@ -10,13 +10,13 @@ const initialState = {
 
 export const ServicesAll = createAsyncThunk(
   "services/GetAll",
-  async (token) => {
+  async ({ token }, { rejectWithValue }) => {
     try {
-      const list = await ServicesApi.getAll(token);
+      const list = await ServicesApi.getAll({ token });
       console.log("services/GetAll", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.Messages);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
@@ -52,6 +52,9 @@ const servicesSlice = createSlice({
     builder
       .addCase(ServicesAll.pending, (state) => {
         state.statusservices = "loading";
+        state.services = [];
+        state.errorservices = null;
+        state.service = null;
       })
       .addCase(ServicesAll.fulfilled, (state, action) => {
         state.statusservices = "succeeded";
@@ -59,33 +62,8 @@ const servicesSlice = createSlice({
       })
       .addCase(ServicesAll.rejected, (state, action) => {
         state.statusservices = "failed";
-        state.errorservices = action.error.message;
+        state.errorservices = action.payload;
       });
-    //   .addCase(SparePartItemsByCenterId.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
-
-    //   .addCase(AddSparePartItemsByCenter.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
   },
 });
 export const {} = servicesSlice.actions;

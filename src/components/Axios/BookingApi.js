@@ -5,14 +5,15 @@ const BookingApi = {
     const url = "/Bookings/GetAll";
     return axiosApi.get(url);
   },
-  async getById(token, bookingId) {
+  async getById({ token, id }) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
+      params: { id },
     };
-    const url = "/Bookings/GetById?id=" + bookingId;
+    const url = "/Bookings/GetById";
     return axiosApi.get(url, config);
   },
   async getListByCenter({ token }) {
@@ -36,7 +37,7 @@ const BookingApi = {
     };
     const url = "/Bookings/UpdateStatus";
 
-   return await axiosApi.patch(url, null, config);
+    return await axiosApi.patch(url, null, config);
   },
 };
 export default BookingApi;

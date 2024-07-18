@@ -10,13 +10,13 @@ const initialState = {
 
 export const SparePartsAll = createAsyncThunk(
   "sparepart/GetAll",
-  async (token) => {
+  async ({ token }, { rejectWithValue }) => {
     try {
-      const list = await SparePartsApi.getAll(token);
+      const list = await SparePartsApi.getAll({ token });
       console.log("sparepart/GetAll", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.Messages);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
@@ -51,41 +51,19 @@ const sparepartsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(SparePartsAll.pending, (state) => {
-        state.status = "loading";
+        state.statussparepart = "loading";
+        state.sparepart = null;
+        state.spareparts = [];
+        state.errorsparepart = null;
       })
       .addCase(SparePartsAll.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.statussparepart = "succeeded";
         state.spareparts = action.payload;
       })
       .addCase(SparePartsAll.rejected, (state, action) => {
-        state.status = "failed";
+        state.statussparepart = "failed";
         state.error = action.error.message;
       });
-    //   .addCase(SparePartItemsByCenterId.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
-
-    //   .addCase(AddSparePartItemsByCenter.pending, (state) => {
-    //     state.status = "loading";
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.sparepartitems = action.payload;
-    //     console.log("payload", state.sparepartitems);
-    //   })
-    //   .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.error.message;
-    //   })
   },
 });
 export const {} = sparepartsSlice.actions;

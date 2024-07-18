@@ -4,7 +4,8 @@ import CustomerCareApi from "../components/Axios/CustomerCareApi";
 const initialState = {
   customercares: [],
   status: "idle",
-  error: null,
+  errorcustomercare: null,
+  customercare: null,
 };
 export const CustomerCareAll = createAsyncThunk(
   "customercare/GetAll",
@@ -46,6 +47,9 @@ const customercareSlice = createSlice({
     builder
       .addCase(CustomerCareAll.pending, (state) => {
         state.status = "loading";
+        state.customercares=[];
+        state.errorcustomercare=null;
+        state.customercare=null;
       })
       .addCase(CustomerCareAll.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -57,6 +61,9 @@ const customercareSlice = createSlice({
       })
       .addCase(CustomerCareByCenterId.pending, (state) => {
         state.status = "loading";
+        state.customercares=[];
+        state.errorcustomercare=null;
+        state.customercare=null;
       })
       .addCase(CustomerCareByCenterId.fulfilled, (state, action) => {
         state.status = "succeeded";

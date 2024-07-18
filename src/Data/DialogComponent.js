@@ -74,6 +74,7 @@ import { makeStyle } from "../components/Booking/Booking";
 import { AddTaskByCenter, TaskGetById } from "../redux/tasksSlice";
 import { TechinicanByCenterId } from "../redux/techinicansSlice";
 import { formatDate } from "./Pagination";
+import { CreateReceipt } from "../redux/receiptSlice";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -104,7 +105,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
 
       await dispatch(AddSparePartItemsByCenter({ data, token }))
         .then(() => {
-          dispatch(SparePartItemsByCenterId({ centerId, token }));
+          // dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
           handleClose();
         })
@@ -118,7 +119,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
   };
   useEffect(() => {
     dispatch(SparePartsAll(token));
-  }, [dispatch, token]);
+  }, [dispatch, token, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Spare Part Item</DialogTitle>
@@ -168,7 +169,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
                 formik.touched.sparePartsId &&
                 Boolean(formik.errors.sparePartsId)
               }
-              disabled={formik.values.sparePartsId}
+              disabled={true}
               helperText={
                 formik.touched.sparePartsId && formik.errors.sparePartsId
               }
@@ -360,6 +361,7 @@ export const MaintenanceInformationsDetailDialog = ({
 
   useEffect(() => {
     if (item) {
+      console.log("MaintenanceInformationsDetailDialog have Item: ", item);
       dispatch(BookingById({ token: token, id: item.bookingId }));
       dispatch(
         MaintenanceInformationById({
@@ -430,17 +432,6 @@ export const UpdateSparePartItemDialog = ({
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
 
-  useEffect(() => {
-    if (item) {
-      formik.setValues({
-        status: item.status || "ACTIVE",
-        sparePartsItemName: item.sparePartsItemName || "",
-        image: item.image || "",
-        capacity: item.capacity || 50,
-      });
-    }
-  }, [item]);
-
   const formik = useFormik({
     initialValues: {
       status: item?.status || "ACTIVE",
@@ -460,7 +451,6 @@ export const UpdateSparePartItemDialog = ({
     onSubmit: async (values) => {
       try {
         let imageUrl = values.image;
-
         if (imageFile) {
           const storageRef = ref(storage, `images/${imageFile.name}`);
           await uploadBytes(storageRef, imageFile);
@@ -486,7 +476,16 @@ export const UpdateSparePartItemDialog = ({
     setImageFile(e.target.files[0]);
     formik.setFieldValue("image", e.target.files[0].name);
   };
-
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        status: item.status || "ACTIVE",
+        sparePartsItemName: item.sparePartsItemName || "",
+        image: item.image || "",
+        capacity: item.capacity || 50,
+      });
+    }
+  }, [dispatch, item, token, handleClose]);
   return (
     <Dialog
       open={open}
@@ -1340,8 +1339,8 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
         .catch((error) => {
           console.error("Failed to add item:", error);
         });
-      await dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
-      await dispatch(TechinicanByCenterId({ centerId, token }));
+      // await dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
+      // await dispatch(TechinicanByCenterId({ centerId, token }));
 
       setReloadAdd(!reloadAdd);
     },
@@ -1742,6 +1741,96 @@ export const ViewTaskDetailDialog = ({
       <DialogActions>
         <Button onClick={handleViewClose}>Close</Button>
       </DialogActions>
+    </Dialog>
+  );
+};
+
+export const UseFormikCreateReceipt = ({
+  open,
+  handleClose,
+  token,
+  informationMaintenanceId,
+}) => {
+  const dispatch = useDispatch();
+
+  const formik = useFormik({
+    initialValues: {
+      informationMaintenanceId: informationMaintenanceId,
+      description: "",
+    },
+    validationSchema: Yup.object({
+      description: Yup.string().required("Name is required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        informationMaintenanceId: informationMaintenanceId,
+        description: values.description,
+      };
+      console.log("formdata create receipt", data);
+      await dispatch(CreateReceipt({ token: token, data: data }))
+        .then(() => {
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  useEffect(() => {
+    console.log("informationMaintenanceId formik:", informationMaintenanceId);
+  }, [dispatch, token, informationMaintenanceId, open]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Create Receipt</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="informationMaintenanceId"
+              label="InformationMaintenance Id"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={informationMaintenanceId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.informationMaintenanceId &&
+                Boolean(formik.errors.informationMaintenanceId)
+              }
+              disabled={informationMaintenanceId}
+              helperText={
+                formik.touched.informationMaintenanceId &&
+                formik.errors.informationMaintenanceId
+              }
+            />
+          </div>
+
+          <TextField
+            margin="dense"
+            name="description"
+            label="Description"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
+            helperText={formik.touched.description && formik.errors.description}
+          />
+
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

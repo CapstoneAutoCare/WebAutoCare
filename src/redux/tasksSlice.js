@@ -73,6 +73,9 @@ const tasksSlice = createSlice({
     builder
       .addCase(TasksAll.pending, (state) => {
         state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
       })
       .addCase(TasksAll.fulfilled, (state, action) => {
         state.statustasks = "succeeded";
@@ -84,6 +87,9 @@ const tasksSlice = createSlice({
       })
       .addCase(TasksByCenter.pending, (state) => {
         state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
       })
       .addCase(TasksByCenter.fulfilled, (state, action) => {
         state.statustasks = "succeeded";
@@ -95,6 +101,9 @@ const tasksSlice = createSlice({
       })
       .addCase(AddTaskByCenter.pending, (state) => {
         state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
       })
       .addCase(AddTaskByCenter.fulfilled, (state, action) => {
         state.statustasks = "succeeded";
@@ -106,6 +115,9 @@ const tasksSlice = createSlice({
       })
       .addCase(TaskPatchStatus.pending, (state) => {
         state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
       })
       .addCase(TaskPatchStatus.fulfilled, (state, action) => {
         state.statustasks = "succeeded";
@@ -117,6 +129,9 @@ const tasksSlice = createSlice({
       })
       .addCase(TaskGetById.pending, (state) => {
         state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
       })
       .addCase(TaskGetById.fulfilled, (state, action) => {
         state.statustasks = "succeeded";

@@ -33,16 +33,16 @@ const ReceiptApi = {
 
     return await axiosApi.get(url, config);
   },
-  async post({ token, data }) {
+  async CreateReceiptPost({ token, data }) {
     const config = {
       headers: {
-        accept: "text/plain",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
     const url = "/Receipts/Post";
 
-    return await axiosApi.get(url, data, config);
+    return await axiosApi.post(url, data, config);
   },
 };
 export default ReceiptApi;

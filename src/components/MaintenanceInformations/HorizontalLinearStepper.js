@@ -12,7 +12,12 @@ import {
 import { Fragment, useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { ReceiptById, ReceiptByInforId } from "../../redux/receiptSlice";
+import {
+  CreateReceipt,
+  ReceiptById,
+  ReceiptByInforId,
+} from "../../redux/receiptSlice";
+import { UseFormikCreateReceipt } from "../../Data/DialogComponent";
 
 export default function HorizontalLinearStepper({
   mainData,
@@ -23,10 +28,11 @@ export default function HorizontalLinearStepper({
   const [skipped, setSkipped] = useState(new Set());
   const dispatch = useDispatch();
   const token = localStorage.getItem("localtoken");
-  const { receipt, errorreceipt, statureceipt } = useSelector(
+  const [inforId, setInforId] = useState(null);
+  const { receipt, errorreceipt, statusreceipt } = useSelector(
     (state) => state.receipts
   );
-
+  const [open, setOpen] = useState(false);
   const isStepOptional = (step) => {
     return step === 1;
   };
@@ -66,10 +72,19 @@ export default function HorizontalLinearStepper({
   const handleReset = () => {
     setActiveStep(0);
   };
-
+  const HandleAddReceipt = ({ informationMaintenanceId }) => {
+    console.log("HandleAddReceipt", informationMaintenanceId);
+    setInforId(informationMaintenanceId);
+    setOpen(true);
+  };
   const stepLabels = mainData.responseMaintenanceHistoryStatuses.map(
     (step) => step.status
   );
+  const handleClose = () => {
+    setOpen(false);
+    setReload((p) => !p);
+    setInforId(null);
+  };
   useEffect(() => {
     dispatch(
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
@@ -134,7 +149,7 @@ export default function HorizontalLinearStepper({
                   <Grid item xs={6}>
                     <Button
                       color="inherit"
-                      // onClick={handleAddService}
+                      // onClick={()=>{HandleAddReceipt({informationMaintenanceId:mainData.informationMaintenanceId})}}
                       sx={{ width: "100%" }}
                     >
                       Add Maintenance Service Infor
@@ -142,12 +157,17 @@ export default function HorizontalLinearStepper({
                   </Grid>
                 </Grid>
               )}
-              {activeStep === 4 && (
+              {activeStep === 4 && statusreceipt === "failed" && (
                 <Grid container spacing={1}>
                   <Grid item xs={12}>
                     <Button
                       color="inherit"
-                      // onClick={handleAddItems}
+                      onClick={() => {
+                        HandleAddReceipt({
+                          informationMaintenanceId:
+                            mainData.informationMaintenanceId,
+                        });
+                      }}
                       sx={{ width: "100%" }}
                     >
                       Receipt
@@ -170,11 +190,17 @@ export default function HorizontalLinearStepper({
           {activeStep === 3 && (
             <OutlinedCardMain data={mainData} setReload={setReload} />
           )}
-          {activeStep === 4 && (
-            <OutlinedCardReceipt data={mainData} setReload={setReload} />
+          {activeStep === 4 && receipt && (
+            <OutlinedCardReceipt data={receipt} main={mainData} setReload={setReload} />
           )}
         </Fragment>
       )}
+      <UseFormikCreateReceipt
+        open={open}
+        handleClose={handleClose}
+        token={token}
+        informationMaintenanceId={inforId}
+      />
     </Box>
   );
 }

@@ -13,53 +13,53 @@ const initialState = {
 
 export const SparePartItemsAll = createAsyncThunk(
   "sparepartitem/GetAll",
-  async (token) => {
+  async (token, { rejectWithValue }) => {
     try {
       const list = await SparePartItemsApi.getAll(token);
       return list.data;
     } catch (error) {
-      throw new Error(error.Messages);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const SparePartItemById = createAsyncThunk(
   "sparepartitem/SparePartItemById",
-  async ({ token, id }) => {
+  async ({ token, id }, { rejectWithValue }) => {
     try {
       const list = await SparePartItemsApi.getById({ token: token, id: id });
       return list.data;
     } catch (error) {
-      throw new Error(error.Messages);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const SparePartItemsByCenterId = createAsyncThunk(
   "sparepartitem/GetListByCenter",
-  async (centerId, token) => {
+  async ({ centerId, token }, { rejectWithValue }) => {
     try {
-      const list = await SparePartItemsApi.getListByCenter(centerId, token);
+      const list = await SparePartItemsApi.getListByCenter({ token, centerId });
       console.log(list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const AddSparePartItemsByCenter = createAsyncThunk(
   "sparepartitem/AddSparePartItemsByCenter",
-  async ({ token, data }) => {
+  async ({ token, data }, { rejectWithValue }) => {
     try {
-      const list = await SparePartItemsApi.addSpartPartItem(token, data);
-      console.log(list);
+      const list = await SparePartItemsApi.addSpartPartItem({ token, data });
+      console.log("sparepartitem/AddSparePartItemsByCenter", list.data);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const UpdateSparePartItemByCenter = createAsyncThunk(
   "sparepartitem/UpdateSparePartItemByCenter",
-  async ({ token, id, data }) => {
+  async ({ token, id, data }, { rejectWithValue }) => {
     try {
       const list = await SparePartItemsApi.updateSparePartItem({
         token: token,
@@ -69,14 +69,14 @@ export const UpdateSparePartItemByCenter = createAsyncThunk(
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 
 export const ChangeStatusSparePartItemCostByCenter = createAsyncThunk(
   "sparepartitemCost/ChangeStatusSparePartItemCostByCenter",
-  async ({ token, id, status }) => {
+  async ({ token, id, status }, { rejectWithValue }) => {
     try {
       const list = await CostItemApi.changestatusCostSpartPartItem({
         token: token,
@@ -86,26 +86,26 @@ export const ChangeStatusSparePartItemCostByCenter = createAsyncThunk(
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 
 export const GetByIdSparePartActiveCost = createAsyncThunk(
   "sparepartitemCost/GetByIdSparePartActiveCost",
-  async ({ token, id }) => {
+  async ({ token, id }, { rejectWithValue }) => {
     try {
       const list = await CostItemApi.getByIdSparePartActiveCost(token, id);
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
 export const AddSparePartItemCost = createAsyncThunk(
   "sparepartitemCost/AddSparePartItemCost",
-  async ({ token, data }) => {
+  async ({ token, data }, { rejectWithValue }) => {
     try {
       const list = await CostItemApi.postSparePartItemCost({
         token,
@@ -114,7 +114,7 @@ export const AddSparePartItemCost = createAsyncThunk(
       console.log(list);
       return list.data;
     } catch (error) {
-      throw new Error(error.message);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );
@@ -135,16 +135,10 @@ const sparepartitemsSlice = createSlice({
     builder
       .addCase(SparePartItemsAll.pending, (state) => {
         state.statussparepartitem = "loading";
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
       })
       .addCase(SparePartItemsAll.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -152,15 +146,16 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(SparePartItemsAll.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       })
       .addCase(SparePartItemsByCenterId.pending, (state) => {
         state.statussparepartitem = "loading";
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
+        
       })
       .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -169,16 +164,16 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(SparePartItemsByCenterId.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       })
 
       .addCase(AddSparePartItemsByCenter.pending, (state) => {
         state.statussparepartitem = "loading";
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
       })
       .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -187,15 +182,15 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       })
       .addCase(UpdateSparePartItemByCenter.pending, (state) => {
         state.statussparepartitem = "loading";
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
       })
       .addCase(UpdateSparePartItemByCenter.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -204,10 +199,15 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(UpdateSparePartItemByCenter.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       })
       .addCase(GetByIdSparePartActiveCost.pending, (state) => {
-        state.sparepartitemscost = "loading";
+        state.statussparepartitem = "loading";
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
       })
       .addCase(GetByIdSparePartActiveCost.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -216,15 +216,15 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(GetByIdSparePartActiveCost.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       })
       .addCase(SparePartItemById.pending, (state) => {
         state.statussparepartitem = "loading";
-        state.sparepartitem=null;
-        state.sparepartitems=[];
-        state.sparepartitemscost=null;
-        state.sparepartitemscosts=[];
-        state.statussparepartitem=null;
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
       })
       .addCase(SparePartItemById.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -233,7 +233,7 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(SparePartItemById.rejected, (state, action) => {
         state.statussparepartitem = "failed";
-        state.errorsparepartitem = action.error.message;
+        state.errorsparepartitem = action.payload;
       });
   },
 });
