@@ -118,6 +118,28 @@ export const AddSparePartItemCost = createAsyncThunk(
     }
   }
 );
+export const GetListByDifSparePartAndInforId = createAsyncThunk(
+  "sparepartitemCost/GetListByDifSparePartAndInforId",
+  async ({ token, centerId, inforId }, { rejectWithValue }) => {
+    try {
+      console.log("centerId", centerId );
+      console.log("inforId", inforId );
+
+      const list = await CostItemApi.GetListByDifSparePartAndInforId({
+        token,
+        centerId,
+        inforId,
+      });
+      console.log(
+        "sparepartitemCost/GetListByDifSparePartAndInforId",
+        list.data
+      );
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const sparepartitemsSlice = createSlice({
   name: "sparepartitem",
   initialState,
@@ -155,7 +177,6 @@ const sparepartitemsSlice = createSlice({
         state.sparepartitemscost = null;
         state.sparepartitemscosts = [];
         state.errorsparepartitem = null;
-        
       })
       .addCase(SparePartItemsByCenterId.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
@@ -232,6 +253,23 @@ const sparepartitemsSlice = createSlice({
         // console.log("payload", state.sparepartitem);
       })
       .addCase(SparePartItemById.rejected, (state, action) => {
+        state.statussparepartitem = "failed";
+        state.errorsparepartitem = action.payload;
+      })
+      .addCase(GetListByDifSparePartAndInforId.pending, (state) => {
+        state.statussparepartitem = "loading";
+        state.sparepartitem = null;
+        state.sparepartitems = [];
+        state.sparepartitemscost = null;
+        state.sparepartitemscosts = [];
+        state.errorsparepartitem = null;
+      })
+      .addCase(GetListByDifSparePartAndInforId.fulfilled, (state, action) => {
+        state.statussparepartitem = "succeeded";
+        state.sparepartitemscosts = action.payload;
+        // console.log("payload", state.sparepartitem);
+      })
+      .addCase(GetListByDifSparePartAndInforId.rejected, (state, action) => {
         state.statussparepartitem = "failed";
         state.errorsparepartitem = action.payload;
       });

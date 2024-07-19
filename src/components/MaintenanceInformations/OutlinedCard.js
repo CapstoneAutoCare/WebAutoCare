@@ -97,6 +97,7 @@ const statusTask = ["ACCEPTED", "DONE"];
 const statusPayment = ["YETPAID", "PAID"];
 
 const TableComponent = ({
+  id,
   image,
   name,
   date,
@@ -105,6 +106,8 @@ const TableComponent = ({
   actualCost,
   status,
   money,
+  costId,
+  itemId,
 }) => (
   <StyledCard>
     <CardContent>
@@ -114,9 +117,18 @@ const TableComponent = ({
           <Typography variant="h5" style={{ fontWeight: "bold" }}>
             {name}
           </Typography>
+          <Typography variant="h6">#{id}</Typography>
           <TableContainer>
             <Table size="small">
               <TableBody>
+                <TableRow>
+                  <TableCell> CostId:</TableCell>
+                  <TableCell>{costId}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>ItemId:</TableCell>
+                  <TableCell>{itemId}</TableCell>
+                </TableRow>
                 <TableRow>
                   <TableCell>Date:</TableCell>
                   <TableCell>{date}</TableCell>
@@ -331,10 +343,10 @@ export const OutlinedCardMain = ({ data, setReload }) => {
       <Card variant="outlined">
         <MainComponent data={data} setReload={setReload}></MainComponent>
       </Card>
-
       {data.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableComponent
+            id={item.maintenanceServiceInfoId}
             image={item.image}
             name={item.maintenanceServiceInfoName}
             date={item.createdDate}
@@ -343,12 +355,16 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             actualCost={item.actualCost}
             status={item.status}
             money={item.totalCost}
+            costId={item.maintenanceServiceCostId}
+            itemId={item.maintenanceServiceId}
           />
         </Card>
       ))}
+
       {data.responseMaintenanceSparePartInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableComponent
+            id={item.maintenanceSparePartInfoId}
             image={item.image}
             name={item.maintenanceSparePartInfoName}
             date={item.createdDate}
@@ -357,6 +373,8 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             actualCost={item.actualCost}
             status={item.status}
             money={item.totalCost}
+            costId={item.sparePartsItemCostId}
+            itemId={item.sparePartsItemId}
           />
         </Card>
       ))}
@@ -665,6 +683,9 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
             actualCost={item.actualCost}
             status={item.status}
             money={item.totalCost}
+            costId={item.maintenanceServiceCostId}
+            itemId={item.maintenanceServiceId}
+            id={item.maintenanceServiceInfoId}
           />
         </Card>
       ))}
@@ -679,6 +700,10 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
             actualCost={item.actualCost}
             status={item.status}
             money={item.totalCost}
+            costId={item.sparePartsItemCostId}
+            itemId={item.sparePartsItemId}
+            id={item.maintenanceSparePartInfoId}
+
           />
         </Card>
       ))}

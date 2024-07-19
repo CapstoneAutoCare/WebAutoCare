@@ -17,7 +17,10 @@ import {
   ReceiptById,
   ReceiptByInforId,
 } from "../../redux/receiptSlice";
-import { UseFormikCreateReceipt } from "../../Data/DialogComponent";
+import {
+  AddMaintenanceSparePartInfoesDialog,
+  UseFormikCreateReceipt,
+} from "../../Data/DialogComponent";
 
 export default function HorizontalLinearStepper({
   mainData,
@@ -33,6 +36,8 @@ export default function HorizontalLinearStepper({
     (state) => state.receipts
   );
   const [open, setOpen] = useState(false);
+  const [openAddMainSparePartInfor, setOpenAddMainSparePartInfor] =
+    useState(false);
   const isStepOptional = (step) => {
     return step === 1;
   };
@@ -76,6 +81,18 @@ export default function HorizontalLinearStepper({
     console.log("HandleAddReceipt", informationMaintenanceId);
     setInforId(informationMaintenanceId);
     setOpen(true);
+  };
+
+  const HandleAddSparePartInfor = ({ informationMaintenanceId }) => {
+    setInforId(informationMaintenanceId);
+    console.log("HandleAddSparePartInfor", informationMaintenanceId);
+    setOpenAddMainSparePartInfor(true);
+  };
+
+  const HandleAddSparePartInforClose = () => {
+    setOpenAddMainSparePartInfor(false);
+    setReload((p) => !p);
+    setInforId(null);
   };
   const stepLabels = mainData.responseMaintenanceHistoryStatuses.map(
     (step) => step.status
@@ -140,7 +157,12 @@ export default function HorizontalLinearStepper({
                   <Grid item xs={6}>
                     <Button
                       color="inherit"
-                      // onClick={handleAddItems}
+                      onClick={() => {
+                        HandleAddSparePartInfor({
+                          informationMaintenanceId:
+                            mainData.informationMaintenanceId,
+                        });
+                      }}
                       sx={{ width: "100%" }}
                     >
                       Add Maintenance SparePart Infor
@@ -149,7 +171,7 @@ export default function HorizontalLinearStepper({
                   <Grid item xs={6}>
                     <Button
                       color="inherit"
-                      // onClick={()=>{HandleAddReceipt({informationMaintenanceId:mainData.informationMaintenanceId})}}
+                      // onClick={()=>{HandleAddSparePartInfor({informationMaintenanceId:mainData.informationMaintenanceId})}}
                       sx={{ width: "100%" }}
                     >
                       Add Maintenance Service Infor
@@ -191,13 +213,23 @@ export default function HorizontalLinearStepper({
             <OutlinedCardMain data={mainData} setReload={setReload} />
           )}
           {activeStep === 4 && receipt && (
-            <OutlinedCardReceipt data={receipt} main={mainData} setReload={setReload} />
+            <OutlinedCardReceipt
+              data={receipt}
+              main={mainData}
+              setReload={setReload}
+            />
           )}
         </Fragment>
       )}
       <UseFormikCreateReceipt
         open={open}
         handleClose={handleClose}
+        token={token}
+        informationMaintenanceId={inforId}
+      />
+      <AddMaintenanceSparePartInfoesDialog
+        open={openAddMainSparePartInfor}
+        handleClose={HandleAddSparePartInforClose}
         token={token}
         informationMaintenanceId={inforId}
       />

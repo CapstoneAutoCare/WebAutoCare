@@ -33,6 +33,7 @@ import {
   AddSparePartItemsByCenter,
   ChangeStatusSparePartItemCostByCenter,
   GetByIdSparePartActiveCost,
+  GetListByDifSparePartAndInforId,
   SparePartItemById,
   SparePartItemsByCenterId,
   UpdateSparePartItemByCenter,
@@ -75,6 +76,7 @@ import { AddTaskByCenter, TaskGetById } from "../redux/tasksSlice";
 import { TechinicanByCenterId } from "../redux/techinicansSlice";
 import { formatDate } from "./Pagination";
 import { CreateReceipt } from "../redux/receiptSlice";
+import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInfoesSlice";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -822,7 +824,7 @@ export const ViewSparePartItemsCostDialog = ({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      {/* <TableCell>Avatar</TableCell> */}
+                      <TableCell>SparePartsItemCostId</TableCell>
                       <TableCell>Price</TableCell>
                       <TableCell>Created Date</TableCell>
                       <TableCell>Note</TableCell>
@@ -834,6 +836,7 @@ export const ViewSparePartItemsCostDialog = ({
                       // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                       .map((item) => (
                         <TableRow key={item.sparePartsItemCostId}>
+                          <TableCell>#{item.sparePartsItemCostId}</TableCell>
                           <TableCell
                             style={{ fontWeight: "bold", fontSize: "25px" }}
                           >
@@ -1136,7 +1139,7 @@ export const ViewMaintenanceServicesCostDialog = ({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      {/* <TableCell>Avatar</TableCell> */}
+                      <TableCell>MaintenanceServiceCostId</TableCell>
                       <TableCell>Price</TableCell>
                       <TableCell>Created Date</TableCell>
                       <TableCell>Note</TableCell>
@@ -1148,6 +1151,8 @@ export const ViewMaintenanceServicesCostDialog = ({
                       // .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                       .map((item) => (
                         <TableRow key={item.maintenanceServiceCostId}>
+                          <TableCell>{item.maintenanceServiceCostId}</TableCell>
+
                           <TableCell
                             style={{ fontWeight: "bold", fontSize: "25px" }}
                           >
@@ -1825,6 +1830,227 @@ export const UseFormikCreateReceipt = ({
             helperText={formik.touched.description && formik.errors.description}
           />
 
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const AddMaintenanceSparePartInfoesDialog = ({
+  open,
+  handleClose,
+  token,
+  informationMaintenanceId,
+}) => {
+  const dispatch = useDispatch();
+  const { sparepartitemscosts } = useSelector((state) => state.sparepartitem);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const formik = useFormik({
+    initialValues: {
+      maintenanceInformationId: informationMaintenanceId,
+      sparePartsItemCostId: "",
+      maintenanceSparePartInfoName: "",
+      quantity: 1,
+      actualCost: 0,
+      note: "",
+    },
+    validationSchema: Yup.object({
+      sparePartsItemCostId: Yup.string().required(
+        "sparePartsItemCostId is required"
+      ),
+      maintenanceSparePartInfoName: Yup.string().required(
+        "maintenanceSparePartInfoName is required"
+      ),
+      quantity: Yup.string().required("quantity is required"),
+      actualCost: Yup.string().required("actualCost is required"),
+      note: Yup.string().required("note is required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        maintenanceInformationId: informationMaintenanceId,
+        sparePartsItemCostId: values.sparePartsItemCostId,
+        maintenanceSparePartInfoName: values.maintenanceSparePartInfoName,
+        quantity: values.quantity,
+        actualCost: values.actualCost,
+        note: values.note,
+      };
+      console.log("formdata AddMaintenanceSparePartInfoesDialog", data);
+      await dispatch(
+        MaintenanceSparePartInfoesPost({ token: token, data: data })
+      )
+        .then(() => {
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  useEffect(() => {
+    if (informationMaintenanceId) {
+      console.log("informationMaintenanceId formik:", informationMaintenanceId);
+      const centerId = localStorage.getItem("CenterId");
+      dispatch(
+        GetListByDifSparePartAndInforId({
+          token: token,
+          centerId: centerId,
+          inforId: informationMaintenanceId,
+        })
+      );
+      const calculatedTotalPrice =
+        formik.values.quantity * formik.values.actualCost;
+      const totaldiscount =
+        calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
+      setTotalPrice(totaldiscount);
+    }
+  }, [
+    dispatch,
+    token,
+    informationMaintenanceId,
+    formik.values.quantity,
+    formik.values.actualCost,
+  ]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Create MaintenanceSparePartInfoes </DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>SpareParts Item Cost Id</InputLabel>
+            <Select
+              label="SpareParts Item Cost Id"
+              name="sparePartsItemCostId"
+              value={formik.values.sparePartsItemCostId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                const selectedCostId = sparepartitemscosts.find(
+                  (part) => part.sparePartsItemCostId === event.target.value
+                );
+                formik.setFieldValue(
+                  "maintenanceSparePartInfoName",
+                  selectedCostId?.sparePartsItemName || ""
+                );
+                formik.setFieldValue(
+                  "actualCost",
+                  selectedCostId?.acturalCost || ""
+                );
+              }}
+              error={
+                formik.touched.sparePartsItemCostId &&
+                Boolean(formik.errors.sparePartsItemCostId)
+              }
+            >
+              {sparepartitemscosts.map((option) => (
+                <MenuItem
+                  key={option.sparePartsItemCostId}
+                  value={option.sparePartsItemCostId}
+                >
+                  Name: {option.sparePartsItemName} - ActuralCost:{" "}
+                  {option.acturalCost}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="maintenanceInformationId"
+            label="InformationMaintenance Id"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={informationMaintenanceId}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.maintenanceInformationId &&
+              Boolean(formik.errors.maintenanceInformationId)
+            }
+            disabled={!formik.values.maintenanceInformationId}
+            helperText={
+              formik.touched.maintenanceInformationId &&
+              formik.errors.maintenanceInformationId
+            }
+          />
+
+          <TextField
+            margin="dense"
+            name="maintenanceSparePartInfoName"
+            label="MaintenanceSparePartInfoName"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.maintenanceSparePartInfoName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.maintenanceSparePartInfoName &&
+              Boolean(formik.errors.maintenanceSparePartInfoName)
+            }
+            disabled={true}
+            helperText={
+              formik.touched.maintenanceSparePartInfoName &&
+              formik.errors.maintenanceSparePartInfoName
+            }
+          />
+          <TextField
+            margin="dense"
+            name="quantity"
+            label="Quantity"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.quantity}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.quantity && Boolean(formik.errors.quantity)}
+            helperText={formik.touched.quantity && formik.errors.quantity}
+          />
+          <TextField
+            margin="dense"
+            name="actualCost"
+            label="ActualCost"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.actualCost}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.actualCost && Boolean(formik.errors.actualCost)
+            }
+            disabled={formik.values.actualCost !== 0}
+            helperText={formik.touched.actualCost && formik.errors.actualCost}
+          />
+          <TextField
+            margin="dense"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.note}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.note && Boolean(formik.errors.note)}
+            helperText={formik.touched.note && formik.errors.note}
+          />
+          <Typography
+            variant="h6"
+            style={{
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            ${totalPrice}
+          </Typography>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
             <Button type="submit">Add</Button>
