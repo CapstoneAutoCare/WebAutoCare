@@ -41,6 +41,19 @@ export const TaskGetById = createAsyncThunk(
     }
   }
 );
+export const TaskListGetByInforId = createAsyncThunk(
+  "tasks/TaskListGetByInforId",
+  async ({ token, id }) => {
+    try {
+      const list = await TaskApi.GetListByInforId({ token, id });
+      console.log("tasks/TaskListGetByInforId", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
+
 export const TaskPatchStatus = createAsyncThunk(
   "tasks/TaskPatchStatus",
   async ({ token, id, status }) => {
@@ -140,7 +153,21 @@ const tasksSlice = createSlice({
       .addCase(TaskGetById.rejected, (state, action) => {
         state.statustasks = "failed";
         state.error = action.error.message;
-      });
+      })
+      .addCase(TaskListGetByInforId.pending, (state) => {
+        state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
+      })
+      .addCase(TaskListGetByInforId.fulfilled, (state, action) => {
+        state.statustasks = "succeeded";
+        state.tasks = action.payload;
+      })
+      .addCase(TaskListGetByInforId.rejected, (state, action) => {
+        state.statustasks = "failed";
+        state.error = action.error.message;
+      });;
   },
 });
 export const {} = tasksSlice.actions;

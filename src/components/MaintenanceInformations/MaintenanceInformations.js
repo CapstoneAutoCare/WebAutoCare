@@ -54,7 +54,7 @@ const MaintenanceInformations = () => {
 
   useEffect(() => {
     dispatch(MaintenanceInformationsByCenterId({ centerId, token }));
-  }, [dispatch, centerId, token,reload]);
+  }, [dispatch, centerId, token, reload]);
 
   return (
     <Box>
@@ -84,6 +84,7 @@ const MaintenanceInformations = () => {
                     <TableCell>Created Date</TableCell>
                     <TableCell>Finished Date</TableCell>
                     <TableCell>Status</TableCell>
+                    <TableCell>Quantity </TableCell>
                     <TableCell>Total Price</TableCell>
                     <TableCell>Note</TableCell>
                     <TableCell>Details</TableCell>
@@ -105,6 +106,15 @@ const MaintenanceInformations = () => {
                           >
                             {item.status}
                           </span>
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            borderRadius: "10px",
+                          }}
+                        >
+                          {item.responseMaintenanceServiceInfos.length +
+                            item.responseMaintenanceSparePartInfos.length}{" "}
+                          items
                         </TableCell>
                         <TableCell
                           style={{

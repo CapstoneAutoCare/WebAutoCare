@@ -21,7 +21,23 @@ const TaskApi = {
       throw error;
     }
   },
-
+  async GetListByInforId({ token, id }) {
+    try {
+      token = token || "";
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: { id },
+      };
+      const url = "/MaintenanceTasks/GetListByInfor";
+      return await axiosApi.get(url, config);
+    } catch (error) {
+      console.error("Error fetching data by ID:", error);
+      throw error;
+    }
+  },
   async GetListByCenter() {
     try {
       const url = `/MaintenanceTasks/GetListByCenter`;

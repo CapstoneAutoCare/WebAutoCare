@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
   OutlinedCardBooking,
+  OutlinedCardListTask,
   OutlinedCardMain,
   OutlinedCardReceipt,
 } from "./OutlinedCard";
@@ -13,8 +14,6 @@ import { Fragment, useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  CreateReceipt,
-  ReceiptById,
   ReceiptByInforId,
 } from "../../redux/receiptSlice";
 import {
@@ -61,19 +60,6 @@ export default function HorizontalLinearStepper({
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
   const handleReset = () => {
     setActiveStep(0);
   };
@@ -113,14 +99,14 @@ export default function HorizontalLinearStepper({
         {stepLabels.map((label, index) => {
           const stepProps = {};
           const labelProps = {};
-          // if (isStepOptional(index)) {
-          //   labelProps.optional = (
-          //     <Typography variant="caption">Optional</Typography>
-          //   );
-          // }
-          // if (isStepSkipped(index)) {
-          //   stepProps.completed = false;
-          // }
+          if (isStepOptional(index)) {
+            labelProps.optional = (
+              <Typography variant="caption">Optional</Typography>
+            );
+          }
+          if (isStepSkipped(index)) {
+            stepProps.completed = false;
+          }
           return (
             <Step key={label} {...stepProps}>
               <StepLabel {...labelProps}>{label}</StepLabel>
@@ -152,7 +138,7 @@ export default function HorizontalLinearStepper({
             </Button>
 
             <Box sx={{ flex: "1 1 auto" }}>
-              {activeStep === 2 && (
+              {activeStep === 2 && ( mainData.status === "CHECKIN" || mainData.status === "REPAIRING") &&(
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
                     <Button
@@ -202,7 +188,7 @@ export default function HorizontalLinearStepper({
               {activeStep === stepLabels.length - 1 ? "Finish" : "Next"}
             </Button>
           </Box>
-          {activeStep === 0 && <OutlinedCardBooking data={bookingData} />}
+          {activeStep === 0 && <OutlinedCardBooking data={bookingData} setReload={setReload}/>}
           {activeStep === 1 && (
             <OutlinedCardMain data={mainData} setReload={setReload} />
           )}
@@ -210,7 +196,7 @@ export default function HorizontalLinearStepper({
             <OutlinedCardMain data={mainData} setReload={setReload} />
           )}
           {activeStep === 3 && (
-            <OutlinedCardMain data={mainData} setReload={setReload} />
+            <OutlinedCardListTask data={mainData} setReload={setReload} />
           )}
           {activeStep === 4 && receipt && (
             <OutlinedCardReceipt

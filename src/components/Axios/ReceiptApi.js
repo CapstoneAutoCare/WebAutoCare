@@ -44,5 +44,17 @@ const ReceiptApi = {
 
     return await axiosApi.post(url, data, config);
   },
+  async ReceiptRemove({ token, id }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params:{id}
+    };
+    const url = "/Receipts/Remove";
+
+    return await axiosApi.delete(url, config);
+  },
 };
 export default ReceiptApi;
