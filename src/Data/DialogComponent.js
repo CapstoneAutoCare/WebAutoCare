@@ -28,7 +28,7 @@ import {
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from "@mui/icons-material/Clear";
 
 import {
   AddSparePartItemCost,
@@ -37,7 +37,6 @@ import {
   GetByIdSparePartActiveCost,
   GetListByDifSparePartAndInforId,
   SparePartItemById,
-  SparePartItemsByCenterId,
   UpdateSparePartItemByCenter,
 } from "../redux/sparepartItemsSlice";
 import {
@@ -45,6 +44,7 @@ import {
   AddMaintenanceServiceCost,
   ChangeStatusMaintenanceServiceCostByCenter,
   GetByIdMaintenanceServiceActiveCost,
+  GetListByDifMaintenanceServiceAndInforId,
   MaintenanceServicesByCenterId,
   MaintenanceServicesById,
   UpdateMaintenanceServiceByCenter,
@@ -54,15 +54,13 @@ import {
   GetListByCenterAndStatusCheckinAndTaskInactive,
   MaintenanceInformationById,
 } from "../redux/maintenanceInformationsSlice";
-import OutlinedCard, {
+import {
   CardMainServiceCostComponent,
   ImageMainTask,
   TaskDetailComponent,
 } from "../components/MaintenanceInformations/OutlinedCard";
 import HorizontalLinearStepper from "../components/MaintenanceInformations/HorizontalLinearStepper";
-import {
-  BookingById,
-} from "../redux/bookingSlice";
+import { BookingById } from "../redux/bookingSlice";
 import { storage } from "./firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { SparePartsAll } from "../redux/sparepartsSlice";
@@ -78,6 +76,7 @@ import { TechinicanByCenterId } from "../redux/techinicansSlice";
 import { formatDate } from "./Pagination";
 import { CreateReceipt } from "../redux/receiptSlice";
 import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInfoesSlice";
+import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesSlice";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -1358,7 +1357,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   }, [dispatch, token, centerId, reloadAdd, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Task</DialogTitle>
+      <DialogTitle>Add Assign Task</DialogTitle>
       {statustech === "loading" && statusmi === "loading" && (
         <DialogContent dividers>
           <CircularProgress />
@@ -1850,6 +1849,11 @@ export const AddMaintenanceSparePartInfoesDialog = ({
   const dispatch = useDispatch();
   const { sparepartitemscosts } = useSelector((state) => state.sparepartitem);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredOptions = sparepartitemscosts.filter((option) =>
+    option.sparePartsItemName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   const formik = useFormik({
     initialValues: {
       maintenanceInformationId: informationMaintenanceId,
@@ -1945,13 +1949,28 @@ export const AddMaintenanceSparePartInfoesDialog = ({
                 formik.touched.sparePartsItemCostId &&
                 Boolean(formik.errors.sparePartsItemCostId)
               }
+              renderValue={(selected) => {
+                const selectedOption = sparepartitemscosts.find(
+                  (option) => option.sparePartsItemCostId === selected
+                );
+                return selectedOption ? selectedOption.sparePartsItemName : "";
+              }}
             >
-              {sparepartitemscosts.map((option) => (
+              <TextField
+                autoFocus
+                margin="dense"
+                variant="outlined"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+              />
+              {filteredOptions.map((option) => (
                 <MenuItem
                   key={option.sparePartsItemCostId}
                   value={option.sparePartsItemCostId}
                 >
-                  Name: {option.sparePartsItemName} - ActuralCost:{" "}
+                  Name: {option.sparePartsItemName} - Actual Cost:{" "}
                   {option.acturalCost}
                 </MenuItem>
               ))}
@@ -2011,6 +2030,248 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             onBlur={formik.handleBlur}
             error={formik.touched.quantity && Boolean(formik.errors.quantity)}
             helperText={formik.touched.quantity && formik.errors.quantity}
+          />
+          <TextField
+            margin="dense"
+            name="actualCost"
+            label="ActualCost"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.actualCost}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.actualCost && Boolean(formik.errors.actualCost)
+            }
+            disabled={formik.values.actualCost !== 0}
+            helperText={formik.touched.actualCost && formik.errors.actualCost}
+          />
+          <TextField
+            margin="dense"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.note}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.note && Boolean(formik.errors.note)}
+            helperText={formik.touched.note && formik.errors.note}
+          />
+          <Typography
+            variant="h6"
+            style={{
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            ${totalPrice}
+          </Typography>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const AddMaintenanceServiceInfoesDialog = ({
+  open,
+  handleClose,
+  token,
+  informationMaintenanceId,
+}) => {
+  const dispatch = useDispatch();
+  const { maintenanceservicescost } = useSelector(
+    (state) => state.maintenanceservice
+  );
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredOptions = maintenanceservicescost.filter((option) =>
+    option.maintenanceServiceName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const formik = useFormik({
+    initialValues: {
+      maintenanceInformationId: informationMaintenanceId,
+      maintenanceServiceCostId: "",
+      maintenanceServiceName: "",
+      quantity: 1,
+      actualCost: 0,
+      note: "",
+    },
+    validationSchema: Yup.object({
+      maintenanceServiceCostId: Yup.string().required(
+        "maintenanceServiceCostId is required"
+      ),
+      maintenanceServiceName: Yup.string().required(
+        "maintenanceServiceInfoName is required"
+      ),
+      quantity: Yup.string().required("quantity is required"),
+      actualCost: Yup.string().required("actualCost is required"),
+      note: Yup.string().required("note is required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        maintenanceInformationId: informationMaintenanceId,
+        maintenanceServiceCostId: values.maintenanceServiceCostId,
+        maintenanceServiceInfoName: values.maintenanceServiceName,
+        quantity: 1,
+        actualCost: values.actualCost,
+        note: values.note,
+      };
+      console.log("formdata AddMaintenanceServiceInfoesDialog", data);
+      await dispatch(MaintenanceServiceInfoesPost({ token: token, data: data }))
+        .then(() => {
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  useEffect(() => {
+    if (informationMaintenanceId) {
+      console.log("informationMaintenanceId formik:", informationMaintenanceId);
+      const centerId = localStorage.getItem("CenterId");
+      dispatch(
+        GetListByDifMaintenanceServiceAndInforId({
+          token: token,
+          centerId: centerId,
+          inforId: informationMaintenanceId,
+        })
+      );
+      const calculatedTotalPrice =
+        formik.values.quantity * formik.values.actualCost;
+      const totaldiscount =
+        calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
+      setTotalPrice(totaldiscount);
+    }
+  }, [
+    dispatch,
+    token,
+    informationMaintenanceId,
+    formik.values.quantity,
+    formik.values.actualCost,
+  ]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Create MaintenanceServiceInfoes </DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>MaintenanceService Cost Id</InputLabel>
+            <Select
+              label="maintenanceServiceCostId"
+              name="maintenanceServiceCostId"
+              value={formik.values.maintenanceServiceCostId}
+              onChange={(event) => {
+                formik.handleChange(event);
+                const selectedCostId = maintenanceservicescost.find(
+                  (part) => part.maintenanceServiceCostId === event.target.value
+                );
+                formik.setFieldValue(
+                  "maintenanceServiceName",
+                  selectedCostId?.maintenanceServiceName || ""
+                );
+                formik.setFieldValue(
+                  "actualCost",
+                  selectedCostId?.acturalCost || ""
+                );
+              }}
+              error={
+                formik.touched.maintenanceServiceCostId &&
+                Boolean(formik.errors.maintenanceServiceCostId)
+              }
+              renderValue={(selected) => {
+                const selectedOption = maintenanceservicescost.find(
+                  (option) => option.maintenanceServiceCostId === selected
+                );
+                return selectedOption ? selectedOption.maintenanceServiceName : "";
+              }}
+            >
+              <TextField
+                autoFocus
+                margin="dense"
+                variant="outlined"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+              />
+              
+              {filteredOptions.map((option) => (
+                <MenuItem
+                  key={option.maintenanceServiceCostId}
+                  value={option.maintenanceServiceCostId}
+                >
+                  Name: {option.maintenanceServiceName} - ActuralCost:{" "}
+                  {option.acturalCost}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="maintenanceInformationId"
+            label="InformationMaintenance Id"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={informationMaintenanceId}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.maintenanceInformationId &&
+              Boolean(formik.errors.maintenanceInformationId)
+            }
+            disabled={!formik.values.maintenanceInformationId}
+            helperText={
+              formik.touched.maintenanceInformationId &&
+              formik.errors.maintenanceInformationId
+            }
+          />
+
+          <TextField
+            margin="dense"
+            name="maintenanceServiceName"
+            label="MaintenanceServiceName"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.maintenanceServiceName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.maintenanceServiceName &&
+              Boolean(formik.errors.maintenanceServiceName)
+            }
+            disabled={true}
+            helperText={
+              formik.touched.maintenanceServiceName &&
+              formik.errors.maintenanceServiceName
+            }
+          />
+          <TextField
+            margin="dense"
+            name="quantity"
+            label="Quantity"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.quantity}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.quantity && Boolean(formik.errors.quantity)}
+            helperText={formik.touched.quantity && formik.errors.quantity}
+            disabled={true}
           />
           <TextField
             margin="dense"

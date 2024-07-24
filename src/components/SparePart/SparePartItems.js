@@ -44,7 +44,7 @@ const makeStyle = (status) => {
   }
 };
 
-const SparePartItems = ({ setShowRightSide }) => {
+const SparePartItems = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);

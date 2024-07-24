@@ -17,6 +17,8 @@ import {
   ReceiptByInforId,
 } from "../../redux/receiptSlice";
 import {
+  AddMaintenanceServiceInfoesDialog,
+  AddMaintenanceServicesCostDialog,
   AddMaintenanceSparePartInfoesDialog,
   UseFormikCreateReceipt,
 } from "../../Data/DialogComponent";
@@ -36,6 +38,8 @@ export default function HorizontalLinearStepper({
   );
   const [open, setOpen] = useState(false);
   const [openAddMainSparePartInfor, setOpenAddMainSparePartInfor] =
+    useState(false);
+    const [openAddMainServiceInfor, setOpenAddMainServiceInfor] =
     useState(false);
   const isStepOptional = (step) => {
     return step === 1;
@@ -69,6 +73,17 @@ export default function HorizontalLinearStepper({
     setOpen(true);
   };
 
+  const HandleAddMainServiceInfor = ({ informationMaintenanceId }) => {
+    setInforId(informationMaintenanceId);
+    console.log("HandleAddMainServiceInfor", informationMaintenanceId);
+    setOpenAddMainServiceInfor(true);
+  };
+
+  const HandleAddMainServiceInforClose = () => {
+    setOpenAddMainServiceInfor(false);
+    setReload((p) => !p);
+    setInforId(null);
+  };
   const HandleAddSparePartInfor = ({ informationMaintenanceId }) => {
     setInforId(informationMaintenanceId);
     console.log("HandleAddSparePartInfor", informationMaintenanceId);
@@ -157,7 +172,7 @@ export default function HorizontalLinearStepper({
                   <Grid item xs={6}>
                     <Button
                       color="inherit"
-                      // onClick={()=>{HandleAddSparePartInfor({informationMaintenanceId:mainData.informationMaintenanceId})}}
+                      onClick={()=>{HandleAddMainServiceInfor({informationMaintenanceId:mainData.informationMaintenanceId})}}
                       sx={{ width: "100%" }}
                     >
                       Add Maintenance Service Infor
@@ -218,6 +233,12 @@ export default function HorizontalLinearStepper({
         handleClose={HandleAddSparePartInforClose}
         token={token}
         informationMaintenanceId={inforId}
+      />
+      <AddMaintenanceServiceInfoesDialog
+        open={openAddMainServiceInfor}
+        handleClose={HandleAddMainServiceInforClose}
+        token={token}
+        informationMaintenanceId={inforId}s
       />
     </Box>
   );

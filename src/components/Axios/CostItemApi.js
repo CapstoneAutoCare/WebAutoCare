@@ -149,5 +149,24 @@ const CostItemApi = {
       throw error;
     }
   },
+  async GetListByDifMainServiceAndInforId({ token, centerId, inforId }) {
+    const url =
+      "/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforId";
+
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${{ token: token }}`,
+      },
+      params: { centerId: centerId, inforId: inforId },
+    };
+    try {
+      const response = await axiosApi.get(url, config);
+      return response;
+    } catch (error) {
+      console.error("Error fetching data by ID:", error);
+      throw error;
+    }
+  },
 };
 export default CostItemApi;

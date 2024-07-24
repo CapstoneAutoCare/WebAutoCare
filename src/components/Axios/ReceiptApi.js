@@ -50,11 +50,23 @@ const ReceiptApi = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      params:{id}
+      params: { id },
     };
     const url = "/Receipts/Remove";
 
     return await axiosApi.delete(url, config);
+  },
+  async ChangeStatusReceipt({ token, id, status }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "/Receipts/ChangeStatus";
+
+    return await axiosApi.patch(url, null,config);
   },
 };
 export default ReceiptApi;

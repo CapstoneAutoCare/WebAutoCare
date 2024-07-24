@@ -90,9 +90,9 @@ const Task = () => {
 
   return (
     <Box>
-      <h3>List Maintenance Informations</h3>
+      <h3>List Assign Task</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
-        Add Task
+        Add Assign Task
       </Button>
       {statustasks === "loading" && (
         <DialogContent dividers>

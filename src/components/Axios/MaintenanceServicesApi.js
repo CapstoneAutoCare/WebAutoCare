@@ -28,7 +28,7 @@ const MaintenanceServicesApi = {
 
     return await axiosApi.get(url, config);
   },
-  async addMaintenanceServicesItem(token, data) {
+  async addMaintenanceServicesItem({token, data}) {
     const config = {
       headers: {
         "Content-Type": "application/json",

@@ -14,33 +14,26 @@ import {
   UilSchedule,
   UilLocationPoint,
 } from "@iconscout/react-unicons";
-
-// Analytics Cards imports
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
-
-// Recent Card Imports
 import img1 from "../imgs/img1.png";
 import img2 from "../imgs/img2.png";
 import img3 from "../imgs/img3.png";
-import { useState } from "react";
 
-// Sidebar Data
 export const SidebarDataCenter = [
   {
     icon: UilEstate,
     heading: "Dashboard",
   },
   {
-    icon: UilUsersAlt,
-    heading: "Managers CustomerCare",
-  },
-  {
-    icon: UilUsersAlt,
-    heading: "Managers Technician",
+    icon: UilPackage,
+    heading: "Maintenance Informations",
   },
   {
     icon: UilClipboardAlt,
     heading: "Booking",
+  },
+  {
+    icon: UilChart,
+    heading: "Assign",
   },
   {
     icon: UilReceipt,
@@ -51,16 +44,16 @@ export const SidebarDataCenter = [
     heading: "Services",
   },
   {
-    icon: UilPackage,
-    heading: "Maintenance Informations",
+    icon: UilUsersAlt,
+    heading: "Managers CustomerCare",
+  },
+  {
+    icon: UilUsersAlt,
+    heading: "Managers Technician",
   },
   {
     icon: UilUser,
     heading: "Profile",
-  },
-  {
-    icon: UilChart,
-    heading: "Tasks",
   },
 ];
 export const SidebarDataAdmin = [
@@ -115,7 +108,6 @@ export const TableStaff = [
     heading: "Information",
   },
 ];
-// Analytics Cards Data
 export const cardsData = [
   {
     title: "Sales",
@@ -168,7 +160,6 @@ export const cardsData = [
   },
 ];
 
-// Recent Update Card Data
 export const UpdatesData = [
   {
     img: img1,

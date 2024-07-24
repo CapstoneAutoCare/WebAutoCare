@@ -180,11 +180,17 @@ const Booking = () => {
                       }}
                     >
                       <TableCell>{item.bookingId}</TableCell>
-                      <TableCell>
+                      <TableCell style={{
+                            borderRadius: "10px",
+                            fontSize: "25px",
+                          }}>
                         {item.responseVehicles.vehiclesBrandName}{" "}
                         {item.responseVehicles.vehicleModelName}
                       </TableCell>
-                      <TableCell>
+                      <TableCell style={{
+                            borderRadius: "10px",
+                            fontSize: "25px",
+                          }}>
                         {item.responseVehicles.licensePlate}
                       </TableCell>
                       <TableCell>{formatDate(item.bookingDate)}</TableCell>

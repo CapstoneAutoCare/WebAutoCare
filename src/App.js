@@ -5,9 +5,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
 } from "react-router-dom";
-import RightSide from "./components/RigtSide/RightSide";
+
 import Register from "./components/Authen/Register";
 
 function App() {

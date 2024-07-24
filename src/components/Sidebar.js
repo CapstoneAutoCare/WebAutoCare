@@ -4,9 +4,7 @@ import { UilSignOutAlt } from "@iconscout/react-unicons";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import MainDash from "./MainDash/MainDash";
-// import Apply from "./Scheduler/Scheduler";
 import { useNavigate } from "react-router-dom";
-import RightSide from "./RigtSide/RightSide";
 import jwt_decode from "jwt-decode";
 import ProfilePage from "./Updates/ProfilePage";
 
@@ -39,7 +37,6 @@ const Sidebar = () => {
       left: "-60%",
     },
   };
-  // const tokenFromSessionStorage = sessionStorage.getItem("token");
   const tokenlocal = localStorage.getItem("localtoken");
 
   const decodeToken = (token) => {
@@ -52,23 +49,22 @@ const Sidebar = () => {
     }
   };
 
-  const [id, setId] = useState("");
   const currentSidebarData =
     userRole === "CENTER" ? SidebarDataCenter : SidebarDataAdmin;
 
   const sidebarComponentsCenter = [
     <></>,
     // <MainDash />,
-    <CustomerCare />,
-    <Technician />,
+    <MaintenanceInformations />,
     <Booking />,
-    <SparePartItems setShowRightSide={setShowRightSide} />,
+    <Task />,
+    <SparePartItems />,
     <MaintenanceServices />,
     // <Apply />,
     // <ProfilePage />,
-    <MaintenanceInformations/>,
-    <HorizontalNonLinearStepper/>,
-    <Task/>,
+    <CustomerCare />,
+    <Technician />,
+    <HorizontalNonLinearStepper />,
   ];
   const sidebarComponentsAdmin = [
     <MainDash />,
@@ -79,7 +75,6 @@ const Sidebar = () => {
     <ProfilePage />,
   ];
 
-  
   useEffect(() => {
     var code = decodeToken(tokenlocal);
     const role =
@@ -90,7 +85,11 @@ const Sidebar = () => {
 
     setUserRole(role);
     CheckRole(tokenlocal, role);
-    if (role === "CUSTOMER" || role === "TECHNICIAN" || role === "CUSTOMERCARE") {
+    if (
+      role === "CUSTOMER" ||
+      role === "TECHNICIAN" ||
+      role === "CUSTOMERCARE"
+    ) {
       navigate("/");
     }
   }, [selected, userRole]);
@@ -102,7 +101,7 @@ const Sidebar = () => {
 
   const handleSubmitLogOut = (e) => {
     e.preventDefault();
-    localStorage.clear(); // Removes all data from localStorage
+    localStorage.clear(); 
     sessionStorage.clear();
     navigate("/");
   };
@@ -148,9 +147,8 @@ const Sidebar = () => {
               </div>
             );
           })}
-          {/* signoutIcon */}
           <div className="menuItem">
-            <UilSignOutAlt onClick={handleSubmitLogOut}></UilSignOutAlt>
+            <UilSignOutAlt onClick={handleSubmitLogOut}>Logout</UilSignOutAlt>
           </div>
         </div>
       </motion.div>
@@ -158,12 +156,6 @@ const Sidebar = () => {
       {userRole === "CENTER"
         ? sidebarComponentsCenter[selected]
         : sidebarComponentsAdmin[selected]}
-
-      {showRightSide && (
-        <div className="right-side-section">
-          <ProfileCardWidget />
-        </div>
-      )}
     </>
   );
 };

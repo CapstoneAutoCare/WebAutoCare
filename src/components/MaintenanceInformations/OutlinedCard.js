@@ -34,7 +34,7 @@ import {
   BookingByCenter,
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
-import { ReceiptRemove } from "../../redux/receiptSlice";
+import { ReceiptChangeStatus, ReceiptRemove } from "../../redux/receiptSlice";
 
 const token = localStorage.getItem("localtoken");
 
@@ -673,10 +673,26 @@ export const TaskDetailComponent = ({ data, setReload }) => {
 };
 export const TableReceiptComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
+
   const handleClear = ({ item }) => {
     dispatch(ReceiptRemove({ token: token, id: item }));
     setReload((p) => !p);
   };
+  const handleStatusChange = async ({ id, status }) => {
+    try {
+      await dispatch(
+        ReceiptChangeStatus({
+          token,
+          id: id,
+          status:status,
+        })
+      );
+      setReload((p) => !p);
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   useEffect(() => {}, [setReload]);
   return (
     <StyledCard>
@@ -734,10 +750,10 @@ export const TableReceiptComponent = ({ data, setReload }) => {
               value={data.status}
               onChange={(event) => {
                 const newStatus = event.target.value;
-                // handleStatusChange({
-                //   id: data.informationMaintenanceId,
-                //   status: newStatus,
-                // });
+                handleStatusChange({
+                  id: data.receiptId,
+                  status: newStatus,
+                });
               }}
               className="status"
               style={{
@@ -790,20 +806,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
 };
 export const ReceiptComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
-  const handleStatusChange = async ({ id, status }) => {
-    // try {
-    //   await dispatch(
-    //     ChangeStatusMi({
-    //       token,
-    //       id: id,
-    //       status,
-    //     })
-    //   );
-    //   setReload((p) => !p);
-    // } catch (error) {
-    //   console.error("Error updating status:", error);
-    // }
-  };
+
   useEffect(() => {}, [dispatch, setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>

@@ -65,6 +65,22 @@ export const ReceiptRemove = createAsyncThunk(
     }
   }
 );
+export const ReceiptChangeStatus = createAsyncThunk(
+  "receipt/ReceiptChangeStatus",
+  async ({ token, id, status }, { rejectWithValue }) => {
+    try {
+      const list = await ReceiptApi.ChangeStatusReceipt({
+        token: token,
+        id,
+        status,
+      });
+      console.log("receipt/ReceiptChangeStatus", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 
 const receiptSlice = createSlice({
   name: "receipt",
@@ -128,6 +144,21 @@ const receiptSlice = createSlice({
         console.log("payload", state.receipt);
       })
       .addCase(ReceiptRemove.rejected, (state, action) => {
+        state.statusreceipt = "failed";
+        state.errorreceipt = action.payload;
+      })
+      .addCase(ReceiptChangeStatus.pending, (state) => {
+        state.statusreceipt = "loading";
+        state.errorreceipt = null;
+        state.receipt = null;
+        state.receipts = [];
+      })
+      .addCase(ReceiptChangeStatus.fulfilled, (state, action) => {
+        state.statusreceipt = "succeeded";
+        state.receipt = action.payload;
+        console.log("payload", state.receipt);
+      })
+      .addCase(ReceiptChangeStatus.rejected, (state, action) => {
         state.statusreceipt = "failed";
         state.errorreceipt = action.payload;
       });

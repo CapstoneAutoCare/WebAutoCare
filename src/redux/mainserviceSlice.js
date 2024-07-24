@@ -52,8 +52,8 @@ export const AddMaintenanceServiceByCenter = createAsyncThunk(
   async ({ token, data }, { rejectWithValue }) => {
     try {
       const list = await MaintenanceServicesApi.addMaintenanceServicesItem({
-        token,
-        data,
+        token:token,
+        data:data,
       });
       console.log(
         "maintenanceservice/AddMaintenanceServiceByCenter",
@@ -128,6 +128,29 @@ export const GetByIdMaintenanceServiceActiveCost = createAsyncThunk(
       });
       console.log(
         "maintenanceservice/getByIdMaintenanceServiceActiveCost",
+        list.data
+      );
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+
+export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
+  "maintenanceservice/GetListByDifMaintenanceServiceAndInforId",
+  async ({ token, centerId, inforId }, { rejectWithValue }) => {
+    try {
+      console.log("centerId", centerId );
+      console.log("inforId", inforId );
+
+      const list = await CostItemApi.GetListByDifMainServiceAndInforId({
+        token,
+        centerId,
+        inforId,
+      });
+      console.log(
+        "maintenanceservice/GetListByDifMaintenanceServiceAndInforId",
         list.data
       );
       return list.data;
@@ -269,6 +292,28 @@ const mainserviceSlice = createSlice({
       )
       .addCase(
         GetByIdMaintenanceServiceActiveCost.rejected,
+        (state, action) => {
+          state.statusmaintenanceservices = "failed";
+          state.errormaintenanceservices = action.error.message;
+        }
+      )
+      .addCase(GetListByDifMaintenanceServiceAndInforId.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+        state.maintenanceservices = [];
+        state.maintenanceservice = null;
+        state.errormaintenanceservices = null;
+        state.maintenanceservicescost = [];
+      })
+      .addCase(
+        GetListByDifMaintenanceServiceAndInforId.fulfilled,
+        (state, action) => {
+          state.statusmaintenanceservices = "succeeded";
+          state.maintenanceservicescost = action.payload;
+          console.log("payload", state.maintenanceservicescost);
+        }
+      )
+      .addCase(
+        GetListByDifMaintenanceServiceAndInforId.rejected,
         (state, action) => {
           state.statusmaintenanceservices = "failed";
           state.errormaintenanceservices = action.error.message;
