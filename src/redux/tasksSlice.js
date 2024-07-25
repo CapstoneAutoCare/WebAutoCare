@@ -53,7 +53,18 @@ export const TaskListGetByInforId = createAsyncThunk(
     }
   }
 );
-
+export const TaskListStatusDifCancelledByInfor = createAsyncThunk(
+  "tasks/TaskListStatusDifCancelledByInfor",
+  async ({ token, id }) => {
+    try {
+      const list = await TaskApi.GetListStatusDifCancelledByInfor({ token, id });
+      console.log("tasks/TaskListStatusDifCancelledByInfor", list.data);
+      return list.data;
+    } catch (error) {
+      throw new Error(error.Messages);
+    }
+  }
+);
 export const TaskPatchStatus = createAsyncThunk(
   "tasks/TaskPatchStatus",
   async ({ token, id, status }) => {
@@ -167,7 +178,21 @@ const tasksSlice = createSlice({
       .addCase(TaskListGetByInforId.rejected, (state, action) => {
         state.statustasks = "failed";
         state.error = action.error.message;
-      });;
+      })
+      .addCase(TaskListStatusDifCancelledByInfor.pending, (state) => {
+        state.statustasks = "loading";
+        state.task=null;
+        state.tasks=[];
+        state.errortasks=null;
+      })
+      .addCase(TaskListStatusDifCancelledByInfor.fulfilled, (state, action) => {
+        state.statustasks = "succeeded";
+        state.tasks = action.payload;
+      })
+      .addCase(TaskListStatusDifCancelledByInfor.rejected, (state, action) => {
+        state.statustasks = "failed";
+        state.error = action.error.message;
+      });
   },
 });
 export const {} = tasksSlice.actions;

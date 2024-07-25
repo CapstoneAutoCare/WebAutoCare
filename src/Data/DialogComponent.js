@@ -1575,171 +1575,168 @@ export const ViewTaskDetailDialog = ({
             </Card>
           </DialogTitle>
           {task.responseMainTaskSpareParts.length > 0 && (
-            <DialogContent dividers>
-              <Grid>
-                <TableContainer
-                  component={Paper}
-                  style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
-                >
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Avatar</TableCell>
-                        <TableCell>Maintenance SparePart Info Id</TableCell>
-                        <TableCell>SparePart Name</TableCell>
-                        <TableCell>Created Date</TableCell>
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell>Id</TableCell>
+                      <TableCell>SparePart Name</TableCell>
+                      <TableCell>Created Date</TableCell>
 
-                        <TableCell>Status</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {task.responseMainTaskSpareParts.map((item) => (
+                      <TableRow key={item.maintenanceTaskSparePartInfoId}>
+                        <TableCell>
+                          <ImageMainTask src={item.image} alt={item.image} />
+                        </TableCell>
+                        <TableCell
+                        // style={{ fontWeight: "bold", fontSize: "25px" }}
+                        >
+                          {item.maintenanceSparePartInfoId}
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{formatDate(item.createdDate)}</TableCell>
+                        <TableCell>
+                          {item.status === "ACTIVE" ? (
+                            <Select
+                              value={item.status}
+                              onChange={(event) => {
+                                const newStatus = event.target.value;
+                                handleStatusChange(
+                                  item.sparePartsItemCostId,
+                                  newStatus
+                                );
+                              }}
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                borderRadius: "10px",
+                                width: "125px",
+                                fontSize: "10px",
+                                height: "50px",
+                              }}
+                            >
+                              {statusTask.map((status) => (
+                                <MenuItem
+                                  key={status}
+                                  value={status}
+                                  disabled={status === item.status}
+                                >
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          ) : (
+                            <span
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                // borderRadius: "10px",
+                                // width: "125px",
+                                // fontSize: "10px",
+                                // height: "50px",
+                              }}
+                            >
+                              {item.status}
+                            </span>
+                          )}
+                        </TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {task.responseMainTaskSpareParts.map((item) => (
-                        <TableRow key={item.maintenanceTaskSparePartInfoId}>
-                          <TableCell>
-                            <ImageMainTask src={item.image} alt={item.image} />
-                          </TableCell>
-                          <TableCell
-                          // style={{ fontWeight: "bold", fontSize: "25px" }}
-                          >
-                            {item.maintenanceSparePartInfoId}
-                          </TableCell>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{formatDate(item.createdDate)}</TableCell>
-                          <TableCell>
-                            {item.status === "ACTIVE" ? (
-                              <Select
-                                value={item.status}
-                                onChange={(event) => {
-                                  const newStatus = event.target.value;
-                                  handleStatusChange(
-                                    item.sparePartsItemCostId,
-                                    newStatus
-                                  );
-                                }}
-                                className="status"
-                                style={{
-                                  ...makeStyle(item.status),
-                                  borderRadius: "10px",
-                                  width: "125px",
-                                  fontSize: "10px",
-                                  height: "50px",
-                                }}
-                              >
-                                {statusTask.map((status) => (
-                                  <MenuItem
-                                    key={status}
-                                    value={status}
-                                    disabled={status === item.status}
-                                  >
-                                    {status}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            ) : (
-                              <span
-                                className="status"
-                                style={{
-                                  ...makeStyle(item.status),
-                                  // borderRadius: "10px",
-                                  // width: "125px",
-                                  // fontSize: "10px",
-                                  // height: "50px",
-                                }}
-                              >
-                                {item.status}
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
-            </DialogContent>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
           )}
+
           {task.responseMainTaskServices.length > 0 && (
-            <DialogContent dividers>
-              <Grid>
-                <TableContainer
-                  component={Paper}
-                  style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
-                >
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Avatar</TableCell>
-                        <TableCell>Maintenance Service Info Id</TableCell>
-                        <TableCell>Service Name</TableCell>
-                        <TableCell>Created Date</TableCell>
-                        <TableCell>Status</TableCell>
+            <Grid>
+              <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell>Id</TableCell>
+                      <TableCell>Service Name</TableCell>
+                      <TableCell>Created Date</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {task.responseMainTaskServices.map((item) => (
+                      <TableRow key={item.maintenanceTaskServiceInfoId}>
+                        <TableCell>
+                          <ImageMainTask src={item.image} alt={item.image} />
+                        </TableCell>
+                        <TableCell
+                        // style={{ fontWeight: "bold", fontSize: "25px" }}
+                        >
+                          {item.maintenanceServiceInfoId}
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{formatDate(item.createdDate)}</TableCell>
+                        <TableCell>
+                          {item.status === "ACTIVE" ? (
+                            <Select
+                              value={item.status}
+                              onChange={(event) => {
+                                const newStatus = event.target.value;
+                                handleStatusChange(
+                                  item.sparePartsItemCostId,
+                                  newStatus
+                                );
+                              }}
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                borderRadius: "10px",
+                                width: "125px",
+                                fontSize: "10px",
+                                height: "50px",
+                              }}
+                            >
+                              {statusTask.map((status) => (
+                                <MenuItem
+                                  key={status}
+                                  value={status}
+                                  disabled={status === item.status}
+                                >
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          ) : (
+                            <span
+                              className="status"
+                              style={{
+                                ...makeStyle(item.status),
+                                // borderRadius: "10px",
+                                // width: "125px",
+                                // fontSize: "10px",
+                                // height: "50px",
+                              }}
+                            >
+                              {item.status}
+                            </span>
+                          )}
+                        </TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {task.responseMainTaskServices.map((item) => (
-                        <TableRow key={item.maintenanceTaskServiceInfoId}>
-                          <TableCell>
-                            <ImageMainTask src={item.image} alt={item.image} />
-                          </TableCell>
-                          <TableCell
-                          // style={{ fontWeight: "bold", fontSize: "25px" }}
-                          >
-                            {item.maintenanceServiceInfoId}
-                          </TableCell>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{formatDate(item.createdDate)}</TableCell>
-                          <TableCell>
-                            {item.status === "ACTIVE" ? (
-                              <Select
-                                value={item.status}
-                                onChange={(event) => {
-                                  const newStatus = event.target.value;
-                                  handleStatusChange(
-                                    item.sparePartsItemCostId,
-                                    newStatus
-                                  );
-                                }}
-                                className="status"
-                                style={{
-                                  ...makeStyle(item.status),
-                                  borderRadius: "10px",
-                                  width: "125px",
-                                  fontSize: "10px",
-                                  height: "50px",
-                                }}
-                              >
-                                {statusTask.map((status) => (
-                                  <MenuItem
-                                    key={status}
-                                    value={status}
-                                    disabled={status === item.status}
-                                  >
-                                    {status}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            ) : (
-                              <span
-                                className="status"
-                                style={{
-                                  ...makeStyle(item.status),
-                                  // borderRadius: "10px",
-                                  // width: "125px",
-                                  // fontSize: "10px",
-                                  // height: "50px",
-                                }}
-                              >
-                                {item.status}
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
-            </DialogContent>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
           )}
         </>
       )}
@@ -1849,11 +1846,11 @@ export const AddMaintenanceSparePartInfoesDialog = ({
   const dispatch = useDispatch();
   const { sparepartitemscosts } = useSelector((state) => state.sparepartitem);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const filteredOptions = sparepartitemscosts.filter((option) =>
     option.sparePartsItemName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const formik = useFormik({
     initialValues: {
       maintenanceInformationId: informationMaintenanceId,
@@ -2092,9 +2089,11 @@ export const AddMaintenanceServiceInfoesDialog = ({
     (state) => state.maintenanceservice
   );
   const [totalPrice, setTotalPrice] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const filteredOptions = maintenanceservicescost.filter((option) =>
-    option.maintenanceServiceName.toLowerCase().includes(searchTerm.toLowerCase())
+    option.maintenanceServiceName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
   const formik = useFormik({
     initialValues: {
@@ -2193,7 +2192,9 @@ export const AddMaintenanceServiceInfoesDialog = ({
                 const selectedOption = maintenanceservicescost.find(
                   (option) => option.maintenanceServiceCostId === selected
                 );
-                return selectedOption ? selectedOption.maintenanceServiceName : "";
+                return selectedOption
+                  ? selectedOption.maintenanceServiceName
+                  : "";
               }}
             >
               <TextField
@@ -2205,7 +2206,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 fullWidth
               />
-              
+
               {filteredOptions.map((option) => (
                 <MenuItem
                   key={option.maintenanceServiceCostId}

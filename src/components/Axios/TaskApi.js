@@ -38,6 +38,23 @@ const TaskApi = {
       throw error;
     }
   },
+  async GetListStatusDifCancelledByInfor({ token, id }) {
+    try {
+      token = token || "";
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: { id },
+      };
+      const url = "/MaintenanceTasks/GetListStatusDifCancelledByInfor";
+      return await axiosApi.get(url, config);
+    } catch (error) {
+      console.error("Error fetching data by ID:", error);
+      throw error;
+    }
+  },
   async GetListByCenter() {
     try {
       const url = `/MaintenanceTasks/GetListByCenter`;

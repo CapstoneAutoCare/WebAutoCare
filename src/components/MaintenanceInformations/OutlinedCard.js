@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ClearIcon from "@mui/icons-material/Clear";
 
 import {
+  Button,
   ButtonBase,
   Grid,
   IconButton,
@@ -28,13 +28,14 @@ import { formatDate } from "../../Data/Pagination";
 import {
   TaskGetById,
   TaskListGetByInforId,
+  TaskListStatusDifCancelledByInfor,
   TaskPatchStatus,
 } from "../../redux/tasksSlice";
 import {
-  BookingByCenter,
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
 import { ReceiptChangeStatus, ReceiptRemove } from "../../redux/receiptSlice";
+import { MaintenanceSparePartInfoesChangeStatus } from "../../redux/maintenanceSparePartInfoesSlice";
 
 const token = localStorage.getItem("localtoken");
 
@@ -108,8 +109,8 @@ const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
 const statusTask = ["ACCEPTED", "DONE"];
 const statusPayment = ["YETPAID", "PAID"];
 const statusBooking = ["WAITING", "DENIED", "ACCEPTED", "CANCELLED"];
-
-const TableComponent = ({
+const statusInforItem = ["ACTIVE", "INACTIVE"];
+export const TableComponent = ({
   id,
   image,
   name,
@@ -121,80 +122,384 @@ const TableComponent = ({
   money,
   costId,
   itemId,
-}) => (
-  <StyledCard>
-    <CardContent>
-      <Box display="flex" alignItems="center">
-        <Image src={image} alt={name} />
-        <ContentWrapper>
-          <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            {name}
-          </Typography>
-          <Typography variant="h6">#{id}</Typography>
-          <TableContainer>
-            <Table size="small">
-              <TableBody>
-                <TableRow>
-                  <TableCell> CostId:</TableCell>
-                  <TableCell>{costId}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>ItemId:</TableCell>
-                  <TableCell>{itemId}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Date:</TableCell>
-                  <TableCell>{date}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Note:</TableCell>
-                  <TableCell>{note}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Quantity:</TableCell>
-                  <TableCell>{quantity}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Actual Cost:</TableCell>
-                  <TableCell>{actualCost}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </ContentWrapper>
-      </Box>
-    </CardContent>
-    <Box style={{ paddingRight: "50px" }}>
-      <Typography
-        variant="h6"
-        style={{
-          ...makeStyle(status),
-          borderRadius: "10px",
-          width: "125px",
-          fontSize: "15px",
-          height: "50px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {status}
-      </Typography>
-      <Typography
-        variant="h6"
-        style={{
-          fontWeight: "bold",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        ${money}
-      </Typography>
-    </Box>
-  </StyledCard>
-);
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await dispatch(
+        MaintenanceSparePartInfoesChangeStatus({
+          token,
+          id: id,
+          status: newStatus,
+        })
+      );
+      setReload((p) => !p);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
+  useEffect(() => {}, [dispatch, setReload]);
+  return (
+    <StyledCard>
+      <CardContent>
+        <Box display="flex" alignItems="center">
+          <Image src={image} alt={name} />
+          <ContentWrapper>
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              {name}
+            </Typography>
+            <Typography variant="h6">#{id}</Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableBody>
+                  <TableRow>
+                    <TableCell> CostId:</TableCell>
+                    <TableCell>{costId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>ItemId:</TableCell>
+                    <TableCell>{itemId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Date:</TableCell>
+                    <TableCell>{date}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Note:</TableCell>
+                    <TableCell>{note}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Quantity:</TableCell>
+                    <TableCell>{quantity}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Actual Cost:</TableCell>
+                    <TableCell>{actualCost}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ContentWrapper>
+        </Box>
+      </CardContent>
+      <Box style={{ paddingRight: "50px" }}>
+        <Button
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            backgroundColor: "green",
+            color: "white", 
+            
+          }}
+        >
+          Edit
+        </Button>
+        <Select
+          value={status}
+          onChange={(event) => {
+            const newStatus = event.target.value;
+            handleStatusChange(id, newStatus);
+          }}
+          style={{
+            ...makeStyle(status),
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            height: "50px",
+          }}
+        >
+          {statusInforItem.map((status) => (
+            <MenuItem key={status} value={status} >
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+        <Typography
+          variant="h6"
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          ${money}
+        </Typography>
+      </Box>
+    </StyledCard>
+  );
+};
+export const TableMainSparePartInforComponent = ({
+  id,
+  image,
+  name,
+  date,
+  note,
+  quantity,
+  actualCost,
+  status,
+  money,
+  costId,
+  itemId,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await dispatch(
+        MaintenanceSparePartInfoesChangeStatus({
+          token,
+          id: id,
+          status: newStatus,
+        })
+      );
+      setReload((p) => !p);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {}, [dispatch, setReload]);
+  return (
+    <StyledCard>
+      <CardContent>
+        <Box display="flex" alignItems="center">
+          <Image src={image} alt={name} />
+          <ContentWrapper>
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              {name}
+            </Typography>
+            <Typography variant="h6">#{id}</Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableBody>
+                  <TableRow>
+                    <TableCell> CostId:</TableCell>
+                    <TableCell>{costId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>ItemId:</TableCell>
+                    <TableCell>{itemId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Date:</TableCell>
+                    <TableCell>{date}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Note:</TableCell>
+                    <TableCell>{note}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Quantity:</TableCell>
+                    <TableCell>{quantity}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Actual Cost:</TableCell>
+                    <TableCell>{actualCost}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ContentWrapper>
+        </Box>
+      </CardContent>
+      <Box style={{ paddingRight: "50px" }}>
+        <Button
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            backgroundColor: "green",
+            color: "white", 
+            
+          }}
+        >
+          Edit
+        </Button>
+        <Select
+          value={status}
+          onChange={(event) => {
+            const newStatus = event.target.value;
+            handleStatusChange(id, newStatus);
+          }}
+          style={{
+            ...makeStyle(status),
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            height: "50px",
+          }}
+        >
+          {statusInforItem.map((status) => (
+            <MenuItem key={status} value={status} >
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+        <Typography
+          variant="h6"
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          ${money}
+        </Typography>
+      </Box>
+    </StyledCard>
+  );
+};
+export const TableMainServiceInforComponent = ({
+  id,
+  image,
+  name,
+  date,
+  note,
+  quantity,
+  actualCost,
+  status,
+  money,
+  costId,
+  itemId,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await dispatch(
+        MaintenanceSparePartInfoesChangeStatus({
+          token,
+          id: id,
+          status: newStatus,
+        })
+      );
+      setReload((p) => !p);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {}, [dispatch, setReload]);
+  return (
+    <StyledCard>
+      <CardContent>
+        <Box display="flex" alignItems="center">
+          <Image src={image} alt={name} />
+          <ContentWrapper>
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              {name}
+            </Typography>
+            <Typography variant="h6">#{id}</Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableBody>
+                  <TableRow>
+                    <TableCell> CostId:</TableCell>
+                    <TableCell>{costId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>ItemId:</TableCell>
+                    <TableCell>{itemId}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Date:</TableCell>
+                    <TableCell>{date}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Note:</TableCell>
+                    <TableCell>{note}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Quantity:</TableCell>
+                    <TableCell>{quantity}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Actual Cost:</TableCell>
+                    <TableCell>{actualCost}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ContentWrapper>
+        </Box>
+      </CardContent>
+      <Box style={{ paddingRight: "50px" }}>
+        <Button
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            backgroundColor: "green",
+            color: "white", 
+            
+          }}
+        >
+          Edit
+        </Button>
+        <Select
+          value={status}
+          onChange={(event) => {
+            const newStatus = event.target.value;
+            handleStatusChange(id, newStatus);
+          }}
+          style={{
+            ...makeStyle(status),
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "10px",
+            width: "125px",
+            fontSize: "10px",
+            height: "50px",
+          }}
+        >
+          {statusInforItem.map((status) => (
+            <MenuItem key={status} value={status} >
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+        <Typography
+          variant="h6"
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          ${money}
+        </Typography>
+      </Box>
+    </StyledCard>
+  );
+};
 export const MainComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
   const handleStatusChange = async ({ id, status }) => {
@@ -358,7 +663,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
       </Card>
       {data.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
-          <TableComponent
+          <TableMainServiceInforComponent
             id={item.maintenanceServiceInfoId}
             image={item.image}
             name={item.maintenanceServiceInfoName}
@@ -370,13 +675,14 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             money={item.totalCost}
             costId={item.maintenanceServiceCostId}
             itemId={item.maintenanceServiceId}
+            setReload={setReload}
           />
         </Card>
       ))}
 
       {data.responseMaintenanceSparePartInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
-          <TableComponent
+          <TableMainSparePartInforComponent
             id={item.maintenanceSparePartInfoId}
             image={item.image}
             name={item.maintenanceSparePartInfoName}
@@ -388,6 +694,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             money={item.totalCost}
             costId={item.sparePartsItemCostId}
             itemId={item.sparePartsItemId}
+            setReload={setReload}
           />
         </Card>
       ))}
@@ -684,7 +991,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
         ReceiptChangeStatus({
           token,
           id: id,
-          status:status,
+          status: status,
         })
       );
       setReload((p) => !p);
@@ -832,7 +1139,7 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
 
       {main.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
-          <TableComponent
+          <TableMainServiceInforComponent
             image={item.image}
             name={item.maintenanceServiceInfoName}
             date={item.createdDate}
@@ -849,7 +1156,7 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
       ))}
       {main.responseMaintenanceSparePartInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
-          <TableComponent
+          <TableMainSparePartInforComponent
             image={item.image}
             name={item.maintenanceSparePartInfoName}
             date={item.createdDate}
@@ -875,7 +1182,10 @@ export const OutlinedCardListTask = ({ data, setReload }) => {
     console.log("OutlinedCardListTask", data);
     if (data) {
       dispatch(
-        TaskListGetByInforId({ token, id: data.informationMaintenanceId })
+        TaskListStatusDifCancelledByInfor({
+          token,
+          id: data.informationMaintenanceId,
+        })
       );
     }
   }, [dispatch, data, setReload]);

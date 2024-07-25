@@ -38,6 +38,26 @@ export const MaintenanceSparePartInfoesPost = createAsyncThunk(
     }
   }
 );
+export const MaintenanceSparePartInfoesChangeStatus = createAsyncThunk(
+  "maintenanceSparePartInfoes/MaintenanceSparePartInfoesChangeStatus",
+  async ({ token, id, status }, { rejectWithValue }) => {
+    try {
+      const list = await MaintenanceSparePartInfoesApi.changeStatus({
+        token,
+        id: id,
+        status: status,
+      });
+      console.log(
+        "maintenanceSparePartInfoes/MaintenanceSparePartInfoesChangeStatus",
+        list.data
+      );
+      return list.data;
+    } catch (error) {
+      console.error("Status ERRROR",error.response.data.Exception);
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 // export const SparePartItemsByCenterId = createAsyncThunk(
 //   "sparepartitem/GetListByCenter",
 //   async (centerId, token) => {
@@ -80,7 +100,7 @@ const maintenanceSparePartInfoesSlice = createSlice({
       })
       .addCase(MaintenanceSparePartInfoesAll.rejected, (state, action) => {
         state.statusmaintenanceSparePartInfos = "failed";
-        state.errormaintenanceSparePartInfos = action.error.message;
+        state.errormaintenanceSparePartInfos = action.payload;
       })
       .addCase(MaintenanceSparePartInfoesPost.pending, (state) => {
         state.statusmaintenanceSparePartInfos = "loading";
@@ -94,7 +114,22 @@ const maintenanceSparePartInfoesSlice = createSlice({
       })
       .addCase(MaintenanceSparePartInfoesPost.rejected, (state, action) => {
         state.statusmaintenanceSparePartInfos = "failed";
-        state.errormaintenanceSparePartInfos = action.error.message;
+        state.errormaintenanceSparePartInfos = action.payload;
+      })
+      .addCase(MaintenanceSparePartInfoesChangeStatus.pending, (state) => {
+        state.statusmaintenanceSparePartInfos = "loading";
+        state.maintenanceSparePartInfo = null;
+        state.maintenanceSparePartInfos = [];
+        state.errormaintenanceSparePartInfos = null;
+      })
+      .addCase(MaintenanceSparePartInfoesChangeStatus.fulfilled, (state, action) => {
+        state.statusmaintenanceSparePartInfos = "succeeded";
+        state.maintenanceSparePartInfos = action.payload;
+      })
+      .addCase(MaintenanceSparePartInfoesChangeStatus.rejected, (state, action) => {
+        state.statusmaintenanceSparePartInfos = "failed";
+        state.errormaintenanceSparePartInfos = action.payload;
+        alert(action.payload);
       });
   },
 });
