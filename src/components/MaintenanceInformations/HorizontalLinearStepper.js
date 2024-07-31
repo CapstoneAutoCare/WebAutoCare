@@ -18,7 +18,6 @@ import {
 } from "../../redux/receiptSlice";
 import {
   AddMaintenanceServiceInfoesDialog,
-  AddMaintenanceServicesCostDialog,
   AddMaintenanceSparePartInfoesDialog,
   UseFormikCreateReceipt,
 } from "../../Data/DialogComponent";
@@ -213,7 +212,7 @@ export default function HorizontalLinearStepper({
           {activeStep === 3 && (
             <OutlinedCardListTask data={mainData} setReload={setReload} />
           )}
-          {activeStep === 4 && receipt && (
+          {activeStep === 4 && receipt && statusreceipt==="succeeded" && (
             <OutlinedCardReceipt
               data={receipt}
               main={mainData}

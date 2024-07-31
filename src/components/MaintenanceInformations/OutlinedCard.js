@@ -3,6 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ClearIcon from "@mui/icons-material/Clear";
+import * as Yup from "yup";
 
 import {
   Button,
@@ -31,11 +32,14 @@ import {
   TaskListStatusDifCancelledByInfor,
   TaskPatchStatus,
 } from "../../redux/tasksSlice";
-import {
-  PatchStatusBookingByCenter,
-} from "../../redux/bookingSlice";
+import { PatchStatusBookingByCenter } from "../../redux/bookingSlice";
 import { ReceiptChangeStatus, ReceiptRemove } from "../../redux/receiptSlice";
 import { MaintenanceSparePartInfoesChangeStatus } from "../../redux/maintenanceSparePartInfoesSlice";
+import { MaintenanceServiceInfoesChangeStatus } from "../../redux/maintenanceServiceInfoesSlice";
+import PaymentApi from "../Axios/PaymentApi";
+import { useFormik } from "formik";
+import axios from "axios";
+import { PaymentCreateVnPayPaymentUrl } from "../../redux/paymentSlice";
 
 const token = localStorage.getItem("localtoken");
 
@@ -195,8 +199,7 @@ export const TableComponent = ({
             width: "125px",
             fontSize: "10px",
             backgroundColor: "green",
-            color: "white", 
-            
+            color: "white",
           }}
         >
           Edit
@@ -220,7 +223,7 @@ export const TableComponent = ({
           }}
         >
           {statusInforItem.map((status) => (
-            <MenuItem key={status} value={status} >
+            <MenuItem key={status} value={status}>
               {status}
             </MenuItem>
           ))}
@@ -252,6 +255,7 @@ export const TableMainSparePartInforComponent = ({
   money,
   costId,
   itemId,
+  discount,
   setReload,
 }) => {
   const dispatch = useDispatch();
@@ -305,6 +309,10 @@ export const TableMainSparePartInforComponent = ({
                     <TableCell>{quantity}</TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell>Discount:</TableCell>
+                    <TableCell>{discount}%</TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableCell>Actual Cost:</TableCell>
                     <TableCell>{actualCost}</TableCell>
                   </TableRow>
@@ -315,7 +323,7 @@ export const TableMainSparePartInforComponent = ({
         </Box>
       </CardContent>
       <Box style={{ paddingRight: "50px" }}>
-        <Button
+        {/* <Button
           style={{
             fontWeight: "bold",
             display: "flex",
@@ -325,12 +333,11 @@ export const TableMainSparePartInforComponent = ({
             width: "125px",
             fontSize: "10px",
             backgroundColor: "green",
-            color: "white", 
-            
+            color: "white",
           }}
         >
           Edit
-        </Button>
+        </Button> */}
         <Select
           value={status}
           onChange={(event) => {
@@ -350,7 +357,7 @@ export const TableMainSparePartInforComponent = ({
           }}
         >
           {statusInforItem.map((status) => (
-            <MenuItem key={status} value={status} >
+            <MenuItem key={status} value={status}>
               {status}
             </MenuItem>
           ))}
@@ -382,13 +389,14 @@ export const TableMainServiceInforComponent = ({
   money,
   costId,
   itemId,
+  discount,
   setReload,
 }) => {
   const dispatch = useDispatch();
   const handleStatusChange = async (id, newStatus) => {
     try {
       await dispatch(
-        MaintenanceSparePartInfoesChangeStatus({
+        MaintenanceServiceInfoesChangeStatus({
           token,
           id: id,
           status: newStatus,
@@ -435,6 +443,10 @@ export const TableMainServiceInforComponent = ({
                     <TableCell>{quantity}</TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell>Discount:</TableCell>
+                    <TableCell>{discount}</TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableCell>Actual Cost:</TableCell>
                     <TableCell>{actualCost}</TableCell>
                   </TableRow>
@@ -455,9 +467,9 @@ export const TableMainServiceInforComponent = ({
             width: "125px",
             fontSize: "10px",
             backgroundColor: "green",
-            color: "white", 
-            
+            color: "white",
           }}
+          // onClick={() => handleclick(id)}
         >
           Edit
         </Button>
@@ -480,7 +492,7 @@ export const TableMainServiceInforComponent = ({
           }}
         >
           {statusInforItem.map((status) => (
-            <MenuItem key={status} value={status} >
+            <MenuItem key={status} value={status}>
               {status}
             </MenuItem>
           ))}
@@ -675,6 +687,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             money={item.totalCost}
             costId={item.maintenanceServiceCostId}
             itemId={item.maintenanceServiceId}
+            discount={item.discount}
             setReload={setReload}
           />
         </Card>
@@ -694,6 +707,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             money={item.totalCost}
             costId={item.sparePartsItemCostId}
             itemId={item.sparePartsItemId}
+            discount={item.discount}
             setReload={setReload}
           />
         </Card>
@@ -842,12 +856,12 @@ export const TableBookingComponent = ({ data, setReload }) => {
                     <TableCell>{data.responseVehicles.licensePlate}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>Note :</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Note:</TableCell>
                     <TableCell>{data.note} </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Address :
+                      Address:
                     </TableCell>
                     <TableCell>{data.responseCenter.address} </TableCell>
                   </TableRow>
@@ -978,13 +992,15 @@ export const TaskDetailComponent = ({ data, setReload }) => {
     )
   );
 };
+
 export const TableReceiptComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
-
+  const { load, setload } = useState(false);
   const handleClear = ({ item }) => {
     dispatch(ReceiptRemove({ token: token, id: item }));
     setReload((p) => !p);
   };
+
   const handleStatusChange = async ({ id, status }) => {
     try {
       await dispatch(
@@ -995,12 +1011,30 @@ export const TableReceiptComponent = ({ data, setReload }) => {
         })
       );
       setReload((p) => !p);
+      setload(!load);
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
+  const { payment, errorpayments, statuspayments } = useSelector(
+    (state) => state.payments
+  );
+  const createPayment = async ({ item }) => {
+    try {
+      const dataitem = {
+        receiptId: item.receiptId,
+        fullName: item.receiptName,
+        description: item.description,
+        amount: item.totalAmount,
+        createdDate: new Date().toISOString(),
+      };
+      await dispatch(PaymentCreateVnPayPaymentUrl({ token, data: dataitem }));
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    }
+  };
 
-  useEffect(() => {}, [setReload]);
+  useEffect(() => {}, [dispatch, setReload, data, load]);
   return (
     <StyledCard>
       <CardContent>
@@ -1027,7 +1061,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell>VAT :</TableCell>
-                    <TableCell>{data.vat}</TableCell>
+                    <TableCell>{data.vat}%</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>SubTotal :</TableCell>
@@ -1051,6 +1085,15 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           justifyContent: "center",
         }}
       >
+        <Button onClick={() => createPayment({ item: data })}>
+          Create Payment
+        </Button>
+
+        {payment && statuspayments === "succeeded" && (
+          <a href={payment} target="_blank" rel="noopener noreferrer">
+            Chuyển đến VNPay
+          </a>
+        )}
         {data.status === "YETPAID" ? (
           <Typography>
             <Select
@@ -1096,7 +1139,6 @@ export const TableReceiptComponent = ({ data, setReload }) => {
             {data.status}
           </Typography>
         )}
-
         <Typography
           variant="h2"
           style={{

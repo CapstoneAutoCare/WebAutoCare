@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   ButtonBase,
@@ -1906,9 +1907,9 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       );
       const calculatedTotalPrice =
         formik.values.quantity * formik.values.actualCost;
-      const totaldiscount =
-        calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
-      setTotalPrice(totaldiscount);
+      // const totaldiscount =
+      //   calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
+      setTotalPrice(calculatedTotalPrice);
     }
   }, [
     dispatch,
@@ -1922,57 +1923,42 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       <DialogTitle>Create MaintenanceSparePartInfoes </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>SpareParts Item Cost Id</InputLabel>
-            <Select
-              label="SpareParts Item Cost Id"
-              name="sparePartsItemCostId"
-              value={formik.values.sparePartsItemCostId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedCostId = sparepartitemscosts.find(
-                  (part) => part.sparePartsItemCostId === event.target.value
-                );
-                formik.setFieldValue(
-                  "maintenanceSparePartInfoName",
-                  selectedCostId?.sparePartsItemName || ""
-                );
-                formik.setFieldValue(
-                  "actualCost",
-                  selectedCostId?.acturalCost || ""
-                );
-              }}
-              error={
-                formik.touched.sparePartsItemCostId &&
-                Boolean(formik.errors.sparePartsItemCostId)
-              }
-              renderValue={(selected) => {
-                const selectedOption = sparepartitemscosts.find(
-                  (option) => option.sparePartsItemCostId === selected
-                );
-                return selectedOption ? selectedOption.sparePartsItemName : "";
-              }}
-            >
+         
+          <Autocomplete
+            fullWidth
+            margin="normal"
+            disablePortal
+            id="sparePartsItemCostId"
+            options={filteredOptions}
+            getOptionLabel={(option) =>
+              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost}`
+            }
+            onChange={(event, newValue) => {
+              const selectedCostId = newValue;
+              formik.setFieldValue(
+                "sparePartsItemCostId",
+                selectedCostId?.sparePartsItemCostId || ""
+              );
+              formik.setFieldValue(
+                "maintenanceSparePartInfoName",
+                selectedCostId?.sparePartsItemName || ""
+              );
+              formik.setFieldValue(
+                "actualCost",
+                selectedCostId?.acturalCost || ""
+              );
+            }}
+            renderInput={(params) => (
               <TextField
-                autoFocus
-                margin="dense"
-                variant="outlined"
-                placeholder="Search..."
+                {...params}
+                label="Name"
+                name="sparePartsItemCostId"
                 value={searchTerm}
+                variant="outlined"
                 onChange={(e) => setSearchTerm(e.target.value)}
-                fullWidth
               />
-              {filteredOptions.map((option) => (
-                <MenuItem
-                  key={option.sparePartsItemCostId}
-                  value={option.sparePartsItemCostId}
-                >
-                  Name: {option.sparePartsItemName} - Actual Cost:{" "}
-                  {option.acturalCost}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            )}
+          />
           <TextField
             autoFocus
             margin="dense"
@@ -2148,9 +2134,9 @@ export const AddMaintenanceServiceInfoesDialog = ({
       );
       const calculatedTotalPrice =
         formik.values.quantity * formik.values.actualCost;
-      const totaldiscount =
-        calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
-      setTotalPrice(totaldiscount);
+      // const totaldiscount =
+      //   calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
+      setTotalPrice(calculatedTotalPrice);
     }
   }, [
     dispatch,
@@ -2164,60 +2150,41 @@ export const AddMaintenanceServiceInfoesDialog = ({
       <DialogTitle>Create MaintenanceServiceInfoes </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>MaintenanceService Cost Id</InputLabel>
-            <Select
-              label="maintenanceServiceCostId"
-              name="maintenanceServiceCostId"
-              value={formik.values.maintenanceServiceCostId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedCostId = maintenanceservicescost.find(
-                  (part) => part.maintenanceServiceCostId === event.target.value
-                );
-                formik.setFieldValue(
-                  "maintenanceServiceName",
-                  selectedCostId?.maintenanceServiceName || ""
-                );
-                formik.setFieldValue(
-                  "actualCost",
-                  selectedCostId?.acturalCost || ""
-                );
-              }}
-              error={
-                formik.touched.maintenanceServiceCostId &&
-                Boolean(formik.errors.maintenanceServiceCostId)
-              }
-              renderValue={(selected) => {
-                const selectedOption = maintenanceservicescost.find(
-                  (option) => option.maintenanceServiceCostId === selected
-                );
-                return selectedOption
-                  ? selectedOption.maintenanceServiceName
-                  : "";
-              }}
-            >
+          <Autocomplete
+            fullWidth
+            margin="normal"
+            disablePortal
+            id="maintenanceServiceCostId"
+            options={filteredOptions}
+            getOptionLabel={(option) =>
+              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}`
+            }
+            onChange={(event, newValue) => {
+              const selectedCostId = newValue;
+              formik.setFieldValue(
+                "maintenanceServiceCostId",
+                selectedCostId?.maintenanceServiceCostId || ""
+              );
+              formik.setFieldValue(
+                "maintenanceServiceName",
+                selectedCostId?.maintenanceServiceName || ""
+              );
+              formik.setFieldValue(
+                "actualCost",
+                selectedCostId?.acturalCost || ""
+              );
+            }}
+            renderInput={(params) => (
               <TextField
-                autoFocus
-                margin="dense"
-                variant="outlined"
-                placeholder="Search..."
+                {...params}
+                label="Name"
+                name="maintenanceServiceCostId"
                 value={searchTerm}
+                variant="outlined"
                 onChange={(e) => setSearchTerm(e.target.value)}
-                fullWidth
               />
-
-              {filteredOptions.map((option) => (
-                <MenuItem
-                  key={option.maintenanceServiceCostId}
-                  value={option.maintenanceServiceCostId}
-                >
-                  Name: {option.maintenanceServiceName} - ActuralCost:{" "}
-                  {option.acturalCost}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            )}
+          />
           <TextField
             autoFocus
             margin="dense"

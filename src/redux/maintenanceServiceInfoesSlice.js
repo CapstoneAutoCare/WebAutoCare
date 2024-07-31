@@ -38,6 +38,26 @@ export const MaintenanceServiceInfoesPost = createAsyncThunk(
     }
   }
 );
+export const MaintenanceServiceInfoesChangeStatus = createAsyncThunk(
+  "maintenanceServiceInfoes/MaintenanceServiceInfoesChangeStatus",
+  async ({ token, id, status }, { rejectWithValue }) => {
+    try {
+      const list = await MaintenanceServicesInforesApi.changeStatus({
+        token,
+        id: id,
+        status: status,
+      });
+      console.log(
+        "maintenanceServiceInfoes/MaintenanceServiceInfoesChangeStatus",
+        list.data
+      );
+      return list.data;
+    } catch (error) {
+      console.error("Status ERRROR",error.response.data.Exception);
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 // export const SparePartItemsByCenterId = createAsyncThunk(
 //   "sparepartitem/GetListByCenter",
 //   async (centerId, token) => {
@@ -80,7 +100,7 @@ const maintenanceServiceInfoesSlice = createSlice({
       })
       .addCase(MaintenanceServiceInfoesAll.rejected, (state, action) => {
         state.statusmaintenanceServiceInfoes = "failed";
-        state.errormaintenanceSparePartInfos = action.error.message;
+        state.maintenanceServiceInfoes = action.payload;
       })
       .addCase(MaintenanceServiceInfoesPost.pending, (state) => {
         state.statusmaintenanceServiceInfoes = "loading";
@@ -94,8 +114,23 @@ const maintenanceServiceInfoesSlice = createSlice({
       })
       .addCase(MaintenanceServiceInfoesPost.rejected, (state, action) => {
         state.statusmaintenanceServiceInfoes = "failed";
-        state.errormaintenanceServiceInfoes = action.error.message;
-        alert(action.error.message);
+        state.maintenanceServiceInfoes = action.payload;
+        alert(action.payload);
+      })
+      .addCase(MaintenanceServiceInfoesChangeStatus.pending, (state) => {
+        state.statusmaintenanceServiceInfoes = "loading";
+        state.maintenanceServiceInfoe = null;
+        state.maintenanceServiceInfoes = [];
+        state.errormaintenanceServiceInfoes = null;
+      })
+      .addCase(MaintenanceServiceInfoesChangeStatus.fulfilled, (state, action) => {
+        state.statusmaintenanceServiceInfoes = "succeeded";
+        state.maintenanceServiceInfoes = action.payload;
+      })
+      .addCase(MaintenanceServiceInfoesChangeStatus.rejected, (state, action) => {
+        state.statusmaintenanceServiceInfoes = "failed";
+        state.maintenanceServiceInfoes = action.payload;
+        alert(action.payload);
       });
   },
 });

@@ -35,7 +35,7 @@ const Task = () => {
   const { tasks = [], statustasks } = useSelector((state) => state.tasks);
   const [reloadTaskDialog, setReloadTaskDialog] = useState(false);
   const [page, setPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
 
   const pageCount = Math.ceil(tasks.length / itemsPerPage);
 

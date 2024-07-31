@@ -62,7 +62,7 @@ const sparepartsSlice = createSlice({
       })
       .addCase(SparePartsAll.rejected, (state, action) => {
         state.statussparepart = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });

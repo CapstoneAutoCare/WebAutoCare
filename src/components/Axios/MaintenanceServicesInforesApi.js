@@ -22,5 +22,17 @@ const MaintenanceServicesInforesApi = {
 
     return await axiosApi.post(url, data, config);
   },
+  async changeStatus({ token, id, status }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "MaintenanceServiceInfoes/PatchStatus";
+
+    return await axiosApi.patch(url, null, config);
+  },
 };
 export default MaintenanceServicesInforesApi;

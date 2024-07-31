@@ -19,6 +19,7 @@ import Technician from "./Technician/Technician";
 import MaintenanceInformations from "./MaintenanceInformations/MaintenanceInformations";
 import HorizontalNonLinearStepper from "./MaintenanceInformations/HorizontalNon";
 import Task from "./Task/Task";
+import { Cookie } from "@mui/icons-material";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);

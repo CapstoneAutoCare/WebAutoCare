@@ -87,6 +87,8 @@ const bookingSlice = createSlice({
       .addCase(BookingAll.rejected, (state, action) => {
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
+        alert(action.payload);
+
       })
       .addCase(BookingById.pending, (state) => {
         state.statusbooking = "loading";
@@ -101,6 +103,8 @@ const bookingSlice = createSlice({
       .addCase(BookingById.rejected, (state, action) => {
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
+        alert(action.payload);
+
       })
       .addCase(BookingByCenter.pending, (state) => {
         state.statusbooking = "loading";
@@ -116,6 +120,8 @@ const bookingSlice = createSlice({
       .addCase(BookingByCenter.rejected, (state, action) => {
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
+        alert(action.payload);
+
       })
       .addCase(PatchStatusBookingByCenter.pending, (state) => {
         state.statusbooking = "loading";
@@ -131,6 +137,8 @@ const bookingSlice = createSlice({
       .addCase(PatchStatusBookingByCenter.rejected, (state, action) => {
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
+        alert(action.payload);
+
       });
   },
 });

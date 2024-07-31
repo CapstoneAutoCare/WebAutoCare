@@ -12,7 +12,7 @@
 }
 
 .App {
-  background: #6495ed;
+  background: #ffffff;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -22,12 +22,12 @@
 
 .AppGlass {
   display: grid;
-  height: 97%;
-  width: 97%;
+  min-height: 100%;
+  width: 100%;
   background: var(--glass);
-  border-radius: 2rem;
+  /* border-radius: 2rem; */
   gap: 16px;
-  grid-template-columns: 14rem auto 2rem;
+  grid-template-columns: 16rem auto 2rem;
   overflow: hidden;
 }
 

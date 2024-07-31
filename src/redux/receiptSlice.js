@@ -90,7 +90,7 @@ const receiptSlice = createSlice({
     builder
       .addCase(ReceiptById.pending, (state) => {
         state.statusreceipt = "loading";
-        state.errorreceipt = null;
+        state.errorreceipt = "";
         state.receipt = null;
         state.receipts = [];
       })
