@@ -51,14 +51,14 @@ export const SidebarDataCenter = [
     icon: UilUsersAlt,
     heading: "Managers Technicians",
   },
-  {
-    icon: UilUsersAlt,
-    heading: "Managers Receipts",
-  },
-  {
-    icon: UilUsersAlt,
-    heading: "Managers Feedbacks",
-  },
+  // {
+  //   icon: UilUsersAlt,
+  //   heading: "Managers Receipts",
+  // },
+  // {
+  //   icon: UilUsersAlt,
+  //   heading: "Managers Feedbacks",
+  // },
   {
     icon: UilUser,
     heading: "Profile",

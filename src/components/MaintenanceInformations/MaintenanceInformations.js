@@ -33,6 +33,7 @@ const statusOptions = [
   "CHECKIN",
   "WAITINGBYCAR",
   "CREATEDBYClIENT",
+  "CANCELLED",
 ];
 
 const MaintenanceInformations = () => {

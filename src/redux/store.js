@@ -14,6 +14,7 @@ import receiptSlice from "./receiptSlice";
 import maintenanceSparePartInfoesReducer from "./maintenanceSparePartInfoesSlice";
 import maintenanceServicetInfoesReducer from "./maintenanceServiceInfoesSlice";
 import paymentsReducer from "./paymentSlice";
+import centersReducer from "./centerSlice";
 
 const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ const store = configureStore({
     maintenanceSparePartInfoes: maintenanceSparePartInfoesReducer,
     maintenanceServicetInfoes :maintenanceServicetInfoesReducer,
     payments: paymentsReducer,
+    centers: centersReducer,
   },
 });
 

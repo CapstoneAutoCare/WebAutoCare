@@ -20,6 +20,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 import { makeStyle } from "../Booking/Booking";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,7 +40,11 @@ import { MaintenanceServiceInfoesChangeStatus } from "../../redux/maintenanceSer
 import PaymentApi from "../Axios/PaymentApi";
 import { useFormik } from "formik";
 import axios from "axios";
-import { PaymentCreateVnPayPaymentUrl } from "../../redux/paymentSlice";
+import {
+  ClearPaymentData,
+  PaymentCreateVnPayPaymentUrl,
+} from "../../redux/paymentSlice";
+import { set } from "firebase/database";
 
 const token = localStorage.getItem("localtoken");
 
@@ -112,7 +117,7 @@ const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
 const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
 const statusTask = ["ACCEPTED", "DONE"];
 const statusPayment = ["YETPAID", "PAID"];
-const statusBooking = ["WAITING", "DENIED", "ACCEPTED", "CANCELLED"];
+const statusBooking = ["WAITING", "ACCEPTED", "CANCELLED"];
 const statusInforItem = ["ACTIVE", "INACTIVE"];
 export const TableComponent = ({
   id,
@@ -1025,7 +1030,6 @@ export const TableReceiptComponent = ({ data, setReload }) => {
         receiptId: item.receiptId,
         fullName: item.receiptName,
         description: item.description,
-        amount: item.totalAmount,
         createdDate: new Date().toISOString(),
       };
       await dispatch(PaymentCreateVnPayPaymentUrl({ token, data: dataitem }));
@@ -1085,15 +1089,19 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           justifyContent: "center",
         }}
       >
-        <Button onClick={() => createPayment({ item: data })}>
-          Create Payment
-        </Button>
-
-        {payment && statuspayments === "succeeded" && (
-          <a href={payment} target="_blank" rel="noopener noreferrer">
-            Chuyển đến VNPay
-          </a>
+        {data.status === "YETPAID" && (
+          <>
+            <Button onClick={() => createPayment({ item: data })}>
+              Create Payment
+            </Button>
+            {payment && statuspayments === "succeeded" && (
+              <a href={payment} target="_blank" rel="noopener noreferrer">
+                Chuyển đến VNPay
+              </a>
+            )}
+          </>
         )}
+
         {data.status === "YETPAID" ? (
           <Typography>
             <Select

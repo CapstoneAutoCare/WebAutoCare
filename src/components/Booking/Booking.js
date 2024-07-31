@@ -107,7 +107,7 @@ export const truncateNote = (note) => {
   }
   return note;
 };
-const statusOptions = ["WAITING", "DENIED", "ACCEPTED", "CANCELLED"];
+const statusOptions = ["WAITING", "ACCEPTED", "CANCELLED"];
 
 const Booking = () => {
   const dispatch = useDispatch();

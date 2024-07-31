@@ -18,8 +18,13 @@
   align-items: center;
   justify-content: center;
   font-family: "Inter", sans-serif;
-}
+  /* font-size: 18px;  */
 
+}
+/* body {
+  font-size: 18px; 
+  
+} */
 .AppGlass {
   display: grid;
   min-height: 100%;
@@ -29,6 +34,10 @@
   gap: 16px;
   grid-template-columns: 16rem auto 2rem;
   overflow: hidden;
+  font-family: "Inter", sans-serif;
+
+  font-size: 18px; 
+
 }
 
 @media screen and (max-width: 1200px) {

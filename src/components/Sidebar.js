@@ -3,7 +3,6 @@ import "./Sidebar.css";
 import { UilSignOutAlt } from "@iconscout/react-unicons";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
-import MainDash from "./MainDash/MainDash";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import ProfilePage from "./Updates/ProfilePage";
@@ -20,6 +19,7 @@ import MaintenanceInformations from "./MaintenanceInformations/MaintenanceInform
 import HorizontalNonLinearStepper from "./MaintenanceInformations/HorizontalNon";
 import Task from "./Task/Task";
 import { Cookie } from "@mui/icons-material";
+import { MainDash } from "./MainDash/MainDash";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -54,8 +54,7 @@ const Sidebar = () => {
     userRole === "CENTER" ? SidebarDataCenter : SidebarDataAdmin;
 
   const sidebarComponentsCenter = [
-    <></>,
-    // <MainDash />,
+    <MainDash />,
     <MaintenanceInformations />,
     <Booking />,
     <Task />,
@@ -106,8 +105,8 @@ const Sidebar = () => {
     sessionStorage.clear();
     navigate("/");
   };
-  // const ADMIN = "ADMIN";
-  // const COMPANY = "CENTER";
+  const ADMIN = "ADMIN";
+  const COMPANY = "CENTER";
   console.log(window.innerWidth);
   return (
     <>
@@ -124,16 +123,24 @@ const Sidebar = () => {
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
         {/* logo */}
-        {/* <div className="logo">
-          <img src={Logo} alt="logo" />
-          <span>
+        <div className="logo">
+          <img 
+          src="https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg" 
+          alt="logo" 
+          style={{
+            width: "120px",
+            height: "120px",
+            borderRadius: "70%",
+            border: "1px solid #000"
+          }}/>
+          {/* <span>
             {userRole === "ADMIN" ? (
               <span className="admin">{ADMIN}</span>
             ) : (
               <span className="company">{COMPANY}</span>
             )}
-          </span>
-        </div> */}
+          </span> */}
+        </div>
 
         <div className="menu">
           {currentSidebarData.map((item, index) => {
