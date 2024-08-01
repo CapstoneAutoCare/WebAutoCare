@@ -88,7 +88,13 @@ const validationSchemaService = Yup.object({
 });
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
-export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
+export const AddSparePartDialog = ({
+  open,
+  handleClose,
+  centerId,
+  token,
+  setReload,
+}) => {
   const { spareparts, errorsparepart } = useSelector(
     (state) => state.spareparts
   );
@@ -103,7 +109,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
     onSubmit: async (values, { resetForm }) => {
       const data = {
         sparePartsItemName: values.sparePartsItemName,
-        sparePartsId: values.sparePartsId ? values.sparePartsId : null,
+        sparePartsId: values.sparePartId ? values.sparePartId : null,
       };
 
       await dispatch(AddSparePartItemsByCenter({ data, token }))
@@ -111,6 +117,7 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
           // dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
           handleClose();
+          setReload((p) => !p);
         })
         .catch((error) => {
           console.error("Failed to add item:", error);
@@ -120,15 +127,64 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
   const handleClear = () => {
     formik.setFieldValue("sparePartsId", "");
   };
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredOptions = spareparts.filter((option) =>
+    option.sparePartName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   useEffect(() => {
     dispatch(SparePartsAll(token));
-  }, [dispatch, token, open]);
+  }, [dispatch, token, open, setReload]);
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
       <DialogTitle>Add Spare Part Item</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <FormControl fullWidth margin="normal">
+          <Autocomplete
+            label="SparePartsId"
+            fullWidth
+            margin="normal"
+            disablePortal
+            id="sparePartsId"
+            options={filteredOptions}
+            getOptionLabel={(option) =>
+              `Name: ${option.sparePartName} - Odo: ${option.maintananceScheduleName} - Vehicle: ${option.reponseVehicleModel.vehiclesBrandName} ${option.reponseVehicleModel.vehicleModelName}`
+            }
+            onChange={(event, newValue) => {
+              const selectedId = newValue;
+              formik.setFieldValue(
+                "sparePartId",
+                selectedId?.sparePartId || ""
+              );
+              formik.setFieldValue(
+                "sparePartsItemName",
+                selectedId?.sparePartName || ""
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Name"
+                name="sparePartsId"
+                value={searchTerm}
+                variant="outlined"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            )}
+          />
+          {/* <FormControl fullWidth margin="normal">
             <InputLabel>SparePart Name</InputLabel>
             <Select
               label="SparePartsId"
@@ -155,17 +211,17 @@ export const AddSparePartDialog = ({ open, handleClose, centerId, token }) => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
               margin="dense"
-              name="sparePartsId"
-              label="Spare PartsId"
+              name="sparePartId"
+              label="Spare Part Id"
               type="text"
               fullWidth
               variant="standard"
-              value={formik.values.sparePartsId}
+              value={formik.values.sparePartId}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={
@@ -466,9 +522,9 @@ export const UpdateSparePartItemDialog = ({
             id: item.sparePartsItemId,
             data: { ...values, image: imageUrl },
           })
-        );
-
-        handleClose();
+        ).then(() => {
+          handleClose();
+        });
       } catch (error) {
         console.error("Failed to update spare part item", error);
       }
@@ -488,7 +544,7 @@ export const UpdateSparePartItemDialog = ({
         capacity: item.capacity || 50,
       });
     }
-  }, [dispatch, item, token, handleClose]);
+  }, [dispatch, item, token]);
   return (
     <Dialog
       open={open}
@@ -1315,6 +1371,7 @@ const validationSchemaTaskByCenter = Yup.object({
   informationMaintenanceId: Yup.string().required(
     "informationMaintenanceId is required"
   ),
+  maintenanceTaskName: Yup.string().required("maintenanceTaskName is required"),
 });
 export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   const dispatch = useDispatch();
@@ -1328,12 +1385,14 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
     initialValues: {
       informationMaintenanceId: "",
       technicianId: "",
+      maintenanceTaskName: "",
     },
     validationSchema: validationSchemaTaskByCenter,
     onSubmit: async (values, { resetForm }) => {
       const data = {
         informationMaintenanceId: values.informationMaintenanceId,
         technicianId: values.technicianId,
+        maintenanceTaskName: values.maintenanceTaskName,
       };
       console.log(data);
       await dispatch(AddTaskByCenter({ token: token, data: data }))
@@ -1371,9 +1430,9 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
           <DialogContent>
             <form onSubmit={formik.handleSubmit}>
               <FormControl fullWidth margin="normal">
-                <InputLabel>Technician Id</InputLabel>
+                <InputLabel>FullName Technician</InputLabel>
                 <Select
-                  label="TechnicianId"
+                  label="FullName Technician"
                   name="technicianId"
                   value={formik.values.technicianId}
                   onChange={(event) => {
@@ -1396,7 +1455,8 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                       key={option.technicianId}
                       value={option.technicianId}
                     >
-                      {option.firstName} {option.email}
+                      FullName: {option.firstName} {option.lastName} - Email:{" "}
+                      {option.email}
                     </MenuItem>
                   ))}
                 </Select>
@@ -1406,7 +1466,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                   autoFocus
                   margin="dense"
                   name="technicianId"
-                  label="Technician Id"
+                  label="technicianId"
                   type="text"
                   fullWidth
                   variant="standard"
@@ -1428,7 +1488,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
               </div>
 
               <FormControl fullWidth margin="normal">
-                <InputLabel>Information Id</InputLabel>
+                <InputLabel>Information Name</InputLabel>
                 <Select
                   label="Information Id"
                   name="informationMaintenanceId"
@@ -1484,6 +1544,28 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="maintenanceTaskName"
+                  label="Name Task"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  value={formik.values.maintenanceTaskName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.maintenanceTaskName &&
+                    Boolean(formik.errors.maintenanceTaskName)
+                  }
+                  helperText={
+                    formik.touched.maintenanceTaskName &&
+                    formik.errors.maintenanceTaskName
+                  }
                 />
               </div>
               <DialogActions>
@@ -1923,7 +2005,6 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       <DialogTitle>Create MaintenanceSparePartInfoes </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-         
           <Autocomplete
             fullWidth
             margin="normal"

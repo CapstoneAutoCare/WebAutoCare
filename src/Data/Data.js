@@ -25,31 +25,31 @@ export const SidebarDataCenter = [
   },
   {
     icon: UilPackage,
-    heading: "Managers Maintenance Informations",
+    heading: "Maintenance Informations",
   },
   {
     icon: UilClipboardAlt,
-    heading: "Managers Booking",
+    heading: "Bookings",
   },
   {
     icon: UilChart,
-    heading: "Managers Assigns",
+    heading: "Assignments",
   },
   {
     icon: UilReceipt,
-    heading: "Managers SpareParts",
+    heading: "SpareParts",
   },
   {
     icon: UilSchedule,
-    heading: "Managers Services",
+    heading: "Services",
   },
   {
     icon: UilUsersAlt,
-    heading: "Managers CustomerCares",
+    heading: "CustomerCares",
   },
   {
     icon: UilUsersAlt,
-    heading: "Managers Technicians",
+    heading: "Technicians",
   },
   // {
   //   icon: UilUsersAlt,

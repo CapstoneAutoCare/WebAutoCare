@@ -17,6 +17,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 import "./sparepartItems.css";
 import {
@@ -101,6 +102,40 @@ const SparePartItems = () => {
     setSelectedItem(item);
     setOpenDialog(true);
   };
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterBrand, setFilterBrand] = useState("");
+  const [filterVehicle, setFilterVehicle] = useState("");
+  const [filterOdo, setFilterOdo] = useState("");
+
+  const filteredItems = sparepartitems.length > 0
+    ? sparepartitems.filter((sparepartitem) => {
+        return (
+          (filterStatus ? sparepartitem.status === filterStatus : true) &&
+          (filterName
+            ? sparepartitem?.sparePartsItemName
+                .toLowerCase()
+                .includes(filterName.toLowerCase())
+            : true) &&
+          (filterBrand
+            ? sparepartitem?.vehiclesBrandName
+                .toLowerCase()
+                .includes(filterBrand.toLowerCase())
+            : true) &&
+          (filterVehicle
+            ? sparepartitem?.vehicleModelName
+                .toLowerCase()
+                .includes(filterVehicle.toLowerCase())
+            : true) &&
+          (filterOdo
+            ? sparepartitem?.maintananceScheduleName
+                .toLowerCase()
+                .includes(filterOdo.toLowerCase())
+            : true)
+        );
+      })
+    : [];
+
   return (
     <Box>
       <h3>List Spare Part Items</h3>
@@ -112,7 +147,9 @@ const SparePartItems = () => {
         handleClose={handleClose}
         centerId={centerId}
         token={token}
+        setReload={setReload}
       />
+
       {statussparepartitem === "loading" && (
         <DialogContent dividers>
           <CircularProgress />
@@ -122,6 +159,33 @@ const SparePartItems = () => {
         sparepartitems &&
         sparepartitems.length > 0 && (
           <DialogContent dividers>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              paddingTop={"5px"}
+              mb={4}
+            >
+              <TextField
+                label="Spare Part Name"
+                value={filterName}
+                onChange={(event) => setFilterName(event.target.value)}
+              />
+              <TextField
+                label="Vehicle Brand"
+                value={filterBrand}
+                onChange={(event) => setFilterBrand(event.target.value)}
+              />
+              <TextField
+                label="Vehicle Name"
+                value={filterVehicle}
+                onChange={(event) => setFilterVehicle(event.target.value)}
+              />
+              <TextField
+                label="Odo"
+                value={filterOdo}
+                onChange={(event) => setFilterOdo(event.target.value)}
+              />
+            </Box>
             <Grid>
               <TableContainer
                 component={Paper}
@@ -132,6 +196,9 @@ const SparePartItems = () => {
                     <TableRow>
                       <TableCell>Avatar</TableCell>
                       <TableCell>Spare Part Name</TableCell>
+                      <TableCell>Vehicle Brand </TableCell>
+                      <TableCell>Vehicle Name</TableCell>
+                      <TableCell>Odo </TableCell>
                       <TableCell>Created Date</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Edit</TableCell>
@@ -139,49 +206,56 @@ const SparePartItems = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sparepartitems
-                      .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                      .map((item) => (
-                        <TableRow key={item.sparePartsItemId}>
-                          <TableCell>
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt="Item Logo"
-                                className="item-logo"
-                                style={{ width: "90px", height: "90px" }}
-                              />
-                            ) : (
-                              <div
-                                className="no-image-placeholder"
-                                style={{ width: "90px", height: "90px" }}
+                    {filteredItems.length > 0 &&
+                      filteredItems
+                        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                        .map((item) => (
+                          <TableRow key={item.sparePartsItemId}>
+                            <TableCell>
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt="Item Logo"
+                                  className="item-logo"
+                                  style={{ width: "90px", height: "90px" }}
+                                />
+                              ) : (
+                                <div
+                                  className="no-image-placeholder"
+                                  style={{ width: "90px", height: "90px" }}
+                                >
+                                  No Image Available
+                                </div>
+                              )}
+                            </TableCell>
+
+                            <TableCell>{item.sparePartsItemName}</TableCell>
+                            <TableCell>{item.vehiclesBrandName}</TableCell>
+                            <TableCell>{item.vehicleModelName}</TableCell>
+                            <TableCell>
+                              {item.maintananceScheduleName}
+                            </TableCell>
+                            <TableCell>{item.createdDate}</TableCell>
+                            <TableCell>
+                              <span
+                                className="status"
+                                style={makeStyle(item.status)}
                               >
-                                No Image Available
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell>{item.sparePartsItemName}</TableCell>
-                          <TableCell>{item.createdDate}</TableCell>
-                          <TableCell>
-                            <span
-                              className="status"
-                              style={makeStyle(item.status)}
-                            >
-                              {item.status}
-                            </span>
-                          </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase onClick={() => handleEdit(item)}>
-                              Edit
-                            </ButtonBase>
-                          </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase onClick={() => handleClickShow(item)}>
-                              Show
-                            </ButtonBase>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                {item.status}
+                              </span>
+                            </TableCell>
+                            <TableCell className="Details">
+                              <ButtonBase onClick={() => handleEdit(item)}>
+                                Edit
+                              </ButtonBase>
+                            </TableCell>
+                            <TableCell className="Details">
+                              <ButtonBase onClick={() => handleClickShow(item)}>
+                                Show
+                              </ButtonBase>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                   </TableBody>
                 </Table>
               </TableContainer>

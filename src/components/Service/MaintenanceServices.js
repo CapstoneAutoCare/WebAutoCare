@@ -17,6 +17,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
@@ -98,6 +99,38 @@ const MaintenanceServices = () => {
     setSelectedItem(item);
     setOpenView(true);
   };
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterBrand, setFilterBrand] = useState("");
+  const [filterVehicle, setFilterVehicle] = useState("");
+  const [filterOdo, setFilterOdo] = useState("");
+
+  const filteredItems = maintenanceservices.filter((ms) => {
+    return (
+      (filterStatus ? ms.status === filterStatus : true) &&
+      (filterName
+        ? ms.maintenanceServiceName
+            .toLowerCase()
+            .includes(filterName.toLowerCase())
+        : true) &&
+      (filterBrand
+        ? ms.vehiclesBrandName
+            .toLowerCase()
+            .includes(filterBrand.toLowerCase())
+        : true) &&
+      (filterVehicle
+        ? ms.vehicleModelName
+            .toLowerCase()
+            .includes(filterVehicle.toLowerCase())
+        : true)
+        &&
+      (filterOdo
+        ? ms.maintananceScheduleName
+            .toLowerCase()
+            .includes(filterOdo.toLowerCase())
+        : true)
+    );
+  });
   return (
     <div>
       <Box>
@@ -119,89 +152,128 @@ const MaintenanceServices = () => {
         {statusmaintenanceservices === "succeeded" &&
           maintenanceservices &&
           maintenanceservices.length > 0 && (
-            <Grid>
-              <TableContainer
-                component={Paper}
-                style={{
-                  boxShadow: "0px 13px 20px 0px #80808029",
-                }}
+            <DialogContent dividers>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                paddingTop={"5px"}
+                mb={4}
               >
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Avatar</TableCell>
-                      <TableCell>Maintenance Service Name </TableCell>
-                      <TableCell>Created Date</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Edit</TableCell>
-                      <TableCell>Shows</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {maintenanceservices
-                      .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                      .map((item) => (
-                        <TableRow
-                          key={item.maintenanceServiceId}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell>
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt="Item Logo"
-                                className="item-logo"
-                                style={{ width: "90px", height: "90px" }}
-                              />
-                            ) : (
-                              <div
-                                className="no-image-placeholder"
-                                style={{ width: "90px", height: "90px" }}
+                <TextField
+                  label="Maintenance Service Name"
+                  value={filterName}
+                  onChange={(event) => setFilterName(event.target.value)}
+                />
+                <TextField
+                  label="Vehicle Brand"
+                  value={filterBrand}
+                  onChange={(event) => setFilterBrand(event.target.value)}
+                />
+                <TextField
+                  label="Vehicle Name"
+                  value={filterVehicle}
+                  onChange={(event) => setFilterVehicle(event.target.value)}
+                />
+                <TextField
+                  label="Odo"
+                  value={filterOdo}
+                  onChange={(event) => setFilterOdo(event.target.value)}
+                />
+              </Box>
+              <Grid>
+                <TableContainer
+                  component={Paper}
+                  style={{
+                    boxShadow: "0px 13px 20px 0px #80808029",
+                  }}
+                >
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Avatar</TableCell>
+                        <TableCell>Maintenance Service Name </TableCell>
+                        <TableCell>Vehicle Brand </TableCell>
+                        <TableCell>Vehicle Name</TableCell>
+                        <TableCell>Odo </TableCell>
+                        <TableCell>Created Date</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Edit</TableCell>
+                        <TableCell>Shows</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {filteredItems
+                        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                        .map((item) => (
+                          <TableRow
+                            key={item.maintenanceServiceId}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell>
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt="Item Logo"
+                                  className="item-logo"
+                                  style={{ width: "90px", height: "90px" }}
+                                />
+                              ) : (
+                                <div
+                                  className="no-image-placeholder"
+                                  style={{ width: "90px", height: "90px" }}
+                                >
+                                  No Image Available
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>{item.maintenanceServiceName}</TableCell>
+                            <TableCell>{item.vehiclesBrandName}</TableCell>
+                            <TableCell>{item.vehicleModelName}</TableCell>
+                            <TableCell>
+                              {item.maintananceScheduleName}
+                            </TableCell>
+                            <TableCell>
+                              {formatDate(item.createdDate)}
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                className="status"
+                                style={{
+                                  ...makeStyle(item.status),
+                                  fontSize: "12px",
+                                  height: "50px",
+                                }}
                               >
-                                No Image Available
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell>{item.maintenanceServiceName}</TableCell>
-                          <TableCell>{formatDate(item.createdDate)}</TableCell>
-                          <TableCell>
-                            <span
-                              className="status"
-                              style={{
-                                ...makeStyle(item.status),
-                                fontSize: "12px",
-                                height: "50px",
-                              }}
-                            >
-                              {item.status}
-                            </span>
-                          </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase onClick={() => handleEdit(item)}>
-                              Edit
-                            </ButtonBase>
-                          </TableCell>
-                          <TableCell className="Details">
-                            <ButtonBase onClick={() => handleClickShow(item)}>
-                              Show
-                            </ButtonBase>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Pagination
-                count={pageCount}
-                page={page}
-                onChange={handleChangePage}
-                variant="outlined"
-                shape="rounded"
-                style={{ marginTop: "20px" }}
-              />
-            </Grid>
+                                {item.status}
+                              </span>
+                            </TableCell>
+                            <TableCell className="Details">
+                              <ButtonBase onClick={() => handleEdit(item)}>
+                                Edit
+                              </ButtonBase>
+                            </TableCell>
+                            <TableCell className="Details">
+                              <ButtonBase onClick={() => handleClickShow(item)}>
+                                Show
+                              </ButtonBase>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Pagination
+                  count={pageCount}
+                  page={page}
+                  onChange={handleChangePage}
+                  variant="outlined"
+                  shape="rounded"
+                  style={{ marginTop: "20px" }}
+                />
+              </Grid>
+            </DialogContent>
           )}
         {selectedItem && (
           <UpdateMaintenanceServiceDialog
@@ -212,13 +284,13 @@ const MaintenanceServices = () => {
           />
         )}
         {selectedItem && (
-        <ViewMaintenanceServicesCostDialog
-          open={openView}
-          handleViewClose={handleViewClose}
-          token={token}
-          item={selectedItem}
-        />
-      )}
+          <ViewMaintenanceServicesCostDialog
+            open={openView}
+            handleViewClose={handleViewClose}
+            token={token}
+            item={selectedItem}
+          />
+        )}
       </Box>
     </div>
   );
