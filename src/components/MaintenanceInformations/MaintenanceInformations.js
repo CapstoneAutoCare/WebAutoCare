@@ -25,6 +25,7 @@ import { MaintenanceInformationsDetailDialog } from "../../Data/DialogComponent"
 import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatDate } from "../../Data/Pagination";
 import { ClearPaymentData } from "../../redux/paymentSlice";
+import { formatNumberWithDots } from "./OutlinedCard";
 
 const statusOptions = [
   "PAID",
@@ -95,7 +96,7 @@ const MaintenanceInformations = () => {
 
   return (
     <Box>
-      <h3>List Maintenance Informations</h3>
+      <h3>Danh Sách Thông Tin Bảo Trì Sửa Chữa</h3>
       {/* <Button variant="contained" color="success">
         Add Maintenance Informations
       </Button> */}
@@ -111,7 +112,7 @@ const MaintenanceInformations = () => {
           displayEmpty
         >
           <MenuItem value="">
-            <em>All Statuses</em>
+            <em>Trạng Thái</em>
           </MenuItem>
           {statusOptions.map((status) => (
             <MenuItem key={status} value={status}>
@@ -120,12 +121,12 @@ const MaintenanceInformations = () => {
           ))}
         </Select>
         <TextField
-          label="Vehicle Name"
+          label="Tên Xe"
           value={filterVehicle}
           onChange={(event) => setFilterVehicle(event.target.value)}
         />
         <TextField
-          label="License Plate"
+          label="Biển Số Xe"
           value={filterLicensePlate}
           onChange={(event) => setFilterLicensePlate(event.target.value)}
         />
@@ -149,17 +150,18 @@ const MaintenanceInformations = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>InformationMaintenance Id</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Vehicles </TableCell>
-                    <TableCell>License Plate</TableCell>
-                    <TableCell>Created Date</TableCell>
-                    <TableCell>Finished Date</TableCell>
+                    {/* <TableCell>Mã Thông Tin</TableCell> */}
+                    <TableCell>Xe </TableCell>
+                    <TableCell>Biển Số Xe</TableCell>
+                    <TableCell>Tên Thông Tin</TableCell>
+
+                    <TableCell>Ngày tạo</TableCell>
+                    <TableCell>Ngày Kết Thúc</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Quantity </TableCell>
-                    <TableCell>Total Price</TableCell>
-                    <TableCell>Note</TableCell>
-                    <TableCell>Details</TableCell>
+                    <TableCell>Số Lượng </TableCell>
+                    <TableCell>Tổng Chi Phí Hiện Tại</TableCell>
+                    <TableCell>Ghi Chú</TableCell>
+                    <TableCell>Chi Tiết</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -170,16 +172,17 @@ const MaintenanceInformations = () => {
                       .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                       .map((item) => (
                         <TableRow key={item.informationMaintenanceId}>
-                          <TableCell>{item.informationMaintenanceId}</TableCell>
-                          <TableCell>
-                            {item.informationMaintenanceName}
-                          </TableCell>
+                          {/* <TableCell>{item.informationMaintenanceId}</TableCell> */}
+
                           <TableCell>
                             {item?.responseVehicles?.vehiclesBrandName}{" "}
                             {item?.responseVehicles?.vehicleModelName}
                           </TableCell>
                           <TableCell>
                             {item?.responseVehicles?.licensePlate}
+                          </TableCell>
+                          <TableCell>
+                            {item.informationMaintenanceName}
                           </TableCell>
                           <TableCell>{formatDate(item.createdDate)}</TableCell>
                           <TableCell>{formatDate(item.finishedDate)}</TableCell>
@@ -208,7 +211,7 @@ const MaintenanceInformations = () => {
                               fontWeight: "bold",
                             }}
                           >
-                            {item.totalPrice} VND
+                            {formatNumberWithDots(item.totalPrice)} VND
                           </TableCell>
                           <TableCell>
                             <Tooltip title={item.note} arrow>
@@ -216,9 +219,9 @@ const MaintenanceInformations = () => {
                             </Tooltip>
                           </TableCell>
                           <TableCell className="Details">
-                            <ButtonBase onClick={() => handleClickOpen(item)}>
-                              SHOW
-                            </ButtonBase>
+                            <Button onClick={() => handleClickOpen(item)} variant="contained" color="success">
+                              Hiển Thị
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}

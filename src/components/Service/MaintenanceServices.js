@@ -27,6 +27,7 @@ import {
   UpdateMaintenanceServiceDialog,
   ViewMaintenanceServicesCostDialog,
 } from "../../Data/DialogComponent";
+import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -134,9 +135,9 @@ const MaintenanceServices = () => {
   return (
     <div>
       <Box>
-        <h3>List Maintenance Services</h3>
+        <h3>Danh Sách Các Dịch Vụ Từng Xe</h3>
         <Button variant="contained" color="success" onClick={handleClickOpen}>
-          Add Maintenance Services
+          Thêm Dịch Mới Cho Xe
         </Button>
         <AddMaintenanceServiceDialog
           open={open}
@@ -160,17 +161,17 @@ const MaintenanceServices = () => {
                 mb={4}
               >
                 <TextField
-                  label="Maintenance Service Name"
+                  label="Tên Dịch Vụ"
                   value={filterName}
                   onChange={(event) => setFilterName(event.target.value)}
                 />
                 <TextField
-                  label="Vehicle Brand"
+                  label="Hãng Xe"
                   value={filterBrand}
                   onChange={(event) => setFilterBrand(event.target.value)}
                 />
                 <TextField
-                  label="Vehicle Name"
+                  label="Loại Xe"
                   value={filterVehicle}
                   onChange={(event) => setFilterVehicle(event.target.value)}
                 />
@@ -191,14 +192,14 @@ const MaintenanceServices = () => {
                     <TableHead>
                       <TableRow>
                         <TableCell>Avatar</TableCell>
-                        <TableCell>Maintenance Service Name </TableCell>
-                        <TableCell>Vehicle Brand </TableCell>
-                        <TableCell>Vehicle Name</TableCell>
+                        <TableCell>Tên Dịch Vụ </TableCell>
+                        <TableCell>Hãng Xe </TableCell>
+                        <TableCell>Loại Xe</TableCell>
                         <TableCell>Odo </TableCell>
-                        <TableCell>Created Date</TableCell>
+                        <TableCell>Ngày Tạo</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Edit</TableCell>
-                        <TableCell>Shows</TableCell>
+                        <TableCell>Chỉnh Sửa</TableCell>
+                        <TableCell>Chi Tiết</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -232,7 +233,7 @@ const MaintenanceServices = () => {
                             <TableCell>{item.vehiclesBrandName}</TableCell>
                             <TableCell>{item.vehicleModelName}</TableCell>
                             <TableCell>
-                              {item.maintananceScheduleName}
+                              {formatNumberWithDots(item.maintananceScheduleName)}
                             </TableCell>
                             <TableCell>
                               {formatDate(item.createdDate)}
@@ -250,14 +251,14 @@ const MaintenanceServices = () => {
                               </span>
                             </TableCell>
                             <TableCell className="Details">
-                              <ButtonBase onClick={() => handleEdit(item)}>
-                                Edit
-                              </ButtonBase>
+                              <Button onClick={() => handleEdit(item)} variant="contained" color="success">
+                                Chỉnh Sửa
+                              </Button>
                             </TableCell>
                             <TableCell className="Details">
-                              <ButtonBase onClick={() => handleClickShow(item)}>
-                                Show
-                              </ButtonBase>
+                              <Button onClick={() => handleClickShow(item)} variant="contained" color="success">
+                                Hiển Thị
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}

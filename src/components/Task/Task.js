@@ -90,9 +90,9 @@ const Task = () => {
 
   return (
     <Box>
-      <h3>List Assign Task</h3>
+      <h3>Danh Sách Giao Việc Cho Nhân Viên Kĩ Thuật</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
-        Add Assign Task
+        Thêm Việc Cho Nhân Viên Kĩ Thuật
       </Button>
       {statustasks === "loading" && (
         <DialogContent dividers>
@@ -114,13 +114,16 @@ const Task = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>TaskId</TableCell>
-                  <TableCell>InformationMaintenanceId</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Created Date</TableCell>
+                  <TableCell>Mã Giao Việc</TableCell>
+                  <TableCell>Mã Thông Tin</TableCell>
+                  <TableCell>Tên Giao Việc</TableCell>
+                  <TableCell>Ngày Thêm Việc</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Technician Id</TableCell>
-                  <TableCell>Details</TableCell>
+                  <TableCell>Nhân Viên Kĩ Thuật</TableCell>
+                  <TableCell>Email Nhân Viên</TableCell>
+                  <TableCell>Phụ Tùng</TableCell>
+                  <TableCell>Dịch vụ</TableCell>
+                  <TableCell>Chi Tiết</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -171,11 +174,15 @@ const Task = () => {
                         )}
                       </TableCell>
 
-                      <TableCell>{item.technicianId}</TableCell>
+                      <TableCell>{item.responseTechnician.firstName}{""} {item.responseTechnician.lastName}</TableCell>
+                      <TableCell>{item.responseTechnician.email}</TableCell>
+                      <TableCell>{item.responseMainTaskSpareParts.length} items</TableCell>
+                      <TableCell>{item.responseMainTaskServices.length} items</TableCell>
+
                       <TableCell className="Details">
-                        <ButtonBase onClick={() => handleClickShow(item)}>
+                        <Button onClick={() => handleClickShow(item)} variant="contained" color="success">
                           SHOW
-                        </ButtonBase>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

@@ -47,7 +47,9 @@ import {
 import { set } from "firebase/database";
 
 const token = localStorage.getItem("localtoken");
-
+export const formatNumberWithDots = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
 const bull = (
   <Box
     component="span"
@@ -185,7 +187,7 @@ export const TableComponent = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Actual Cost:</TableCell>
-                    <TableCell>{actualCost}</TableCell>
+                    <TableCell>{formatNumberWithDots(actualCost)}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -207,7 +209,7 @@ export const TableComponent = ({
             color: "white",
           }}
         >
-          Edit
+          Chỉnh Sửa
         </Button>
         <Select
           value={status}
@@ -242,7 +244,7 @@ export const TableComponent = ({
             alignItems: "center",
           }}
         >
-          ${money}
+          {formatNumberWithDots(money)} VND
         </Typography>
       </Box>
     </StyledCard>
@@ -319,7 +321,7 @@ export const TableMainSparePartInforComponent = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Actual Cost:</TableCell>
-                    <TableCell>{actualCost}</TableCell>
+                    <TableCell>{formatNumberWithDots(actualCost)} VND</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -376,7 +378,7 @@ export const TableMainSparePartInforComponent = ({
             alignItems: "center",
           }}
         >
-          ${money}
+          {formatNumberWithDots(money)} VND
         </Typography>
       </Box>
     </StyledCard>
@@ -453,7 +455,7 @@ export const TableMainServiceInforComponent = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Actual Cost:</TableCell>
-                    <TableCell>{actualCost}</TableCell>
+                    <TableCell>{formatNumberWithDots(actualCost)} VND</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -476,7 +478,7 @@ export const TableMainServiceInforComponent = ({
           }}
           // onClick={() => handleclick(id)}
         >
-          Edit
+          Chỉnh Sửa
         </Button>
         <Select
           value={status}
@@ -511,7 +513,7 @@ export const TableMainServiceInforComponent = ({
             alignItems: "center",
           }}
         >
-          ${money}
+          {formatNumberWithDots(money)} VND
         </Typography>
       </Box>
     </StyledCard>
@@ -598,12 +600,12 @@ export const MainComponent = ({ data, setReload }) => {
         )}
 
         <Typography
-          variant="h2"
+          variant="h3"
           style={{
             fontWeight: "bold",
           }}
         >
-          ${data.totalPrice}
+          {formatNumberWithDots(data.totalPrice)} VND
         </Typography>
       </div>
     </StyledCard>
@@ -619,7 +621,7 @@ export const CardCostComponent = ({ data, cost }) => {
             <ImageBooking src={data.image} alt={data.image} />
             <ContentWrapper style={{ alignItems: "flex-start" }}>
               <Typography variant="h5" style={{ fontWeight: "bold" }}>
-                Name: {data.sparePartsItemName}
+                Tên: {data.sparePartsItemName}
               </Typography>
               <Typography variant="h5" style={{ fontWeight: "bold" }}>
                 {data?.clientId}
@@ -630,10 +632,10 @@ export const CardCostComponent = ({ data, cost }) => {
         </CardContent>
 
         <Typography
-          variant="h2"
+          variant="h3"
           style={{ paddingRight: "50px", fontWeight: "bold" }}
         >
-          ${cost?.acturalCost}
+          {formatNumberWithDots(cost?.acturalCost)} VND
         </Typography>
       </StyledCard>
     )
@@ -662,10 +664,10 @@ export const CardMainServiceCostComponent = ({ data, cost }) => {
         </CardContent>
 
         <Typography
-          variant="h2"
+          variant="h3"
           style={{ paddingRight: "50px", fontWeight: "bold" }}
         >
-          ${cost?.acturalCost}
+          {formatNumberWithDots(cost?.acturalCost)} VND
         </Typography>
       </StyledCard>
     )
@@ -1069,11 +1071,11 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell>SubTotal :</TableCell>
-                    <TableCell>${data.subTotal}</TableCell>
+                    <TableCell>{data.subTotal} VND</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>TotalAmount :</TableCell>
-                    <TableCell>${data.totalAmount}</TableCell>
+                    <TableCell>{formatNumberWithDots(data.totalAmount)} VND</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -1092,11 +1094,11 @@ export const TableReceiptComponent = ({ data, setReload }) => {
         {data.status === "YETPAID" && (
           <>
             <Button onClick={() => createPayment({ item: data })}>
-              Create Payment
+              Tạo Thanh Toán
             </Button>
             {payment && statuspayments === "succeeded" && (
               <a href={payment} target="_blank" rel="noopener noreferrer">
-                Chuyển đến VNPay
+                Chuyển Đến VNPay
               </a>
             )}
           </>
@@ -1148,14 +1150,14 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           </Typography>
         )}
         <Typography
-          variant="h2"
+          variant="h3"
           style={{
             // paddingTop: "10px",
             // paddingRight: "50px",
             fontWeight: "bold",
           }}
         >
-          ${data.totalAmount}
+          {formatNumberWithDots(data.totalAmount)} VND
         </Typography>
       </div>
     </StyledCard>

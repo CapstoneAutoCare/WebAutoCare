@@ -13,46 +13,49 @@ import {
   UilReceipt,
   UilSchedule,
   UilLocationPoint,
+  
 } from "@iconscout/react-unicons";
 import img1 from "../imgs/img1.png";
 import img2 from "../imgs/img2.png";
 import img3 from "../imgs/img3.png";
-
+import CarRepairIcon from '@mui/icons-material/CarRepair';
+import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
+import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
 export const SidebarDataCenter = [
   {
-    icon: UilEstate,
-    heading: "Dashboard",
-  },
-  {
-    icon: UilPackage,
-    heading: "Maintenance Informations",
-  },
-  {
-    icon: UilClipboardAlt,
-    heading: "Bookings",
-  },
-  {
     icon: UilChart,
-    heading: "Assignments",
+    heading: "Thống Kê",
   },
   {
-    icon: UilReceipt,
-    heading: "SpareParts",
+    icon: CarRepairIcon,
+    heading: "Thông Tin Bảo Trì Sửa Chữa",
   },
   {
     icon: UilSchedule,
-    heading: "Services",
+    heading: "Đặt Lịch",
+  },
+  {
+    icon: AssignmentIndOutlinedIcon,
+    heading: "Giao Việc ",
+  },
+  {
+    icon: UilPackage,
+    heading: "Phụ Tùng",
+  },
+  {
+    icon: UilPackage,
+    heading: "Dịch Vụ",
   },
   {
     icon: UilUsersAlt,
-    heading: "CustomerCares",
+    heading: "Nhân Viên Chăm Sóc",
   },
   {
     icon: UilUsersAlt,
-    heading: "Technicians",
+    heading: "Nhân Viên Kĩ Thuật",
   },
   // {
-  //   icon: UilUsersAlt,
+  //   icon: UilEstate,
   //   heading: "Managers Receipts",
   // },
   // {

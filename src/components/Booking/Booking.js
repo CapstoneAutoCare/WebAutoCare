@@ -163,7 +163,7 @@ const Booking = () => {
 
   return (
     <Box>
-      <h3>List Booking</h3>
+      <h3>Danh Sách Lịch Đặt</h3>
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Select
           value={filterStatus}
@@ -171,7 +171,7 @@ const Booking = () => {
           displayEmpty
         >
           <MenuItem value="">
-            <em>All Statuses</em>
+            <em>Trạng Thái</em>
           </MenuItem>
           {statusOptions.map((status) => (
             <MenuItem key={status} value={status}>
@@ -180,12 +180,12 @@ const Booking = () => {
           ))}
         </Select>
         <TextField
-          label="Vehicle Name"
+          label="Tên Xe"
           value={filterVehicle}
           onChange={(event) => setFilterVehicle(event.target.value)}
         />
         <TextField
-          label="License Plate"
+          label="Biển Số Xe"
           value={filterLicensePlate}
           onChange={(event) => setFilterLicensePlate(event.target.value)}
         />
@@ -206,12 +206,12 @@ const Booking = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Booking Id</TableCell>
-                    <TableCell>Vehicles </TableCell>
-                    <TableCell>License Plate</TableCell>
-                    <TableCell>Booking Date</TableCell>
-                    <TableCell>Odo</TableCell>
-                    <TableCell>Note</TableCell>
+                    <TableCell>Mã Đặt Lịch</TableCell>
+                    <TableCell>Xe </TableCell>
+                    <TableCell>Biển Số Xe</TableCell>
+                    <TableCell>Ngày Đặt Lịch</TableCell>
+                    <TableCell>Số Odo</TableCell>
+                    <TableCell>Ghi Chú</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Status</TableCell>
                     {/* <TableCell>Details</TableCell> */}

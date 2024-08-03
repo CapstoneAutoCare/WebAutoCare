@@ -57,6 +57,7 @@ import {
 } from "../redux/maintenanceInformationsSlice";
 import {
   CardMainServiceCostComponent,
+  formatNumberWithDots,
   ImageMainTask,
   TaskDetailComponent,
 } from "../components/MaintenanceInformations/OutlinedCard";
@@ -184,34 +185,7 @@ export const AddSparePartDialog = ({
               />
             )}
           />
-          {/* <FormControl fullWidth margin="normal">
-            <InputLabel>SparePart Name</InputLabel>
-            <Select
-              label="SparePartsId"
-              name="sparePartsId"
-              value={formik.values.sparePartsId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedSparePart = spareparts.find(
-                  (part) => part.sparePartId === event.target.value
-                );
-                formik.setFieldValue(
-                  "sparePartsItemName",
-                  selectedSparePart?.sparePartName || ""
-                );
-              }}
-              error={
-                formik.touched.sparePartsId &&
-                Boolean(formik.errors.sparePartsId)
-              }
-            >
-              {spareparts.map((option) => (
-                <MenuItem key={option.sparePartId} value={option.sparePartId}>
-                  {option.maintananceScheduleName} {option.sparePartName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
+          
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
@@ -301,6 +275,10 @@ export const AddMaintenanceServiceDialog = ({
         });
     },
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredOptions = services.filter((option) =>
+    option.serviceCareName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleClear = () => {
     formik.setFieldValue("serviceCareId", "");
   };
@@ -309,11 +287,43 @@ export const AddMaintenanceServiceDialog = ({
   }, [dispatch, token]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Spare Part Item</DialogTitle>
+      <DialogTitle>Thêm Dịch Vụ Mới</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>SparePart Name</InputLabel>
+        <Autocomplete
+            label="ServiceCareId"
+            fullWidth
+            margin="normal"
+            disablePortal
+            id="serviceCareId"
+            options={filteredOptions}
+            getOptionLabel={(option) =>
+              `Tên: ${option.serviceCareName} - Odo: ${option?.maintananceScheduleName} - Vehicle: ${option.reponseVehicleModel?.vehiclesBrandName} ${option.reponseVehicleModel?.vehicleModelName}`
+            }
+            onChange={(event, newValue) => {
+              const selectedId = newValue;
+              formik.setFieldValue(
+                "serviceCareId",
+                selectedId?.serviceCareId || ""
+              );
+              formik.setFieldValue(
+                "maintenanceServiceName",
+                selectedId?.serviceCareName || ""
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Name"
+                name="serviceCareId"
+                value={searchTerm}
+                variant="outlined"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            )}
+          />
+          {/* <FormControl fullWidth margin="normal">
+            <InputLabel>Tên Dịch Vụ</InputLabel>
             <Select
               label="Service Care Id"
               name="serviceCareId"
@@ -342,7 +352,7 @@ export const AddMaintenanceServiceDialog = ({
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
@@ -451,7 +461,7 @@ export const MaintenanceInformationsDetailDialog = ({
       }}
     >
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-        Maintenance Information Detail
+        Thông Tin Bảo Trì Sửa Chữa Chi Tiết
       </DialogTitle>
       {(statusmi === "loading" || statusbooking === "loading") && (
         <DialogContent dividers>
@@ -511,7 +521,7 @@ export const UpdateSparePartItemDialog = ({
       try {
         let imageUrl = values.image;
         if (imageFile) {
-          const storageRef = ref(storage, `images/${imageFile.name}`);
+          const storageRef = ref(storage, `Files/${imageFile.name}`);
           await uploadBytes(storageRef, imageFile);
           imageUrl = await getDownloadURL(storageRef);
         }
@@ -676,6 +686,7 @@ export const UpdateMaintenanceServiceDialog = ({
           const storageRef = ref(storage, `images/${imageFile.name}`);
           await uploadBytes(storageRef, imageFile);
           imageUrl = await getDownloadURL(storageRef);
+          console.log(imageUrl);
         }
 
         dispatch(
@@ -850,13 +861,13 @@ export const ViewSparePartItemsCostDialog = ({
         <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              View List Cost Item
+              Danh Sách Các Lịch Sử Giá
               <Button
                 variant="contained"
                 color="success"
                 onClick={handleAddClickOpen}
               >
-                Add New Cost
+                Thêm Giá Mới
               </Button>
             </div>
             <AddSparePartItemsCostDialog
@@ -881,10 +892,10 @@ export const ViewSparePartItemsCostDialog = ({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>SparePartsItemCostId</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Created Date</TableCell>
-                      <TableCell>Note</TableCell>
+                      <TableCell>Mã Giá</TableCell>
+                      <TableCell>Tiền</TableCell>
+                      <TableCell>Ngày Tạo</TableCell>
+                      <TableCell>Ghi Chú</TableCell>
                       <TableCell>Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -897,7 +908,7 @@ export const ViewSparePartItemsCostDialog = ({
                           <TableCell
                             style={{ fontWeight: "bold", fontSize: "25px" }}
                           >
-                            ${item.acturalCost}
+                            {formatNumberWithDots(item.acturalCost)} VND
                           </TableCell>
                           <TableCell>{item.dateTime}</TableCell>
                           <TableCell>{item.note}</TableCell>
@@ -988,7 +999,7 @@ export const AddMaintenanceServicesCostDialog = ({
   }, [dispatch, token]);
   return (
     <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Maintenance Service</DialogTitle>
+      <DialogTitle>Thêm Dịch Vụ</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           {/* <FormControl fullWidth margin="normal">
@@ -1213,7 +1224,7 @@ export const ViewMaintenanceServicesCostDialog = ({
                           <TableCell
                             style={{ fontWeight: "bold", fontSize: "25px" }}
                           >
-                            ${item.acturalCost}
+                            {formatNumberWithDots(item.acturalCost)} VND
                           </TableCell>
                           <TableCell>{item.dateTime}</TableCell>
                           <TableCell>{item.note}</TableCell>
@@ -1930,10 +1941,17 @@ export const AddMaintenanceSparePartInfoesDialog = ({
   const { sparepartitemscosts } = useSelector((state) => state.sparepartitem);
   const [totalPrice, setTotalPrice] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredOptions = sparepartitemscosts.filter((option) =>
-    option.sparePartsItemName.toLowerCase().includes(searchTerm.toLowerCase())
+  const { main } = useSelector((state) => state.maintenanceInformation);
+
+  const filteredOptions = sparepartitemscosts.filter(
+    (option) =>
+      option.sparePartsItemName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) &&
+      option.vehicleModelName.includes(main.responseVehicles.vehicleModelName)
   );
 
+  console.log("inforcare", main.responseVehicles.vehiclesBrandName);
   const formik = useFormik({
     initialValues: {
       maintenanceInformationId: informationMaintenanceId,
@@ -1980,12 +1998,16 @@ export const AddMaintenanceSparePartInfoesDialog = ({
     if (informationMaintenanceId) {
       console.log("informationMaintenanceId formik:", informationMaintenanceId);
       const centerId = localStorage.getItem("CenterId");
+
       dispatch(
         GetListByDifSparePartAndInforId({
           token: token,
           centerId: centerId,
           inforId: informationMaintenanceId,
         })
+      );
+      dispatch(
+        MaintenanceInformationById({ miId: informationMaintenanceId, token })
       );
       const calculatedTotalPrice =
         formik.values.quantity * formik.values.actualCost;
@@ -2012,7 +2034,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             id="sparePartsItemCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost}`
+              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2038,6 +2060,11 @@ export const AddMaintenanceSparePartInfoesDialog = ({
                 variant="outlined"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.sparePartsItemCostId}>
+                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`}
+              </li>
             )}
           />
           <TextField
@@ -2157,10 +2184,14 @@ export const AddMaintenanceServiceInfoesDialog = ({
   );
   const [totalPrice, setTotalPrice] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredOptions = maintenanceservicescost.filter((option) =>
-    option.maintenanceServiceName
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+  const { main } = useSelector((state) => state.maintenanceInformation);
+
+  const filteredOptions = maintenanceservicescost.filter(
+    (option) =>
+      option.maintenanceServiceName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) &&
+      option.vehicleModelName.includes(main.responseVehicles.vehicleModelName)
   );
   const formik = useFormik({
     initialValues: {
@@ -2213,6 +2244,9 @@ export const AddMaintenanceServiceInfoesDialog = ({
           inforId: informationMaintenanceId,
         })
       );
+      dispatch(
+        MaintenanceInformationById({ miId: informationMaintenanceId, token })
+      );
       const calculatedTotalPrice =
         formik.values.quantity * formik.values.actualCost;
       // const totaldiscount =
@@ -2238,7 +2272,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             id="maintenanceServiceCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}`
+              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2264,6 +2298,11 @@ export const AddMaintenanceServiceInfoesDialog = ({
                 variant="outlined"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.maintenanceServiceCostId}>
+                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`}
+              </li>
             )}
           />
           <TextField
