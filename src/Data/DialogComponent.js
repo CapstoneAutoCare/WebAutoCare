@@ -521,7 +521,7 @@ export const UpdateSparePartItemDialog = ({
       try {
         let imageUrl = values.image;
         if (imageFile) {
-          const storageRef = ref(storage, `Files/${imageFile.name}`);
+          const storageRef = ref(storage, `images/${imageFile.name}`);
           await uploadBytes(storageRef, imageFile);
           imageUrl = await getDownloadURL(storageRef);
         }
