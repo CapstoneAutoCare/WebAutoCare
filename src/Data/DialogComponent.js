@@ -2034,7 +2034,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             id="sparePartsItemCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
+              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2063,7 +2063,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.sparePartsItemCostId}>
-                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`}
+                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`}
               </li>
             )}
           />
@@ -2272,7 +2272,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             id="maintenanceServiceCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
+              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2301,7 +2301,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.maintenanceServiceCostId}>
-                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`}
+                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`}
               </li>
             )}
           />

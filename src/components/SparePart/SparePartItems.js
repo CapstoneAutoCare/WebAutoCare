@@ -32,6 +32,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
+import { formatDate } from "../../Data/Pagination";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -236,7 +237,7 @@ const SparePartItems = () => {
                             <TableCell>
                               {formatNumberWithDots(item.maintananceScheduleName)}
                             </TableCell>
-                            <TableCell>{item.createdDate}</TableCell>
+                            <TableCell>{formatDate(item.createdDate)}</TableCell>
                             <TableCell>
                               <span
                                 className="status"
