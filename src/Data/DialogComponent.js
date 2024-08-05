@@ -132,8 +132,45 @@ export const AddSparePartDialog = ({
   const filteredOptions = spareparts.filter((option) =>
     option.sparePartName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedOdo, setSelectedOdo] = useState("");
+  const [filteredParts, setFilteredParts] = useState([]);
+
+  const handleBrandChange = (e) => {
+    setSelectedBrand(e.target.value);
+    setSelectedModel("");
+    setSelectedOdo("");
+  };
+
+  const handleModelChange = (e) => {
+    setSelectedModel(e.target.value);
+    setSelectedOdo("");
+  };
+
+  const handleOdoChange = (e) => {
+    setSelectedOdo(e.target.value);
+  };
   useEffect(() => {
     dispatch(SparePartsAll(token));
+
+    let results = spareparts;
+    if (selectedBrand) {
+      results = results.filter(
+        (part) => part.reponseVehicleModel.vehiclesBrandName === selectedBrand
+      );
+    }
+    if (selectedModel) {
+      results = results.filter(
+        (part) => part.vehicleModelName === selectedModel
+      );
+    }
+    if (selectedOdo) {
+      results = results.filter(
+        (part) => part.maintananceScheduleName === selectedOdo
+      );
+    }
+    setFilteredParts(results);
   }, [dispatch, token, open, setReload]);
   return (
     <Dialog
@@ -185,7 +222,103 @@ export const AddSparePartDialog = ({
               />
             )}
           />
-          
+{/* 
+          <div>
+            <label>Chọn Brand: </label>
+            <select value={selectedBrand} onChange={handleBrandChange}>
+              <option value="">Chọn Brand</option>
+              {[
+                ...new Set(
+                  spareparts.map(
+                    (part) => part.reponseVehicleModel.vehiclesBrandName
+                  )
+                ),
+              ].map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedBrand && (
+            <div>
+              <label>Chọn Model: </label>
+              <select value={selectedModel} onChange={handleModelChange}>
+                <option value="">Chọn Model</option>
+                {[
+                  ...new Set(
+                    spareparts
+                      .filter(
+                        (part) =>
+                          part.reponseVehicleModel.vehiclesBrandName ===
+                          selectedBrand
+                      )
+                      .map((part) => part.reponseVehicleModel.vehicleModelName)
+                  ),
+                ].map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {selectedModel && (
+            <div>
+              <label>Chọn Odo: </label>
+              <select value={selectedOdo} onChange={handleOdoChange}>
+                <option value="">Chọn Odo</option>
+                {[
+                  ...new Set(
+                    spareparts
+                      .filter(
+                        (part) =>
+                          part.reponseVehicleModel.vehicleModelName ===
+                          selectedModel
+                      )
+                      .map((part) => part.maintananceScheduleName)
+                  ),
+                ].map((odo) => (
+                  <option key={odo} value={odo}>
+                    {odo}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )} */}
+
+          {/* {selectedOdo && (
+            <div>
+              <label>Chọn Phụ Tùng: </label>
+              <select
+                value={filteredParts}
+                onChange={(e) => setFilteredParts(e.target.value)}
+              >
+                <option value="">Chọn Phụ Tùng</option>
+                {[
+                  ...new Set(
+                    spareparts
+                      .filter(
+                        (part) => part.maintananceScheduleName === selectedOdo
+                         && part.reponseVehicleModel.vehicleModelName === selectedModel
+                         &&part.reponseVehicleModel.vehiclesBrandName === selectedBrand
+                      )
+                      .map((part) => ({
+                        id: part.sparePartId,
+                        name: ` ${part.sparePartName} - ${part.maintananceScheduleName} - ${part.reponseVehicleModel.vehicleModelName}`,
+                      }))
+                  ),
+                ].map((sparePart) => (
+                  <option key={sparePart.id} value={sparePart.id}>
+                    {sparePart.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )} */}
+
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
@@ -290,7 +423,7 @@ export const AddMaintenanceServiceDialog = ({
       <DialogTitle>Thêm Dịch Vụ Mới</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-        <Autocomplete
+          <Autocomplete
             label="ServiceCareId"
             fullWidth
             margin="normal"

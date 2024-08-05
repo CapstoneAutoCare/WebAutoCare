@@ -1046,7 +1046,8 @@ export const TableReceiptComponent = ({ data, setReload }) => {
       <CardContent>
         <Box display="flex" alignItems="center">
           <Image
-            src="https://firebasestorage.googleapis.com/v0/b/codeui-node.appspot.com/o/images%2Fimage.png?alt=media&token=2ade0f8b-d89b-436f-898c-23ebf51587af"
+            // src="https://firebasestorage.googleapis.com/v0/b/codeui-node.appspot.com/o/images%2Fimage.png?alt=media&token=2ade0f8b-d89b-436f-898c-23ebf51587af"
+            src=""
             alt={data.image}
           />
           <ContentWrapper>
