@@ -29,6 +29,7 @@ import { formatNumberWithDots } from "./OutlinedCard";
 
 const statusOptions = [
   "PAID",
+  "YETPAID",
   "PAYMENT",
   "REPAIRING",
   "CHECKIN",

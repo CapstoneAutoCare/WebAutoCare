@@ -206,13 +206,16 @@ const Booking = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Mã Đặt Lịch</TableCell>
+                    {/* <TableCell>Mã Đặt Lịch</TableCell> */}
                     <TableCell>Xe </TableCell>
                     <TableCell>Biển Số Xe</TableCell>
+                    <TableCell>Tên Khách Hàng</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Số Điện Thoại</TableCell>
                     <TableCell>Ngày Đặt Lịch</TableCell>
                     <TableCell>Số Odo</TableCell>
                     <TableCell>Ghi Chú</TableCell>
-                    <TableCell>Email</TableCell>
+                    <TableCell>Avatar</TableCell>
                     <TableCell>Status</TableCell>
                     {/* <TableCell>Details</TableCell> */}
                   </TableRow>
@@ -227,7 +230,7 @@ const Booking = () => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{item.bookingId}</TableCell>
+                        {/* <TableCell>{item.bookingId}</TableCell> */}
                         <TableCell
                         // style={{ borderRadius: "10px", fontSize: "25px" }}
                         >
@@ -239,14 +242,36 @@ const Booking = () => {
                         >
                           {item.responseVehicles.licensePlate}
                         </TableCell>
+                        <TableCell>
+                          {item.responseClient.firstName}{" "}
+                          {item.responseClient.lastName}
+                        </TableCell>
+                        <TableCell>{item.responseClient.email}</TableCell>
+                        <TableCell>{item.responseClient.phone}</TableCell>
                         <TableCell>{formatDate(item.bookingDate)}</TableCell>
                         <TableCell>{item.responseVehicles.odo}</TableCell>
                         <TableCell>
                           <Tooltip title={item.note} arrow>
                             <span>{truncateNote(item.note)}</span>
                           </Tooltip>
-                        </TableCell>{" "}
-                        <TableCell>{item.responseClient.email}</TableCell>
+                        </TableCell>
+                        <TableCell>
+                              {item.responseClient.logo ? (
+                                <img
+                                  src={item.responseClient.logo}
+                                  alt="Item Logo"
+                                  className="item-logo"
+                                  style={{ width: "45px", height: "45px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0" }}
+                                  />
+                              ) : (
+                                <div
+                                  className="no-image-placeholder"
+                                  style={{ width: "45px", height: "45px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0" }}
+                                  >
+                                  No Image Available
+                                </div>
+                              )}
+                            </TableCell>
                         <TableCell>
                           {item.status === "WAITING" ? (
                             <Select
