@@ -2305,7 +2305,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
               alignItems: "center",
             }}
           >
-            ${totalPrice}
+            {totalPrice} VND
           </Typography>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
@@ -2544,7 +2544,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
               alignItems: "center",
             }}
           >
-            ${totalPrice}
+            {totalPrice} VND
           </Typography>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
