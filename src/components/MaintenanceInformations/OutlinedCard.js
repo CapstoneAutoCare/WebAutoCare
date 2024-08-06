@@ -914,7 +914,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
                 <TableBody>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Vehicle:
+                      Xe:
                     </TableCell>
                     <TableCell>
                       {data.responseVehicles.vehiclesBrandName}{" "}
@@ -923,14 +923,14 @@ export const TableBookingComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Booking Date:
+                      Ngày Đặt Lịch:
                     </TableCell>
                     <TableCell>{data.bookingDate}</TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      License Plate:
+                      Biển Số Xe:
                     </TableCell>
                     <TableCell>{data.responseVehicles.licensePlate}</TableCell>
                   </TableRow>
@@ -940,7 +940,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Address:
+                      Địa Chỉ Trung Tâm:
                     </TableCell>
                     <TableCell>{data.responseCenter.address} </TableCell>
                   </TableRow>
@@ -1018,11 +1018,11 @@ export const TaskDetailComponent = ({ data, setReload }) => {
             <ImageBooking src={data.image} alt={data.image} />
             <ContentWrapper style={{ alignItems: "flex-start" }}>
               <Typography variant="h5" style={{ fontWeight: "bold" }}>
-                Name: {data.maintenanceTaskName}
+                Tên Giao Việc: {data.maintenanceTaskName}
               </Typography>
               <Typography variant="h6">#{data.maintenanceTaskId}</Typography>
               <Typography variant="h6" style={{ fontWeight: "bold" }}>
-                Date: {formatDate(data.createdDate)}
+                Ngày Tạo : {formatDate(data.createdDate)}
               </Typography>
             </ContentWrapper>
           </Box>
@@ -1131,11 +1131,11 @@ export const TableReceiptComponent = ({ data, setReload }) => {
               <Table size="small">
                 <TableBody key={data.receiptId}>
                   <TableRow>
-                    <TableCell>CreatedDate:</TableCell>
+                    <TableCell>Ngày Tạo:</TableCell>
                     <TableCell>{formatDate(data.createdDate)}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Description :</TableCell>
+                    <TableCell>Thông Tin Chi Tiết :</TableCell>
                     <TableCell>{data.description}</TableCell>
                   </TableRow>
                   <TableRow>
@@ -1143,11 +1143,11 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                     <TableCell>{data.vat}%</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>SubTotal :</TableCell>
+                    <TableCell>Tiền Phụ :</TableCell>
                     <TableCell>{data.subTotal} VND</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>TotalAmount :</TableCell>
+                    <TableCell>Tổng Tiền :</TableCell>
                     <TableCell>
                       {formatNumberWithDots(data.totalAmount)} VND
                     </TableCell>
@@ -1369,7 +1369,7 @@ export const TableMainTaskSparePartsComponent = ({ data, setReload }) => {
           {/* <Image src={data.image} alt={data.image} /> */}
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
-              Infor Booking
+              Thông tin Đặt Lịch
             </Typography>
             <Typography variant="h8">#{data.bookingId}</Typography>
             <TableContainer>
@@ -1384,26 +1384,26 @@ export const TableMainTaskSparePartsComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Booking Date:
+                      Ngày Tạo:
                     </TableCell>
                     <TableCell>{data?.bookingDate}</TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      License Plate:
+                     Biển Số Xe:
                     </TableCell>
                     <TableCell>
                       {data?.responseVehicles?.licensePlate}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>Note :</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ghi Chú :</TableCell>
                     <TableCell>{data?.note} </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Address :
+                      Địa Chỉ Trung Tâm :
                     </TableCell>
                     <TableCell>{data?.responseCenter?.address} </TableCell>
                   </TableRow>
@@ -1482,7 +1482,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
           {/* <Image src={data.image} alt={data.image} /> */}
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
-              Infor Booking
+              Thông Tin Đặt Lịch
             </Typography>
             <Typography variant="h8">#{data.bookingId}</Typography>
             <TableContainer>
@@ -1490,7 +1490,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
                 <TableBody>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Vehicle:
+                      Xe:
                     </TableCell>
                     <TableCell>
                       {data.responseVehicles.vehiclesBrandName}{" "}
@@ -1499,14 +1499,14 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Booking Date:
+                     Ngày Đặt:
                     </TableCell>
                     <TableCell>{data.bookingDate}</TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      License Plate:
+                      Biển Số Xe:
                     </TableCell>
                     <TableCell>{data.responseVehicles.licensePlate}</TableCell>
                   </TableRow>
@@ -1516,7 +1516,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Address :
+                      Địa Chỉ Trung Tâm :
                     </TableCell>
                     <TableCell>{data.responseCenter.address} </TableCell>
                   </TableRow>

@@ -189,7 +189,7 @@ export const AddSparePartDialog = ({
         },
       }}
     >
-      <DialogTitle>Add Spare Part Item</DialogTitle>
+      <DialogTitle>Thêm Phụ Tùng Trung Tâm</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <Autocomplete
@@ -370,8 +370,8 @@ export const AddSparePartDialog = ({
           />
 
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -537,8 +537,8 @@ export const AddMaintenanceServiceDialog = ({
           />
 
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -706,7 +706,7 @@ export const UpdateSparePartItemDialog = ({
       }}
     >
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-        Edit Spare Part Items
+        Cập Nhật Phụ Tùng Trung Tâm
       </DialogTitle>
 
       {item && (
@@ -860,7 +860,7 @@ export const UpdateMaintenanceServiceDialog = ({
       }}
     >
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-        Edit Maintenance Service Items
+        Cập Nhật Dịch Vụ Trung Tâm
       </DialogTitle>
 
       {item && (
@@ -1083,7 +1083,7 @@ export const ViewSparePartItemsCostDialog = ({
         </DialogContent>
       )}
       <DialogActions>
-        <Button onClick={handleViewClose}>Close</Button>
+        <Button onClick={handleViewClose}>Đóng</Button>
       </DialogActions>
     </Dialog>
   );
@@ -1222,8 +1222,8 @@ export const AddMaintenanceServicesCostDialog = ({
             helperText={formik.touched.note && formik.errors.note}
           />
           <DialogActions>
-            <Button onClick={handleAddClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleAddClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -1311,13 +1311,13 @@ export const ViewMaintenanceServicesCostDialog = ({
         <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              View List Cost Item
+              Xem Danh Sách Giá
               <Button
                 variant="contained"
                 color="success"
                 onClick={handleAddClickOpen}
               >
-                Add New Cost
+               Thêm Giá Mới
               </Button>
             </div>
             <AddMaintenanceServicesCostDialog
@@ -1342,10 +1342,10 @@ export const ViewMaintenanceServicesCostDialog = ({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>MaintenanceServiceCostId</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Created Date</TableCell>
-                      <TableCell>Note</TableCell>
+                      <TableCell>Mã Giá</TableCell>
+                      <TableCell>Giá</TableCell>
+                      <TableCell>Ngày Tạo</TableCell>
+                      <TableCell>Ghi Chú</TableCell>
                       <TableCell>Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -1399,7 +1399,7 @@ export const ViewMaintenanceServicesCostDialog = ({
         </DialogContent>
       )}
       <DialogActions>
-        <Button onClick={handleViewClose}>Close</Button>
+        <Button onClick={handleViewClose}>Đóng</Button>
       </DialogActions>
     </Dialog>
   );
@@ -1446,7 +1446,7 @@ export const AddSparePartItemsCostDialog = ({
   }, [dispatch, token, open]);
   return (
     <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Spare Part Item</DialogTitle>
+      <DialogTitle>Thêm Phụ Tùng Trung Tâm</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -1503,8 +1503,8 @@ export const AddSparePartItemsCostDialog = ({
             helperText={formik.touched.note && formik.errors.note}
           />
           <DialogActions>
-            <Button onClick={handleAddClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleAddClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -1806,7 +1806,7 @@ export const ViewTaskDetailDialog = ({
         <>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              View List Task
+              Xem Danh Sách Giao Việc
             </div>
 
             <Card>
@@ -1824,8 +1824,8 @@ export const ViewTaskDetailDialog = ({
                     <TableRow>
                       <TableCell>Avatar</TableCell>
                       <TableCell>Id</TableCell>
-                      <TableCell>SparePart Name</TableCell>
-                      <TableCell>Created Date</TableCell>
+                      <TableCell>Tên Phụ Tùng </TableCell>
+                      <TableCell>Ngày Tạo</TableCell>
 
                       <TableCell>Status</TableCell>
                     </TableRow>
@@ -1907,8 +1907,8 @@ export const ViewTaskDetailDialog = ({
                     <TableRow>
                       <TableCell>Avatar</TableCell>
                       <TableCell>Id</TableCell>
-                      <TableCell>Service Name</TableCell>
-                      <TableCell>Created Date</TableCell>
+                      <TableCell>Tên Dịch Vụ </TableCell>
+                      <TableCell>Ngày Tạo</TableCell>
                       <TableCell>Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -1980,7 +1980,7 @@ export const ViewTaskDetailDialog = ({
         </>
       )}
       <DialogActions>
-        <Button onClick={handleViewClose}>Close</Button>
+        <Button onClick={handleViewClose}>Đóng</Button>
       </DialogActions>
     </Dialog>
   );
@@ -2023,7 +2023,7 @@ export const UseFormikCreateReceipt = ({
   }, [dispatch, token, informationMaintenanceId, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create Receipt</DialogTitle>
+      <DialogTitle>Tạo Hóa Đơn</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -2067,8 +2067,8 @@ export const UseFormikCreateReceipt = ({
           />
 
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -2169,7 +2169,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
   ]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create MaintenanceSparePartInfoes </DialogTitle>
+      <DialogTitle>Tạo Thông Tin Phụ Tùng Thay Thế </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <Autocomplete
@@ -2308,8 +2308,8 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             {totalPrice} VND
           </Typography>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -2407,7 +2407,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
   ]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create MaintenanceServiceInfoes </DialogTitle>
+      <DialogTitle>Tạo Dịch Vụ Thay Thế </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <Autocomplete
@@ -2547,8 +2547,8 @@ export const AddMaintenanceServiceInfoesDialog = ({
             {totalPrice} VND
           </Typography>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -2611,7 +2611,7 @@ export const ViewListTaskinInforDialog = ({ data, setReload }) => {
         <>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              View List Task
+              Danh Sách Giao Việc Chi Tiết
             </div>
             {tasks.map((task) => (
               <Card key={task.maintenanceTaskId}>
@@ -2631,9 +2631,9 @@ export const ViewListTaskinInforDialog = ({ data, setReload }) => {
                       <TableHead>
                         <TableRow>
                           <TableCell>Avatar</TableCell>
-                          <TableCell>Maintenance SparePart Info Id</TableCell>
-                          <TableCell>SparePart Name</TableCell>
-                          <TableCell>Created Date</TableCell>
+                          <TableCell>Mã Phụ Tùng Thay Thế</TableCell>
+                          <TableCell>Tên Phụ Tùng Làm</TableCell>
+                          <TableCell>Ngày Tạo</TableCell>
 
                           <TableCell>Status</TableCell>
                         </TableRow>
@@ -2717,9 +2717,9 @@ export const ViewListTaskinInforDialog = ({ data, setReload }) => {
                       <TableHead>
                         <TableRow>
                           <TableCell>Avatar</TableCell>
-                          <TableCell>Maintenance Service Info Id</TableCell>
-                          <TableCell>Service Name</TableCell>
-                          <TableCell>Created Date</TableCell>
+                          <TableCell>Mã Dịch Vụ Thay Thế</TableCell>
+                          <TableCell>Tên Dịch Vụ Làm</TableCell>
+                          <TableCell>Ngày Tạo</TableCell>
                           <TableCell>Status</TableCell>
                         </TableRow>
                       </TableHead>
