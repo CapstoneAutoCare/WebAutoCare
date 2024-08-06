@@ -1,128 +1,228 @@
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { Link } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Container from "@mui/material/Container";
-import { useNavigate } from "react-router-dom";
-import AuthenApi from "../Axios/AuthenApi";
-import Typography from "@mui/material/Typography"; // Import Typography
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#45f3ff",
-    },
-    secondary: {
-      main: "#8f8f8f",
-    },
-  },
-});
+import React, { useState } from 'react';
+import { Box, Typography, TextField, Button, Link, Grid } from '@mui/material';
+import axios from 'axios';
+
 export default function Register() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    gender: '',
+    phone: '',
+    logo: '',
+    maintenanceCenterName: '',
+    maintenanceCenterDescription: '',
+    address: '',
+    district: '',
+    city: '',
+    country: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { password, ...rest } = formData;
+
+    try {
+      const response = await axios.post('https://autocareversion2.tryasp.net/api/MaintenanceCenters/Post', {
+        ...rest,
+        password // Include password in the request
+      });
+      console.log(response.data);
+      // Handle success
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Container
-        maxWidth="xs"
-        style={{
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#e0f7fa"
+    >
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          position: "relative",
+          borderRadius: "8px",
+          background: "#ffffff",
+          padding: "50px 40px",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          background:
-            "linear-gradient(106.37deg, #ffe1bc 29.63%, #ffcfd1 51.55%, #f3c6f1 90.85%)",
+          flexDirection: "column",
+          width: "100%",
+          maxWidth: "800px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <div
-          className="box"
-          style={{
-            position: "relative",
-            width: "380px",
-            height: "420px",
-            backgroundColor: "#fefefe",
-            borderRadius: "8px",
-            overflow: "hidden",
+        <Typography
+          variant="h4"
+          component="h2"
+          sx={{
+            color: "#030304",
+            fontWeight: 500,
+            textAlign: "center",
+            letterSpacing: "0.1em",
+            mb: 4,
           }}
         >
-          {/* Add animations here if desired */}
-          <form
-            style={{
-              position: "absolute",
-              inset: "2px",
-              borderRadius: "8px",
-              background: "#f7f7f7",
-              zIndex: 10,
-              padding: "50px 40px",
-              display: "flex",
-              flexDirection: "column",
-            }}
-            // onSubmit={handleSubmit}
-          >
-            <h2
-              style={{
-                color: "#030304",
-                fontWeight: 500,
-                textAlign: "center",
-                letterSpacing: "0.1em",
-              }}
-            >
-              Sign in
-            </h2>
+          Register
+        </Typography>
+
+        {/* First Horizontal Section */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
             <TextField
-              label="Username"
+              label="Email"
               variant="outlined"
-              name="username"
-              //   value={formData.username}
-              //   onChange={handleInputChange}
-              style={{ marginTop: "35px" }}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               fullWidth
-              required
+              margin="normal"
             />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextField
               label="Password"
               variant="outlined"
               type="password"
               name="password"
-              //   value={formData.password}
-              //   onChange={handleInputChange}
-              style={{ marginTop: "20px" }}
+              value={formData.password}
+              onChange={handleChange}
               fullWidth
-              required
+              margin="normal"
             />
-            {/* <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "20px",
-              }}
-            >
-              <Link href="#" variant="body2" color="secondary">
-                Forgot Password
-              </Link>
-              <Link href="#" variant="body2" color="secondary">
-                Sign Up
-              </Link>
-            </div> */}
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginTop: "20px" }}
-            >
-              Login
-            </Button>
-            {/* {error && (
-              <Typography
-                variant="body"
-                color="error"
-                style={{ marginBottom: "10px" }}
-              >
-                {error}
-              </Typography>
-            )} */}
-          </form>
-        </div>
-      </Container>
-    </ThemeProvider>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Gender"
+              variant="outlined"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Phone"
+              variant="outlined"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+
+        {/* Second Horizontal Section */}
+        <Grid container spacing={2} mt={4}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Logo URL"
+              variant="outlined"
+              name="logo"
+              value={formData.logo}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Maintenance Center Name"
+              variant="outlined"
+              name="maintenanceCenterName"
+              value={formData.maintenanceCenterName}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Maintenance Center Description"
+              variant="outlined"
+              name="maintenanceCenterDescription"
+              value={formData.maintenanceCenterDescription}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Address"
+              variant="outlined"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="District"
+              variant="outlined"
+              name="district"
+              value={formData.district}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="City"
+              variant="outlined"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Country"
+              variant="outlined"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ mt: 4 }}
+        >
+          Register
+        </Button>
+        <Box display="flex" justifyContent="center" mt={2}>
+          <Link href="/" variant="body2" color="secondary">
+            Already have an account? Sign In
+          </Link>
+        </Box>
+      </Box>
+    </Box>
   );
 }

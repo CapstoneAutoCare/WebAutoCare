@@ -1,0 +1,28 @@
+/* register.css */
+
+.signin-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .field-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
+  .checkbox-wrap {
+    display: flex;
+    align-items: center;
+  }
+  
+  .text-md-right {
+    text-align: right;
+  }
+  
+  .w-100 {
+    width: 100%;
+  }
+  

@@ -4,21 +4,18 @@ import Sidebar from "./components/Sidebar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Register from "./components/Authen/Register";
+import LayoutWithGlass from "./Data/Layout";
 
 function App() {
   return (
     <Router>
-      {/* <div className="App">
-        <Routes></Routes>
-      </div> */}
-
-      <div className="AppGlass">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Sidebar />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<LayoutWithGlass />}>
+          <Route index element={<Sidebar />} />
+        </Route>
+      </Routes>
     </Router>
   );
 }

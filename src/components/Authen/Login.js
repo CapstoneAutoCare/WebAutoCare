@@ -68,30 +68,60 @@ export default function Login() {
   });
 
   return (
-    <Box>
-      <form
-        style={{
-          position: "absolute",
-          inset: "2px",
-          borderRadius: "8px",
-          background: "#f7f7f7",
-          zIndex: 10,
-          padding: "50px 40px",
-          display: "flex",
-          flexDirection: "column",
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{
+        position: 'relative',
+        backgroundImage: 'url()', 
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+          zIndex: 1,
+        }}
+      />
+      <Box
+        component="form"
+        sx={{
+          position: 'relative',
+          borderRadius: '8px',
+          background: '#ffffff',
+          padding: '50px 40px',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          maxWidth: '400px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          zIndex: 2, // Ensure the form is above the overlay
         }}
         onSubmit={formik.handleSubmit}
       >
-        <h2
-          style={{
-            color: "#030304",
+        <Typography
+          variant="h4"
+          component="h2"
+          sx={{
+            color: '#030304',
             fontWeight: 500,
-            textAlign: "center",
-            letterSpacing: "0.1em",
+            textAlign: 'center',
+            letterSpacing: '0.1em',
+            mb: 4,
           }}
         >
           Sign in
-        </h2>
+        </Typography>
         <TextField
           label="Email"
           variant="outlined"
@@ -101,7 +131,7 @@ export default function Login() {
           onBlur={formik.handleBlur}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
-          style={{ marginTop: "35px" }}
+          sx={{ mb: 2 }}
           fullWidth
           required
         />
@@ -115,16 +145,14 @@ export default function Login() {
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
-          style={{ marginTop: "20px" }}
+          sx={{ mb: 2 }}
           fullWidth
           required
         />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "20px",
-          }}
+        {/* <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{ mb: 2 }}
         >
           <Link href="#" variant="body2" color="secondary">
             Forgot Password
@@ -132,12 +160,12 @@ export default function Login() {
           <Link href="/register" variant="body2" color="secondary">
             Sign Up
           </Link>
-        </div>
+        </Box> */}
         <Button
           type="submit"
           variant="contained"
           color="primary"
-          style={{ marginTop: "20px" }}
+          sx={{ mb: 2 }}
           disabled={formik.isSubmitting}
         >
           Login
@@ -146,12 +174,12 @@ export default function Login() {
           <Typography
             variant="body2"
             color="error"
-            style={{ marginTop: "10px" }}
+            sx={{ mt: 1 }}
           >
             {formik.errors.email}
           </Typography>
         )}
-      </form>
+      </Box>
     </Box>
   );
 }

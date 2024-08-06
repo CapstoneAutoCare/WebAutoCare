@@ -1,4 +1,3 @@
-/* App.css */
 :root {
   --yellow: linear-gradient(180deg, #f8d49a -146.42%, #fad79d -46.42%);
   --orange: #fca61f;
@@ -7,7 +6,7 @@
   --purple: linear-gradient(180deg, #bb67ff 0%, #c484f3 100%);
   --pink: #ff919d;
   --glass: rgba(255, 255, 255, 0.54);
-  --boxShadow: 0px 19px 60px rgb(0 0 0 / 8%);
+  --boxShadow: 0px 19px 60px rgb(0 0, 0 / 8%);
   --smboxShadow: -79px 51px 60px rgba(0, 0, 0, 0.08);
   --activeItem: #f799a354;
 }
@@ -26,6 +25,36 @@ html, body, #root {
   font-family: "Inter", sans-serif;
 }
 
+/* CSS cho Login */
+.login-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+/* CSS cho Register */
+.register-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+/* CSS cho Sidebar */
+.sidebar-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column; /* Đảm bảo Sidebar không bị bóp */
+  align-items: center;
+  justify-content: center;
+  background: var(--glass);
+  padding: 1rem; /* Để thêm không gian nếu cần */
+}
+
+/* CSS cho các phần khác */
 .AppGlass {
   display: grid;
   min-height: 100%;
@@ -49,13 +78,4 @@ html, body, #root {
   .AppGlass {
     grid-template-columns: 1fr;
   }
-}
-
-/* CSS để đảm bảo Login chiếm toàn bộ màn hình */
-.login-page {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ffffff; /* Hoặc màu nền bạn muốn */
 }

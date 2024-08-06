@@ -21,7 +21,6 @@ import Technician from "./Technician/Technician";
 import MaintenanceInformations from "./MaintenanceInformations/MaintenanceInformations";
 import HorizontalNonLinearStepper from "./MaintenanceInformations/HorizontalNon";
 import Task from "./Task/Task";
-import { Cookie } from "@mui/icons-material";
 import { MainDash } from "./MainDash/MainDash";
 import { CheckRole } from "../redux/authSlice";
 const Sidebar = () => {

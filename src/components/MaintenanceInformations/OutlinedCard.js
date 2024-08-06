@@ -24,7 +24,10 @@ import {
 } from "@mui/material";
 import { makeStyle } from "../Booking/Booking";
 import { useDispatch, useSelector } from "react-redux";
-import { ChangeStatusMi } from "../../redux/maintenanceInformationsSlice";
+import {
+  ChangeStatusMi,
+  MaintenanceInformationById,
+} from "../../redux/maintenanceInformationsSlice";
 import { useEffect, useState } from "react";
 import { formatDate } from "../../Data/Pagination";
 import {
@@ -48,7 +51,7 @@ import { set } from "firebase/database";
 
 const token = localStorage.getItem("localtoken");
 export const formatNumberWithDots = (num) => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 const bull = (
   <Box
@@ -264,8 +267,12 @@ export const TableMainSparePartInforComponent = ({
   itemId,
   discount,
   setReload,
+  informationMaintenanceId,
 }) => {
   const dispatch = useDispatch();
+  const { main, statusmi } = useSelector(
+    (state) => state.maintenanceInformation
+  );
   const handleStatusChange = async (id, newStatus) => {
     try {
       await dispatch(
@@ -281,7 +288,11 @@ export const TableMainSparePartInforComponent = ({
     }
   };
 
-  useEffect(() => {}, [dispatch, setReload]);
+  useEffect(() => {
+    dispatch(
+      MaintenanceInformationById({ miId: informationMaintenanceId, token })
+    );
+  }, [dispatch, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -321,7 +332,9 @@ export const TableMainSparePartInforComponent = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Actual Cost:</TableCell>
-                    <TableCell>{formatNumberWithDots(actualCost)} VND</TableCell>
+                    <TableCell>
+                      {formatNumberWithDots(actualCost)} VND
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -330,56 +343,80 @@ export const TableMainSparePartInforComponent = ({
         </Box>
       </CardContent>
       <Box style={{ paddingRight: "50px" }}>
-        {/* <Button
-          style={{
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: "10px",
-            width: "125px",
-            fontSize: "10px",
-            backgroundColor: "green",
-            color: "white",
-          }}
-        >
-          Edit
-        </Button> */}
-        <Select
-          value={status}
-          onChange={(event) => {
-            const newStatus = event.target.value;
-            handleStatusChange(id, newStatus);
-          }}
-          style={{
-            ...makeStyle(status),
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: "10px",
-            width: "125px",
-            fontSize: "10px",
-            height: "50px",
-          }}
-        >
-          {statusInforItem.map((status) => (
-            <MenuItem key={status} value={status}>
-              {status}
-            </MenuItem>
-          ))}
-        </Select>
-        <Typography
-          variant="h6"
-          style={{
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {formatNumberWithDots(money)} VND
-        </Typography>
+        {statusmi === "succeeded" && main && (
+          <>
+            {main.status === "CHECKIN" ? (
+              <>
+                {/* <Button
+                  style={{
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                    width: "125px",
+                    fontSize: "10px",
+                    backgroundColor: "green",
+                    color: "white",
+                  }}
+                  // onClick={() => handleclick(id)}
+                >
+                  Chỉnh Sửa
+                </Button> */}
+                <Select
+                  value={status}
+                  onChange={(event) => {
+                    const newStatus = event.target.value;
+                    handleStatusChange(id, newStatus);
+                  }}
+                  style={{
+                    ...makeStyle(status),
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                    width: "125px",
+                    fontSize: "10px",
+                    height: "50px",
+                  }}
+                >
+                  {statusInforItem.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </>
+            ) : (
+              <Typography>
+                <span
+                  className="status"
+                  style={{
+                    ...makeStyle(status),
+                    // borderRadius: "10px",
+                    // width: "125px",
+                    // fontSize: "10px",
+                    // height: "50px",
+                  }}
+                >
+                  {status}
+                </span>
+              </Typography>
+            )}
+            <Typography
+              variant="h6"
+              style={{
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {formatNumberWithDots(money)} VND
+            </Typography>
+          </>
+        )}
       </Box>
     </StyledCard>
   );
@@ -398,8 +435,12 @@ export const TableMainServiceInforComponent = ({
   itemId,
   discount,
   setReload,
+  informationMaintenanceId,
 }) => {
   const dispatch = useDispatch();
+  const { main, statusmi } = useSelector(
+    (state) => state.maintenanceInformation
+  );
   const handleStatusChange = async (id, newStatus) => {
     try {
       await dispatch(
@@ -415,7 +456,11 @@ export const TableMainServiceInforComponent = ({
     }
   };
 
-  useEffect(() => {}, [dispatch, setReload]);
+  useEffect(() => {
+    dispatch(
+      MaintenanceInformationById({ miId: informationMaintenanceId, token })
+    );
+  }, [dispatch, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -455,7 +500,9 @@ export const TableMainServiceInforComponent = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Actual Cost:</TableCell>
-                    <TableCell>{formatNumberWithDots(actualCost)} VND</TableCell>
+                    <TableCell>
+                      {formatNumberWithDots(actualCost)} VND
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -464,57 +511,80 @@ export const TableMainServiceInforComponent = ({
         </Box>
       </CardContent>
       <Box style={{ paddingRight: "50px" }}>
-        <Button
-          style={{
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: "10px",
-            width: "125px",
-            fontSize: "10px",
-            backgroundColor: "green",
-            color: "white",
-          }}
-          // onClick={() => handleclick(id)}
-        >
-          Chỉnh Sửa
-        </Button>
-        <Select
-          value={status}
-          onChange={(event) => {
-            const newStatus = event.target.value;
-            handleStatusChange(id, newStatus);
-          }}
-          style={{
-            ...makeStyle(status),
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: "10px",
-            width: "125px",
-            fontSize: "10px",
-            height: "50px",
-          }}
-        >
-          {statusInforItem.map((status) => (
-            <MenuItem key={status} value={status}>
-              {status}
-            </MenuItem>
-          ))}
-        </Select>
-        <Typography
-          variant="h6"
-          style={{
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {formatNumberWithDots(money)} VND
-        </Typography>
+        {statusmi === "succeeded" && main && (
+          <>
+            {main.status === "CHECKIN" ? (
+              <>
+                {/* <Button
+                  style={{
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                    width: "125px",
+                    fontSize: "10px",
+                    backgroundColor: "green",
+                    color: "white",
+                  }}
+                  // onClick={() => handleclick(id)}
+                >
+                  Chỉnh Sửa
+                </Button> */}
+                <Select
+                  value={status}
+                  onChange={(event) => {
+                    const newStatus = event.target.value;
+                    handleStatusChange(id, newStatus);
+                  }}
+                  style={{
+                    ...makeStyle(status),
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                    width: "125px",
+                    fontSize: "10px",
+                    height: "50px",
+                  }}
+                >
+                  {statusInforItem.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </>
+            ) : (
+              <Typography>
+                <span
+                  className="status"
+                  style={{
+                    ...makeStyle(status),
+                    // borderRadius: "10px",
+                    // width: "125px",
+                    // fontSize: "10px",
+                    // height: "50px",
+                  }}
+                >
+                  {status}
+                </span>
+              </Typography>
+            )}
+            <Typography
+              variant="h6"
+              style={{
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {formatNumberWithDots(money)} VND
+            </Typography>
+          </>
+        )}
       </Box>
     </StyledCard>
   );
@@ -696,6 +766,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             itemId={item.maintenanceServiceId}
             discount={item.discount}
             setReload={setReload}
+            informationMaintenanceId={data.informationMaintenanceId}
           />
         </Card>
       ))}
@@ -716,6 +787,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
             itemId={item.sparePartsItemId}
             discount={item.discount}
             setReload={setReload}
+            informationMaintenanceId={data.informationMaintenanceId}
           />
         </Card>
       ))}
@@ -978,21 +1050,21 @@ export const TaskDetailComponent = ({ data, setReload }) => {
               ))}
             </Select>
           ) : ( */}
-            <Typography
-              variant="h6"
-              style={{
-                ...makeStyle(data.status),
-                borderRadius: "10px",
-                width: "125px",
-                fontSize: "15px",
-                height: "50px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {data.status}
-            </Typography>
+          <Typography
+            variant="h6"
+            style={{
+              ...makeStyle(data.status),
+              borderRadius: "10px",
+              width: "125px",
+              fontSize: "15px",
+              height: "50px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {data.status}
+          </Typography>
           {/* )} */}
         </Box>
       </StyledCard>
@@ -1076,7 +1148,9 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell>TotalAmount :</TableCell>
-                    <TableCell>{formatNumberWithDots(data.totalAmount)} VND</TableCell>
+                    <TableCell>
+                      {formatNumberWithDots(data.totalAmount)} VND
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
