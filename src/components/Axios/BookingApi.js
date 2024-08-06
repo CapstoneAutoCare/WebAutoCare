@@ -16,14 +16,14 @@ const BookingApi = {
     const url = "/Bookings/GetById";
     return axiosApi.get(url, config);
   },
-  async getListByCenter({ token }) {
+  async getListByCenter({ token, id }) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/Bookings/GetListByCenter";
+    const url = `/Bookings/GetListByCenterId?id=${id}`;
 
     return await axiosApi.get(url, config);
   },

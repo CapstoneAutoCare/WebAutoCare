@@ -22,9 +22,9 @@ export const TasksAll = createAsyncThunk(
 );
 export const TasksByCenter = createAsyncThunk(
   "tasks/TasksByCenter",
-  async (token, { rejectWithValue }) => {
+  async ( {token,id}, { rejectWithValue }) => {
     try {
-      const list = await TaskApi.GetListByCenter(token);
+      const list = await TaskApi.GetListByCenter({token,id});
       console.log("tasks/GetListByCenter", list.data);
       return list.data;
     } catch (error) {
@@ -89,6 +89,30 @@ export const AddTaskByCenter = createAsyncThunk(
     try {
       const list = await TaskApi.PostTask({ token, data });
       console.log("tasks/AddTaskByCenter", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const DChangeStatusMTServiceInfor = createAsyncThunk(
+  "tasks/DChangeStatusMTServiceInfor",
+  async ({ token, id, status },{rejectWithValue}) => {
+    try {
+      const list = await TaskApi.ChangeStatusMTServiceInfor({ token, id, status });
+      console.log("tasks/DChangeStatusMTServiceInfor", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const DChangeStatusMTSparePartInfor = createAsyncThunk(
+  "tasks/DChangeStatusMTSparePartInfor",
+  async ({ token, id, status },{rejectWithValue}) => {
+    try {
+      const list = await TaskApi.ChangeStatusMTSparePartInfor({ token, id, status });
+      console.log("tasks/DChangeStatusMTSparePartInfor", list.data);
       return list.data;
     } catch (error) {
       return rejectWithValue(error.response.data.Exception);

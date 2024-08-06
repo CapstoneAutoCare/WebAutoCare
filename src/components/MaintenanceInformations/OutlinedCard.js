@@ -956,7 +956,7 @@ export const TaskDetailComponent = ({ data, setReload }) => {
           </Box>
         </CardContent>
         <Box style={{ paddingRight: "50px" }}>
-          {data.status === "ACCEPTED" ? (
+          {/* {data.status === "ACCEPTED" ? (
             <Select
               value={data.status}
               onChange={(event) => {
@@ -977,7 +977,7 @@ export const TaskDetailComponent = ({ data, setReload }) => {
                 </MenuItem>
               ))}
             </Select>
-          ) : (
+          ) : ( */}
             <Typography
               variant="h6"
               style={{
@@ -993,7 +993,7 @@ export const TaskDetailComponent = ({ data, setReload }) => {
             >
               {data.status}
             </Typography>
-          )}
+          {/* )} */}
         </Box>
       </StyledCard>
     )

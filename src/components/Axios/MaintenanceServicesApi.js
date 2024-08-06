@@ -24,11 +24,11 @@ const MaintenanceServicesApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/MaintenanceServices/GetListByCenter";
+    const url = `/MaintenanceServices/GetListByCenterId?id=${centerId}`;
 
     return await axiosApi.get(url, config);
   },
-  async addMaintenanceServicesItem({token, data}) {
+  async addMaintenanceServicesItem({ token, data }) {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -64,6 +64,5 @@ const MaintenanceServicesApi = {
         console.error("Update SparePartItem error:", error);
       });
   },
-  
 };
 export default MaintenanceServicesApi;

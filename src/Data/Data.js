@@ -67,6 +67,32 @@ export const SidebarDataCenter = [
     heading: "Profile",
   },
 ];
+export const SidebarDataCustomerCare = [
+  {
+    icon: CarRepairIcon,
+    heading: "Thông Tin Bảo Trì Sửa Chữa",
+  },
+  {
+    icon: UilSchedule,
+    heading: "Đặt Lịch",
+  },
+  {
+    icon: AssignmentIndOutlinedIcon,
+    heading: "Giao Việc ",
+  },
+  {
+    icon: UilPackage,
+    heading: "Phụ Tùng",
+  },
+  {
+    icon: UilPackage,
+    heading: "Dịch Vụ",
+  },
+  {
+    icon: UilUser,
+    heading: "Profile",
+  },
+];
 export const SidebarDataAdmin = [
   {
     icon: UilEstate,

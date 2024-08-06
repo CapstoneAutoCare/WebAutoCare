@@ -109,41 +109,46 @@ const SparePartItems = () => {
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicle, setFilterVehicle] = useState("");
   const [filterOdo, setFilterOdo] = useState("");
+  const role = localStorage.getItem("ROLE");
 
-  const filteredItems = sparepartitems.length > 0
-    ? sparepartitems.filter((sparepartitem) => {
-        return (
-          (filterStatus ? sparepartitem.status === filterStatus : true) &&
-          (filterName
-            ? sparepartitem?.sparePartsItemName
-                .toLowerCase()
-                .includes(filterName.toLowerCase())
-            : true) &&
-          (filterBrand
-            ? sparepartitem?.vehiclesBrandName
-                .toLowerCase()
-                .includes(filterBrand.toLowerCase())
-            : true) &&
-          (filterVehicle
-            ? sparepartitem?.vehicleModelName
-                .toLowerCase()
-                .includes(filterVehicle.toLowerCase())
-            : true) &&
-          (filterOdo
-            ? sparepartitem?.maintananceScheduleName
-                .toLowerCase()
-                .includes(filterOdo.toLowerCase())
-            : true)
-        );
-      })
-    : [];
+  const filteredItems =
+    sparepartitems.length > 0
+      ? sparepartitems.filter((sparepartitem) => {
+          return (
+            (filterStatus ? sparepartitem.status === filterStatus : true) &&
+            (filterName
+              ? sparepartitem?.sparePartsItemName
+                  .toLowerCase()
+                  .includes(filterName.toLowerCase())
+              : true) &&
+            (filterBrand
+              ? sparepartitem?.vehiclesBrandName
+                  .toLowerCase()
+                  .includes(filterBrand.toLowerCase())
+              : true) &&
+            (filterVehicle
+              ? sparepartitem?.vehicleModelName
+                  .toLowerCase()
+                  .includes(filterVehicle.toLowerCase())
+              : true) &&
+            (filterOdo
+              ? sparepartitem?.maintananceScheduleName
+                  .toLowerCase()
+                  .includes(filterOdo.toLowerCase())
+              : true)
+          );
+        })
+      : [];
 
   return (
     <Box>
       <h3>Danh Sách Các Phụ Tùng Từng Xe</h3>
-      <Button variant="contained" color="success" onClick={handleClickOpen}>
-        Thêm Phụ Tùng Mới
-      </Button>
+
+      {role === "CENTER" && (
+        <Button variant="contained" color="success" onClick={handleClickOpen}>
+          Thêm Phụ Tùng Mới
+        </Button>
+      )}
       <AddSparePartDialog
         open={open}
         handleClose={handleClose}
@@ -235,9 +240,13 @@ const SparePartItems = () => {
                             <TableCell>{item.vehiclesBrandName}</TableCell>
                             <TableCell>{item.vehicleModelName}</TableCell>
                             <TableCell>
-                              {formatNumberWithDots(item.maintananceScheduleName)}
+                              {formatNumberWithDots(
+                                item.maintananceScheduleName
+                              )}
                             </TableCell>
-                            <TableCell>{formatDate(item.createdDate)}</TableCell>
+                            <TableCell>
+                              {formatDate(item.createdDate)}
+                            </TableCell>
                             <TableCell>
                               <span
                                 className="status"
@@ -247,12 +256,20 @@ const SparePartItems = () => {
                               </span>
                             </TableCell>
                             <TableCell className="Details">
-                              <Button onClick={() => handleEdit(item)} variant="contained" color="success">
+                              <Button
+                                onClick={() => handleEdit(item)}
+                                variant="contained"
+                                color="success"
+                              >
                                 Chỉnh Sửa
                               </Button>
                             </TableCell>
                             <TableCell className="Details">
-                              <Button onClick={() => handleClickShow(item)} variant="contained" color="success">
+                              <Button
+                                onClick={() => handleClickShow(item)}
+                                variant="contained"
+                                color="success"
+                              >
                                 Hiển Thị
                               </Button>
                             </TableCell>

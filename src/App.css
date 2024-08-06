@@ -1,3 +1,4 @@
+/* App.css */
 :root {
   --yellow: linear-gradient(180deg, #f8d49a -146.42%, #fad79d -46.42%);
   --orange: #fca61f;
@@ -11,33 +12,30 @@
   --activeItem: #f799a354;
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
 .App {
-  background: #ffffff;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #ffffff;
   font-family: "Inter", sans-serif;
-  /* font-size: 18px;  */
-
 }
-/* body {
-  font-size: 18px; 
-  
-} */
+
 .AppGlass {
   display: grid;
   min-height: 100%;
   width: 100%;
   background: var(--glass);
-  /* border-radius: 2rem; */
   gap: 16px;
   grid-template-columns: 16rem auto 2rem;
   overflow: hidden;
   font-family: "Inter", sans-serif;
-
-  font-size: 18px; 
-
+  font-size: 18px;
 }
 
 @media screen and (max-width: 1200px) {
@@ -51,4 +49,13 @@
   .AppGlass {
     grid-template-columns: 1fr;
   }
+}
+
+/* CSS để đảm bảo Login chiếm toàn bộ màn hình */
+.login-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff; /* Hoặc màu nền bạn muốn */
 }

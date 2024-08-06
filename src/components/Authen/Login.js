@@ -10,6 +10,7 @@ import {
   Container,
   Typography,
   CssBaseline,
+  Box,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { loginAsync } from "../../redux/authSlice";
@@ -47,7 +48,7 @@ export default function Login() {
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
         await dispatch(loginAsync(values));
-        
+
         const tokenlocal = localStorage.getItem("localtoken");
 
         if (tokenlocal != null) {
@@ -60,120 +61,97 @@ export default function Login() {
       } catch (error) {
         console.error("Login error:", error.response.data.Messages);
         setErrors({ email: error.response.data.Messages });
+        alert(error.response.data.Exceptions);
       }
       setSubmitting(false);
     },
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Container
-        maxWidth="xs"
+    <Box>
+      <form
         style={{
+          position: "absolute",
+          inset: "2px",
+          borderRadius: "8px",
+          background: "#f7f7f7",
+          zIndex: 10,
+          padding: "50px 40px",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          backgroundColor: "#6495ED",
+          flexDirection: "column",
         }}
+        onSubmit={formik.handleSubmit}
       >
-        <div
-          className="box"
+        <h2
           style={{
-            position: "relative",
-            width: "380px",
-            height: "420px",
-            backgroundColor: "#fefefe",
-            borderRadius: "8px",
-            overflow: "hidden",
+            color: "#030304",
+            fontWeight: 500,
+            textAlign: "center",
+            letterSpacing: "0.1em",
           }}
         >
-          <form
-            style={{
-              position: "absolute",
-              inset: "2px",
-              borderRadius: "8px",
-              background: "#f7f7f7",
-              zIndex: 10,
-              padding: "50px 40px",
-              display: "flex",
-              flexDirection: "column",
-            }}
-            onSubmit={formik.handleSubmit}
-          >
-            <h2
-              style={{
-                color: "#030304",
-                fontWeight: 500,
-                textAlign: "center",
-                letterSpacing: "0.1em",
-              }}
-            >
-              Sign in
-            </h2>
-            <TextField
-              label="Email"
-              variant="outlined"
-              name="email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-              style={{ marginTop: "35px" }}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Password"
-              variant="outlined"
-              type="password"
-              name="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              style={{ marginTop: "20px" }}
-              fullWidth
-              required
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "20px",
-              }}
-            >
-              <Link href="#" variant="body2" color="secondary">
-                Forgot Password
-              </Link>
-              <Link href="/register" variant="body2" color="secondary">
-                Sign Up
-              </Link>
-            </div>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginTop: "20px" }}
-              disabled={formik.isSubmitting}
-            >
-              Login
-            </Button>
-            {formik.errors.email && (
-              <Typography
-                variant="body2"
-                color="error"
-                style={{ marginTop: "10px" }}
-              >
-                {formik.errors.email}
-              </Typography>
-            )}
-          </form>
+          Sign in
+        </h2>
+        <TextField
+          label="Email"
+          variant="outlined"
+          name="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+          style={{ marginTop: "35px" }}
+          fullWidth
+          required
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          type="password"
+          name="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+          style={{ marginTop: "20px" }}
+          fullWidth
+          required
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "20px",
+          }}
+        >
+          <Link href="#" variant="body2" color="secondary">
+            Forgot Password
+          </Link>
+          <Link href="/register" variant="body2" color="secondary">
+            Sign Up
+          </Link>
         </div>
-      </Container>
-    </ThemeProvider>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          style={{ marginTop: "20px" }}
+          disabled={formik.isSubmitting}
+        >
+          Login
+        </Button>
+        {formik.errors.email && (
+          <Typography
+            variant="body2"
+            color="error"
+            style={{ marginTop: "10px" }}
+          >
+            {formik.errors.email}
+          </Typography>
+        )}
+      </form>
+    </Box>
   );
 }

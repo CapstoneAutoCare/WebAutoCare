@@ -52,8 +52,8 @@ export const AddMaintenanceServiceByCenter = createAsyncThunk(
   async ({ token, data }, { rejectWithValue }) => {
     try {
       const list = await MaintenanceServicesApi.addMaintenanceServicesItem({
-        token:token,
-        data:data,
+        token: token,
+        data: data,
       });
       console.log(
         "maintenanceservice/AddMaintenanceServiceByCenter",
@@ -141,8 +141,8 @@ export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
   "maintenanceservice/GetListByDifMaintenanceServiceAndInforId",
   async ({ token, centerId, inforId }, { rejectWithValue }) => {
     try {
-      console.log("centerId", centerId );
-      console.log("inforId", inforId );
+      console.log("centerId", centerId);
+      console.log("inforId", inforId);
 
       const list = await CostItemApi.GetListByDifMainServiceAndInforId({
         token,

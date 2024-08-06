@@ -31,9 +31,9 @@ export const BookingById = createAsyncThunk(
 );
 export const BookingByCenter = createAsyncThunk(
   "booking/GetListByCenter",
-  async ({ token }, { rejectWithValue }) => {
+  async ({ token, id }, { rejectWithValue }) => {
     try {
-      const list = await BookingApi.getListByCenter({ token });
+      const list = await BookingApi.getListByCenter({ token, id });
       console.log(list.data);
       return list.data;
     } catch (error) {
@@ -88,7 +88,6 @@ const bookingSlice = createSlice({
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
         alert(action.payload);
-
       })
       .addCase(BookingById.pending, (state) => {
         state.statusbooking = "loading";
@@ -104,7 +103,6 @@ const bookingSlice = createSlice({
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
         alert(action.payload);
-
       })
       .addCase(BookingByCenter.pending, (state) => {
         state.statusbooking = "loading";
@@ -121,7 +119,6 @@ const bookingSlice = createSlice({
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
         alert(action.payload);
-
       })
       .addCase(PatchStatusBookingByCenter.pending, (state) => {
         state.statusbooking = "loading";
@@ -138,7 +135,6 @@ const bookingSlice = createSlice({
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
         alert(action.payload);
-
       });
   },
 });

@@ -71,6 +71,8 @@ import { CardCostComponent } from "../components/MaintenanceInformations/Outline
 import { makeStyle } from "../components/Booking/Booking";
 import {
   AddTaskByCenter,
+  DChangeStatusMTServiceInfor,
+  DChangeStatusMTSparePartInfor,
   TaskGetById,
   TaskListGetByInforId,
 } from "../redux/tasksSlice";
@@ -222,7 +224,7 @@ export const AddSparePartDialog = ({
               />
             )}
           />
-{/* 
+          {/* 
           <div>
             <label>Chọn Brand: </label>
             <select value={selectedBrand} onChange={handleBrandChange}>
@@ -1561,7 +1563,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   }, [dispatch, token, centerId, reloadAdd, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Assign Task</DialogTitle>
+      <DialogTitle>Thêm Việc Cho Nhân Viên</DialogTitle>
       {statustech === "loading" && statusmi === "loading" && (
         <DialogContent dividers>
           <CircularProgress />
@@ -1574,9 +1576,9 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
           <DialogContent>
             <form onSubmit={formik.handleSubmit}>
               <FormControl fullWidth margin="normal">
-                <InputLabel>FullName Technician</InputLabel>
+                <InputLabel>Tên Nhân Viên</InputLabel>
                 <Select
-                  label="FullName Technician"
+                  label="Tên Nhân Viên"
                   name="technicianId"
                   value={formik.values.technicianId}
                   onChange={(event) => {
@@ -1610,7 +1612,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                   autoFocus
                   margin="dense"
                   name="technicianId"
-                  label="technicianId"
+                  label="Mã Nhân Viên"
                   type="text"
                   fullWidth
                   variant="standard"
@@ -1632,9 +1634,9 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
               </div>
 
               <FormControl fullWidth margin="normal">
-                <InputLabel>Information Name</InputLabel>
+                <InputLabel>Thông Tin Sửa Chữa</InputLabel>
                 <Select
-                  label="Information Id"
+                  label="Thông Tin Sửa Chữa"
                   name="informationMaintenanceId"
                   value={formik.values.informationMaintenanceId}
                   onChange={(event) => {
@@ -1657,8 +1659,13 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                       key={option.informationMaintenanceId}
                       value={option.informationMaintenanceId}
                     >
-                      {"Note: "}
-                      {option.note} {"- TotalPrice: "}
+                      {"Xe: "}
+                      {option.responseVehicles?.vehiclesBrandName}{" "}
+                      {option.responseVehicles?.vehicleModelName}
+                      {" - "}
+                      {option.responseVehicles?.licensePlate}
+                      {"- Ghi Chú: "}
+                      {option.note} {"- Tiền: "}
                       {option.totalPrice} VND
                     </MenuItem>
                   ))}
@@ -1669,7 +1676,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                   autoFocus
                   margin="dense"
                   name="informationMaintenanceId"
-                  label="Information MaintenanceId"
+                  label="Mã Thông Tin"
                   type="text"
                   fullWidth
                   variant="standard"
@@ -1695,7 +1702,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                   autoFocus
                   margin="dense"
                   name="maintenanceTaskName"
-                  label="Name Task"
+                  label="Giao Việc"
                   type="text"
                   fullWidth
                   variant="standard"
@@ -1713,8 +1720,8 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
                 />
               </div>
               <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button type="submit">Add</Button>
+                <Button onClick={handleClose}>Trả Về</Button>
+                <Button type="submit">Thêm</Button>
               </DialogActions>
             </form>
           </DialogContent>
@@ -1723,7 +1730,8 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   );
 };
 
-const statusTask = ["ACTIVE", "DONE", "CANCELLED"];
+// const statusTask = ["ACTIVE", "DONE", "CANCELLED"];
+const statusTask = ["ACTIVE", "DONE"];
 
 export const ViewTaskDetailDialog = ({
   open,
@@ -1737,17 +1745,32 @@ export const ViewTaskDetailDialog = ({
   const [openAdd, setOpenAdd] = useState(false);
   const [reload, setReload] = useState(false);
 
-  const handleStatusChange = async (sparePartsItemCostId, newStatus) => {
+  const handleStatusChangeMTSsI = async (
+    maintenanceTaskServiceInfoId,
+    newStatus
+  ) => {
     try {
       await dispatch(
-        ChangeStatusSparePartItemCostByCenter({
+        DChangeStatusMTServiceInfor({
           token: token,
-          id: sparePartsItemCostId,
+          id: maintenanceTaskServiceInfoId,
           status: newStatus,
         })
       );
+      setReload(!reload);
+    } catch (error) {}
+  };
+  const handleStatusChangeMTSpI = async (
+    maintenanceTaskSparePartInfoId,
+    newStatus
+  ) => {
+    try {
       await dispatch(
-        GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
+        DChangeStatusMTSparePartInfor({
+          token: token,
+          id: maintenanceTaskSparePartInfoId,
+          status: newStatus,
+        })
       );
       setReload(!reload);
     } catch (error) {}
@@ -1759,17 +1782,6 @@ export const ViewTaskDetailDialog = ({
     }
   }, [item, reload, dispatch]);
 
-  const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
-  };
-  const handleAddClickOpen = () => {
-    setOpenAdd(true);
-  };
-
-  const handleAddClose = () => {
-    setOpenAdd(false);
-    setReload(!reload);
-  };
   return (
     <Dialog
       open={open}
@@ -1827,7 +1839,7 @@ export const ViewTaskDetailDialog = ({
                         <TableCell
                         // style={{ fontWeight: "bold", fontSize: "25px" }}
                         >
-                          {item.maintenanceSparePartInfoId}
+                          {item.maintenanceTaskSparePartInfoId}
                         </TableCell>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{formatDate(item.createdDate)}</TableCell>
@@ -1837,8 +1849,8 @@ export const ViewTaskDetailDialog = ({
                               value={item.status}
                               onChange={(event) => {
                                 const newStatus = event.target.value;
-                                handleStatusChange(
-                                  item.sparePartsItemCostId,
+                                handleStatusChangeMTSpI(
+                                  item.maintenanceTaskSparePartInfoId,
                                   newStatus
                                 );
                               }}
@@ -1909,7 +1921,7 @@ export const ViewTaskDetailDialog = ({
                         <TableCell
                         // style={{ fontWeight: "bold", fontSize: "25px" }}
                         >
-                          {item.maintenanceServiceInfoId}
+                          {item.maintenanceTaskServiceInfoId}
                         </TableCell>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{formatDate(item.createdDate)}</TableCell>
@@ -1919,8 +1931,8 @@ export const ViewTaskDetailDialog = ({
                               value={item.status}
                               onChange={(event) => {
                                 const newStatus = event.target.value;
-                                handleStatusChange(
-                                  item.sparePartsItemCostId,
+                                handleStatusChangeMTSsI(
+                                  item.maintenanceTaskServiceInfoId,
                                   newStatus
                                 );
                               }}

@@ -55,10 +55,16 @@ const TaskApi = {
       throw error;
     }
   },
-  async GetListByCenter() {
+  async GetListByCenter({ token, id }) {
     try {
-      const url = `/MaintenanceTasks/GetListByCenter`;
-      return await axiosApi.get(url);
+      const url = `/MaintenanceTasks/GetListByCenterId?id=${id}`;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      return await axiosApi.get(url, config);
     } catch (error) {
       console.error("Error fetching tasks by center:", error);
       throw error;
@@ -86,6 +92,31 @@ const TaskApi = {
       console.error("Error changing status:", error);
       throw error;
     }
+  },
+
+  async ChangeStatusMTSparePartInfor({ token, id, status }) {
+    token = token || "";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "/MaintenanceTaskSparePartInfoes/PatchStatus";
+    return await axiosApi.patch(url, null, config);
+  },
+  async ChangeStatusMTServiceInfor({ token, id, status }) {
+    token = token || "";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "/MaintenanceTaskServiceInfoes/PatchStatus";
+    return await axiosApi.patch(url, null, config);
   },
 };
 

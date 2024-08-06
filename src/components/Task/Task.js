@@ -20,7 +20,10 @@ import {
 } from "@mui/material";
 import { TaskPatchStatus, TasksByCenter } from "../../redux/tasksSlice";
 import { makeStyle } from "../Booking/Booking";
-import { AddTaskDialog, ViewTaskDetailDialog } from "../../Data/DialogComponent";
+import {
+  AddTaskDialog,
+  ViewTaskDetailDialog,
+} from "../../Data/DialogComponent";
 import { formatDate } from "../../Data/Pagination";
 
 const statusOptions = ["ACTIVE", "ACCEPTED", "CANCELLED"];
@@ -43,8 +46,6 @@ const Task = () => {
     setPage(newPage);
   };
 
-
-
   const handleViewClose = () => {
     setReloadTaskDialog(!reloadTaskDialog);
     setSelectedItem(null);
@@ -55,9 +56,7 @@ const Task = () => {
     setSelectedItem(item);
     setOpenDialog(true);
     console.log("Selected Item: ", item);
-
   };
-
 
   const handleClickOpenAdd = () => {
     setAddDialog(true);
@@ -68,7 +67,7 @@ const Task = () => {
     setAddDialog(false);
     setReloadTaskDialog(!reloadTaskDialog);
   };
-  
+
   const handleStatusChange = async (maintenanceTaskId, newStatus) => {
     try {
       await dispatch(
@@ -84,8 +83,9 @@ const Task = () => {
       // console.error("Error updating status:", errors);
     }
   };
+
   useEffect(() => {
-    dispatch(TasksByCenter(token));
+    dispatch(TasksByCenter({ token, id: centerId }));
   }, [dispatch, centerId, token, reloadTaskDialog]);
 
   return (
@@ -141,7 +141,10 @@ const Task = () => {
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
-                              handleStatusChange(item.maintenanceTaskId, newStatus);
+                              handleStatusChange(
+                                item.maintenanceTaskId,
+                                newStatus
+                              );
                             }}
                             style={{
                               ...makeStyle(item.status),
@@ -153,7 +156,11 @@ const Task = () => {
                             // disabled={item.status}
                           >
                             {statusOptions.map((status) => (
-                              <MenuItem key={status} value={status} disabled={status === item.status}>
+                              <MenuItem
+                                key={status}
+                                value={status}
+                                disabled={status === item.status}
+                              >
                                 {status}
                               </MenuItem>
                             ))}
@@ -174,13 +181,24 @@ const Task = () => {
                         )}
                       </TableCell>
 
-                      <TableCell>{item.responseTechnician.firstName}{""} {item.responseTechnician.lastName}</TableCell>
+                      <TableCell>
+                        {item.responseTechnician.firstName}
+                        {""} {item.responseTechnician.lastName}
+                      </TableCell>
                       <TableCell>{item.responseTechnician.email}</TableCell>
-                      <TableCell>{item.responseMainTaskSpareParts.length} items</TableCell>
-                      <TableCell>{item.responseMainTaskServices.length} items</TableCell>
+                      <TableCell>
+                        {item.responseMainTaskSpareParts.length} items
+                      </TableCell>
+                      <TableCell>
+                        {item.responseMainTaskServices.length} items
+                      </TableCell>
 
                       <TableCell className="Details">
-                        <Button onClick={() => handleClickShow(item)} variant="contained" color="success">
+                        <Button
+                          onClick={() => handleClickShow(item)}
+                          variant="contained"
+                          color="success"
+                        >
                           SHOW
                         </Button>
                       </TableCell>

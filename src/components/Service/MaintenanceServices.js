@@ -61,9 +61,7 @@ const MaintenanceServices = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    dispatch(
-      MaintenanceServicesByCenterId({ centerId: centerId, token: token })
-    );
+    dispatch(MaintenanceServicesByCenterId({ centerId, token }));
   }, [dispatch, centerId, token, reload]);
 
   const pageCount = Math.ceil(maintenanceservices.length / itemsPerPage);
@@ -115,16 +113,13 @@ const MaintenanceServices = () => {
             .includes(filterName.toLowerCase())
         : true) &&
       (filterBrand
-        ? ms.vehiclesBrandName
-            .toLowerCase()
-            .includes(filterBrand.toLowerCase())
+        ? ms.vehiclesBrandName.toLowerCase().includes(filterBrand.toLowerCase())
         : true) &&
       (filterVehicle
         ? ms.vehicleModelName
             .toLowerCase()
             .includes(filterVehicle.toLowerCase())
-        : true)
-        &&
+        : true) &&
       (filterOdo
         ? ms.maintananceScheduleName
             .toLowerCase()
@@ -132,13 +127,18 @@ const MaintenanceServices = () => {
         : true)
     );
   });
+  const role = localStorage.getItem("ROLE");
+
   return (
     <div>
       <Box>
         <h3>Danh Sách Các Dịch Vụ Từng Xe</h3>
-        <Button variant="contained" color="success" onClick={handleClickOpen}>
-          Thêm Dịch Mới Cho Xe
-        </Button>
+        {role === "CENTER" && (
+          <Button variant="contained" color="success" onClick={handleClickOpen}>
+            Thêm Dịch Mới Cho Xe
+          </Button>
+        )}
+
         <AddMaintenanceServiceDialog
           open={open}
           handleClose={handleClose}
@@ -233,7 +233,9 @@ const MaintenanceServices = () => {
                             <TableCell>{item.vehiclesBrandName}</TableCell>
                             <TableCell>{item.vehicleModelName}</TableCell>
                             <TableCell>
-                              {formatNumberWithDots(item.maintananceScheduleName)}
+                              {formatNumberWithDots(
+                                item.maintananceScheduleName
+                              )}
                             </TableCell>
                             <TableCell>
                               {formatDate(item.createdDate)}
@@ -251,12 +253,20 @@ const MaintenanceServices = () => {
                               </span>
                             </TableCell>
                             <TableCell className="Details">
-                              <Button onClick={() => handleEdit(item)} variant="contained" color="success">
+                              <Button
+                                onClick={() => handleEdit(item)}
+                                variant="contained"
+                                color="success"
+                              >
                                 Chỉnh Sửa
                               </Button>
                             </TableCell>
                             <TableCell className="Details">
-                              <Button onClick={() => handleClickShow(item)} variant="contained" color="success">
+                              <Button
+                                onClick={() => handleClickShow(item)}
+                                variant="contained"
+                                color="success"
+                              >
                                 Hiển Thị
                               </Button>
                             </TableCell>

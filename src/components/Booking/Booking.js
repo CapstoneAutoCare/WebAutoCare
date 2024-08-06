@@ -124,7 +124,7 @@ const Booking = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterVehicle, setFilterVehicle] = useState("");
   const [filterLicensePlate, setFilterLicensePlate] = useState("");
-
+  var centerId = localStorage.getItem("CenterId");
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -134,7 +134,7 @@ const Booking = () => {
       await dispatch(
         PatchStatusBookingByCenter({ bookingId, status: newStatus, token })
       );
-      dispatch(BookingByCenter({ token: token }));
+      dispatch(BookingByCenter({ token: token, id: centerId }));
       setReload(true);
     } catch (error) {
       // console.error("Error updating status:", errors);
@@ -142,7 +142,7 @@ const Booking = () => {
   };
 
   useEffect(() => {
-    dispatch(BookingByCenter({ token: token }));
+    dispatch(BookingByCenter({ token: token, id: centerId }));
   }, [dispatch, token, reload]);
 
   const filteredBookings = bookings.filter((booking) => {
@@ -256,22 +256,38 @@ const Booking = () => {
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                              {item.responseClient.logo ? (
-                                <img
-                                  src={item.responseClient.logo}
-                                  alt="Item Logo"
-                                  className="item-logo"
-                                  style={{ width: "45px", height: "45px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0" }}
-                                  />
-                              ) : (
-                                <div
-                                  className="no-image-placeholder"
-                                  style={{ width: "45px", height: "45px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0" }}
-                                  >
-                                  No Image Available
-                                </div>
-                              )}
-                            </TableCell>
+                          {item.responseClient.logo ? (
+                            <img
+                              src={item.responseClient.logo}
+                              alt="Item Logo"
+                              className="item-logo"
+                              style={{
+                                width: "45px",
+                                height: "45px",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#f0f0f0",
+                              }}
+                            />
+                          ) : (
+                            <div
+                              className="no-image-placeholder"
+                              style={{
+                                width: "45px",
+                                height: "45px",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#f0f0f0",
+                              }}
+                            >
+                              No Image Available
+                            </div>
+                          )}
+                        </TableCell>
                         <TableCell>
                           {item.status === "WAITING" ? (
                             <Select

@@ -22,7 +22,7 @@ const MaintenanceInformationsApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/MaintenanceInformations/GetListByCenter";
+    const url = `/MaintenanceInformations/GetListByCenterId?id=${centerId}`;
 
     return await axiosApi.get(url, config);
   },
