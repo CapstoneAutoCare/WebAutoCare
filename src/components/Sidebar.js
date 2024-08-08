@@ -23,6 +23,12 @@ import HorizontalNonLinearStepper from "./MaintenanceInformations/HorizontalNon"
 import Task from "./Task/Task";
 import { MainDash } from "./MainDash/MainDash";
 import { CheckRole } from "../redux/authSlice";
+import Center from "./PageAdmin/Center";
+import ScheduleList from "./PageAdmin/ScheduleList";
+import BrandVehicle from "./PageAdmin/BrandVehicle";
+import VehicleModel from "./PageAdmin/VehicleModel";
+import SparePart from "./PageAdmin/SparePart";
+import ServiceCare from "./PageAdmin/ServiceCare";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -75,7 +81,16 @@ const Sidebar = () => {
       <SparePartItems />,
       <MaintenanceServices />,
     ],
-    ADMIN: [<MainDash />, <Booking />, <ProfilePage />],
+    ADMIN: [
+      <MainDash />,
+      <Center />,
+      <ScheduleList />,
+      <BrandVehicle />,
+      <VehicleModel />,
+      <SparePart />,
+      <ServiceCare />,
+      <ProfilePage />,
+    ],
   };
 
   useEffect(() => {

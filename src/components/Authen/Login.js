@@ -105,7 +105,7 @@ export default function Login() {
           width: '100%',
           maxWidth: '400px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          zIndex: 2, // Ensure the form is above the overlay
+          zIndex: 2,
         }}
         onSubmit={formik.handleSubmit}
       >
@@ -120,7 +120,7 @@ export default function Login() {
             mb: 4,
           }}
         >
-          Sign in
+          Login AutoCare
         </Typography>
         <TextField
           label="Email"
@@ -149,7 +149,7 @@ export default function Login() {
           fullWidth
           required
         />
-        {/* <Box
+        <Box
           display="flex"
           justifyContent="space-between"
           sx={{ mb: 2 }}
@@ -160,7 +160,7 @@ export default function Login() {
           <Link href="/register" variant="body2" color="secondary">
             Sign Up
           </Link>
-        </Box> */}
+        </Box>
         <Button
           type="submit"
           variant="contained"

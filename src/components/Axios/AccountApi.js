@@ -7,8 +7,6 @@ const AccountApi = {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
-      // Các thông tin cấu hình khác của Axios nếu cần
-      // Ví dụ: params, timeout, response type, v.v.
     };
     const url = "/Accounts/GetAccounts";
 

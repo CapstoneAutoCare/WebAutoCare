@@ -41,6 +41,8 @@ const makeStyle = (status) => {
       return { background: "#59bfff", color: "white" };
   }
 };
+const statusOptions = ["ACTIVE", "INACTIVE"];
+const totalpackage = ["Có Gói", "Không Có Gói"];
 const MaintenanceServices = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -59,10 +61,6 @@ const MaintenanceServices = () => {
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
-
-  useEffect(() => {
-    dispatch(MaintenanceServicesByCenterId({ centerId, token }));
-  }, [dispatch, centerId, token, reload]);
 
   const pageCount = Math.ceil(maintenanceservices.length / itemsPerPage);
 
@@ -103,32 +101,40 @@ const MaintenanceServices = () => {
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicle, setFilterVehicle] = useState("");
   const [filterOdo, setFilterOdo] = useState("");
+  const [filterBoolean, setFilterBoolean] = useState("");
 
   const filteredItems = maintenanceservices.filter((ms) => {
+    const serviceName = ms.maintenanceServiceName
+      ? ms.maintenanceServiceName.toLowerCase()
+      : "";
+    const brandName = ms.vehiclesBrandName
+      ? ms.vehiclesBrandName.toLowerCase()
+      : "";
+    const vehicleModelName = ms.vehicleModelName
+      ? ms.vehicleModelName.toLowerCase()
+      : "";
+    const odoName = ms.maintananceScheduleName
+      ? ms.maintananceScheduleName.toLowerCase()
+      : "";
+    const booleanCondition =
+      filterBoolean === "" ||
+      (filterBoolean === "Có Gói" && ms.boolean) ||
+      (filterBoolean === "Không Có Gói" && !ms.boolean);
+
     return (
-      (filterStatus ? ms.status === filterStatus : true) &&
-      (filterName
-        ? ms.maintenanceServiceName
-            .toLowerCase()
-            .includes(filterName.toLowerCase())
-        : true) &&
-      (filterBrand
-        ? ms.vehiclesBrandName.toLowerCase().includes(filterBrand.toLowerCase())
-        : true) &&
-      (filterVehicle
-        ? ms.vehicleModelName
-            .toLowerCase()
-            .includes(filterVehicle.toLowerCase())
-        : true) &&
-      (filterOdo
-        ? ms.maintananceScheduleName
-            .toLowerCase()
-            .includes(filterOdo.toLowerCase())
-        : true)
+      booleanCondition &&
+      (!filterStatus || ms.status === filterStatus) &&
+      (!filterName || serviceName.includes(filterName.toLowerCase())) &&
+      (!filterBrand || brandName.includes(filterBrand.toLowerCase())) &&
+      (!filterVehicle ||
+        vehicleModelName.includes(filterVehicle.toLowerCase())) &&
+      (!filterOdo || odoName.includes(filterOdo.toLowerCase()))
     );
   });
   const role = localStorage.getItem("ROLE");
-
+  useEffect(() => {
+    dispatch(MaintenanceServicesByCenterId({ centerId, token }));
+  }, [dispatch, centerId, token, reload]);
   return (
     <div>
       <Box>
@@ -144,6 +150,7 @@ const MaintenanceServices = () => {
           handleClose={handleClose}
           centerId={centerId}
           token={token}
+          setReload={setReload}
         />
         {statusmaintenanceservices === "loading" && (
           <DialogContent dividers>
@@ -158,8 +165,36 @@ const MaintenanceServices = () => {
                 display="flex"
                 justifyContent="space-between"
                 paddingTop={"5px"}
-                mb={4}
+                mb={6}
               >
+                <Select
+                  value={filterStatus}
+                  onChange={(event) => setFilterStatus(event.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="">
+                    <em>Trạng Thái</em>
+                  </MenuItem>
+                  {statusOptions.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={filterBoolean}
+                  onChange={(event) => setFilterBoolean(event.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="">
+                    <em>Tất Cả</em>
+                  </MenuItem>
+                  {totalpackage.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
                 <TextField
                   label="Tên Dịch Vụ"
                   value={filterName}
@@ -176,7 +211,7 @@ const MaintenanceServices = () => {
                   onChange={(event) => setFilterVehicle(event.target.value)}
                 />
                 <TextField
-                  label="Odo"
+                  label="Gói Odo Xe"
                   value={filterOdo}
                   onChange={(event) => setFilterOdo(event.target.value)}
                 />
@@ -197,6 +232,7 @@ const MaintenanceServices = () => {
                         <TableCell>Loại Xe</TableCell>
                         <TableCell>Odo </TableCell>
                         <TableCell>Ngày Tạo</TableCell>
+                        <TableCell>Gói</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>Chỉnh Sửa</TableCell>
                         <TableCell>Chi Tiết</TableCell>
@@ -233,12 +269,17 @@ const MaintenanceServices = () => {
                             <TableCell>{item.vehiclesBrandName}</TableCell>
                             <TableCell>{item.vehicleModelName}</TableCell>
                             <TableCell>
-                              {formatNumberWithDots(
-                                item.maintananceScheduleName
-                              )}
+                              {item?.maintananceScheduleName === "0"
+                                ? ""
+                                : formatNumberWithDots(
+                                    item?.maintananceScheduleName
+                                  )}
                             </TableCell>
                             <TableCell>
                               {formatDate(item.createdDate)}
+                            </TableCell>
+                            <TableCell>
+                              {item.boolean ? "Có Gói" : "Không Có Gói"}
                             </TableCell>
                             <TableCell>
                               <span

@@ -241,7 +241,7 @@ const SparePartItems = () => {
                             <TableCell>{item.vehicleModelName}</TableCell>
                             <TableCell>
                               {formatNumberWithDots(
-                                item.maintananceScheduleName
+                                item?.maintananceScheduleName
                               )}
                             </TableCell>
                             <TableCell>

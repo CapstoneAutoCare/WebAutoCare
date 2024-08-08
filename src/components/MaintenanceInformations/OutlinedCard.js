@@ -51,7 +51,7 @@ import { set } from "firebase/database";
 
 const token = localStorage.getItem("localtoken");
 export const formatNumberWithDots = (num) => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 const bull = (
   <Box
@@ -913,9 +913,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
               <Table size="small">
                 <TableBody>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>
-                      Xe:
-                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Xe:</TableCell>
                     <TableCell>
                       {data.responseVehicles.vehiclesBrandName}{" "}
                       {data.responseVehicles.vehicleModelName}
@@ -1010,6 +1008,16 @@ export const TaskDetailComponent = ({ data, setReload }) => {
       // console.error("Error updating status:", errors);
     }
   };
+  // useEffect(() => {
+  //   if (data) {
+  //     dispatch(
+  //       TaskListStatusDifCancelledByInfor({
+  //         token,
+  //         id: data.informationMaintenanceId,
+  //       })
+  //     );
+  //   }
+  // }, [dispatch, data, setReload]);
   return (
     data && (
       <StyledCard>
@@ -1074,7 +1082,6 @@ export const TaskDetailComponent = ({ data, setReload }) => {
 
 export const TableReceiptComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
-  const { load, setload } = useState(false);
   const handleClear = ({ item }) => {
     dispatch(ReceiptRemove({ token: token, id: item }));
     setReload((p) => !p);
@@ -1090,7 +1097,6 @@ export const TableReceiptComponent = ({ data, setReload }) => {
         })
       );
       setReload((p) => !p);
-      setload(!load);
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -1112,7 +1118,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
     }
   };
 
-  useEffect(() => {}, [dispatch, setReload, data, load]);
+  useEffect(() => {}, [dispatch, setReload, data]);
   return (
     <StyledCard>
       <CardContent>
@@ -1149,7 +1155,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                   <TableRow>
                     <TableCell>Tổng Tiền :</TableCell>
                     <TableCell>
-                      {formatNumberWithDots(data.totalAmount)} VND
+                      {formatNumberWithDots(data?.totalAmount)} VND
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -1318,23 +1324,13 @@ export const OutlinedCardListTask = ({ data, setReload }) => {
   }, [dispatch, data, setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
-      <Grid container spacing={2}>
-        {tasks.length > 1
-          ? tasks.map((task) => (
-              <Grid item xs={12} sm={6} key={task.maintenanceTaskId}>
-                <Card key={task.maintenanceTaskId}>
-                  <TaskDetailComponent data={task} setReload={setReload} />
-                </Card>
-              </Grid>
-            ))
-          : tasks.map((task) => (
-              <Grid item xs={12} key={task.maintenanceTaskId}>
-                <Card key={task.maintenanceTaskId}>
-                  <TaskDetailComponent data={task} setReload={setReload} />
-                </Card>
-              </Grid>
-            ))}
-      </Grid>
+      {tasks.map((task) => (
+        <Grid item xs={12} key={task.maintenanceTaskId}>
+          <Card key={task.maintenanceTaskId}>
+            <TaskDetailComponent data={task} setReload={setReload} />
+          </Card>
+        </Grid>
+      ))}
     </Box>
   );
 };
@@ -1391,14 +1387,16 @@ export const TableMainTaskSparePartsComponent = ({ data, setReload }) => {
 
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                     Biển Số Xe:
+                      Biển Số Xe:
                     </TableCell>
                     <TableCell>
                       {data?.responseVehicles?.licensePlate}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>Ghi Chú :</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Ghi Chú :
+                    </TableCell>
                     <TableCell>{data?.note} </TableCell>
                   </TableRow>
                   <TableRow>
@@ -1489,9 +1487,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
               <Table size="small">
                 <TableBody>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>
-                      Xe:
-                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Xe:</TableCell>
                     <TableCell>
                       {data.responseVehicles.vehiclesBrandName}{" "}
                       {data.responseVehicles.vehicleModelName}
@@ -1499,7 +1495,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                     Ngày Đặt:
+                      Ngày Đặt:
                     </TableCell>
                     <TableCell>{data.bookingDate}</TableCell>
                   </TableRow>

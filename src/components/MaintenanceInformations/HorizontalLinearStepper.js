@@ -103,7 +103,7 @@ export default function HorizontalLinearStepper({
     dispatch(
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
     );
-  }, [dispatch, setReload]);
+  }, [dispatch]);
   return (
     <Box sx={{ width: "100%" }}>
       <Stepper activeStep={activeStep}>
@@ -250,7 +250,6 @@ export default function HorizontalLinearStepper({
         handleClose={HandleAddMainServiceInforClose}
         token={token}
         informationMaintenanceId={inforId}
-        s
       />
     </Box>
   );

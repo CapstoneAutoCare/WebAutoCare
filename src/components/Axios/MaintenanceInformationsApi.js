@@ -38,12 +38,13 @@ const MaintenanceInformationsApi = {
 
     return await axiosApi.get(url, config);
   },
-  async GetListByCenterAndStatusCheckinAndTaskInactive(token) {
+  async GetListByCenterAndStatusCheckinAndTaskInactive({token,centerId}) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
+      params: { centerId },
     };
     const url =
       "/MaintenanceInformations/GetListByCenterAndStatusCheckinAndAnyTaskCancel";

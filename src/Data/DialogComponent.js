@@ -66,7 +66,7 @@ import { BookingById } from "../redux/bookingSlice";
 import { storage } from "./firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { SparePartsAll } from "../redux/sparepartsSlice";
-import { ServicesAll } from "../redux/servicesSlice";
+import { GetServiceCaresNotInMaintenanceServices } from "../redux/servicesSlice";
 import { CardCostComponent } from "../components/MaintenanceInformations/OutlinedCard";
 import { makeStyle } from "../components/Booking/Booking";
 import {
@@ -88,6 +88,7 @@ const validationSchemaSparePart = Yup.object({
 const validationSchemaService = Yup.object({
   maintenanceServiceName: Yup.string().required("Name is required"),
   serviceCareId: Yup.string(),
+  vehicleModelId: Yup.string(),
 });
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
@@ -200,7 +201,7 @@ export const AddSparePartDialog = ({
             id="sparePartsId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.sparePartName} - Odo: ${option.maintananceScheduleName} - Vehicle: ${option.reponseVehicleModel.vehiclesBrandName} ${option.reponseVehicleModel.vehicleModelName}`
+              `Name: ${option.sparePartName} - Vehicle: ${option.reponseVehicleModel.vehiclesBrandName} ${option.reponseVehicleModel.vehicleModelName}`
             }
             onChange={(event, newValue) => {
               const selectedId = newValue;
@@ -341,6 +342,9 @@ export const AddSparePartDialog = ({
               helperText={
                 formik.touched.sparePartsId && formik.errors.sparePartsId
               }
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
             {formik.values.sparePartsId && (
               <IconButton onClick={handleClear} size="small">
@@ -384,6 +388,7 @@ export const AddMaintenanceServiceDialog = ({
   handleClose,
   centerId,
   token,
+  setReload,
 }) => {
   const dispatch = useDispatch();
   const { services, statusservices } = useSelector((state) => state.services);
@@ -397,6 +402,7 @@ export const AddMaintenanceServiceDialog = ({
       const data = {
         maintenanceServiceName: values.maintenanceServiceName,
         serviceCareId: values.serviceCareId ? values.serviceCareId : null,
+        vehicleModelId: values.vehicleModelId ? values.vehicleModelId : null,
       };
 
       await dispatch(AddMaintenanceServiceByCenter({ data, token }))
@@ -408,6 +414,7 @@ export const AddMaintenanceServiceDialog = ({
         .catch((error) => {
           console.error("Failed to add item:", error);
         });
+      setReload((p) => !p);
     },
   });
   const [searchTerm, setSearchTerm] = useState("");
@@ -418,8 +425,8 @@ export const AddMaintenanceServiceDialog = ({
     formik.setFieldValue("serviceCareId", "");
   };
   useEffect(() => {
-    dispatch(ServicesAll(token));
-  }, [dispatch, token]);
+    dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
+  }, [dispatch, token, setReload]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Thêm Dịch Vụ Mới</DialogTitle>
@@ -444,6 +451,10 @@ export const AddMaintenanceServiceDialog = ({
               formik.setFieldValue(
                 "maintenanceServiceName",
                 selectedId?.serviceCareName || ""
+              );
+              formik.setFieldValue(
+                "vehicleModelId",
+                selectedId?.reponseVehicleModel?.vehicleModelId || ""
               );
             }}
             renderInput={(params) => (
@@ -515,7 +526,39 @@ export const AddMaintenanceServiceDialog = ({
               </IconButton>
             )}
           </div>
-
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="vehicleModelId"
+              label="Vehicle Model"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={
+                filteredOptions.find(
+                  (option) =>
+                    option.reponseVehicleModel?.vehicleModelId ===
+                    formik.values.vehicleModelId
+                )?.reponseVehicleModel?.vehicleModelName || ""
+              }
+              onChange={(e) =>
+                formik.setFieldValue("vehicleModelId", e.target.value)
+              }
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.vehicleModelId &&
+                Boolean(formik.errors.vehicleModelId)
+              }
+              helperText={
+                formik.touched.vehicleModelId && formik.errors.vehicleModelId
+              }
+              disabled
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </div>
           <TextField
             margin="dense"
             name="maintenanceServiceName"
@@ -782,6 +825,10 @@ export const UpdateSparePartItemDialog = ({
     </Dialog>
   );
 };
+const packageOptions = [
+  { label: "Có Gói", value: true },
+  { label: "Không Có Gói", value: false },
+];
 export const UpdateMaintenanceServiceDialog = ({
   open,
   handleClose,
@@ -797,6 +844,7 @@ export const UpdateMaintenanceServiceDialog = ({
         status: item.status || "ACTIVE",
         maintenanceServiceName: item.maintenanceServiceName || "",
         image: item.image || "",
+        boolean: item.boolean,
       });
     }
   }, [item]);
@@ -806,12 +854,14 @@ export const UpdateMaintenanceServiceDialog = ({
       status: item?.status || "ACTIVE",
       maintenanceServiceName: item?.maintenanceServiceName || "",
       image: item?.image || "",
+      boolean: item?.boolean,
     },
     validationSchema: Yup.object({
       status: Yup.string().required("Status is required"),
       maintenanceServiceName: Yup.string().required(
         "Spare Part Item Name is required"
       ),
+      boolean: Yup.string(),
     }),
     onSubmit: async (values) => {
       try {
@@ -830,9 +880,9 @@ export const UpdateMaintenanceServiceDialog = ({
             id: item.maintenanceServiceId,
             data: { ...values, image: imageUrl },
           })
-        );
-
-        handleClose();
+        ).then(() => {
+          handleClose();
+        });
       } catch (error) {
         console.error("Failed to update spare part item", error);
       }
@@ -883,6 +933,24 @@ export const UpdateMaintenanceServiceDialog = ({
                   ))}
                 </Select>
               </FormControl>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Package</InputLabel>
+                <Select
+                  label="Package"
+                  name="boolean"
+                  value={formik.values.boolean}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.boolean && Boolean(formik.errors.boolean)
+                  }
+                >
+                  {packageOptions.map((option) => (
+                    <MenuItem key={option} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <TextField
                 label="Maintenance Service Name"
@@ -909,6 +977,7 @@ export const UpdateMaintenanceServiceDialog = ({
                 helperText={formik.touched.image && formik.errors.image}
                 fullWidth
                 margin="normal"
+                InputLabelProps={{ shrink: true }}
               />
               <DialogActions>
                 <Button type="submit" color="primary">
@@ -1130,7 +1199,7 @@ export const AddMaintenanceServicesCostDialog = ({
   //   formik.setFieldValue("sparePartsItemId", "");
   // };
   useEffect(() => {
-    dispatch(ServicesAll(token));
+    // dispatch(ServicesAll(token));
   }, [dispatch, token]);
   return (
     <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
@@ -1317,7 +1386,7 @@ export const ViewMaintenanceServicesCostDialog = ({
                 color="success"
                 onClick={handleAddClickOpen}
               >
-               Thêm Giá Mới
+                Thêm Giá Mới
               </Button>
             </div>
             <AddMaintenanceServicesCostDialog
@@ -1442,7 +1511,7 @@ export const AddSparePartItemsCostDialog = ({
   });
 
   useEffect(() => {
-    dispatch(ServicesAll(token));
+    // dispatch(ServicesAll(token));
   }, [dispatch, token, open]);
   return (
     <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
@@ -1559,7 +1628,9 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
 
   useEffect(() => {
     dispatch(TechinicanByCenterId({ centerId, token }));
-    dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
+    dispatch(
+      GetListByCenterAndStatusCheckinAndTaskInactive({ token, centerId })
+    );
   }, [dispatch, token, centerId, reloadAdd, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -2179,7 +2250,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             id="sparePartsItemCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`
+              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2208,7 +2279,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.sparePartsItemCostId}>
-                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`}
+                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
               </li>
             )}
           />
@@ -2331,13 +2402,17 @@ export const AddMaintenanceServiceInfoesDialog = ({
   const [searchTerm, setSearchTerm] = useState("");
   const { main } = useSelector((state) => state.maintenanceInformation);
 
-  const filteredOptions = maintenanceservicescost.filter(
-    (option) =>
+  const filteredOptions = maintenanceservicescost.filter((option) => {
+    const vehicleModelName = option.vehicleModelName || "";
+    const searchVehicleModelName = main.responseVehicles.vehicleModelName || "";
+
+    return (
       option.maintenanceServiceName
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) &&
-      option.vehicleModelName.includes(main.responseVehicles.vehicleModelName)
-  );
+      vehicleModelName.includes(searchVehicleModelName)
+    );
+  });
   const formik = useFormik({
     initialValues: {
       maintenanceInformationId: informationMaintenanceId,
@@ -2417,7 +2492,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             id="maintenanceServiceCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`
+              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2446,7 +2521,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.maintenanceServiceCostId}>
-                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} - Odo: ${option.maintananceScheduleName}`}
+                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
               </li>
             )}
           />

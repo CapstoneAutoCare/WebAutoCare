@@ -13,14 +13,13 @@ import {
   UilReceipt,
   UilSchedule,
   UilLocationPoint,
-  
 } from "@iconscout/react-unicons";
 import img1 from "../imgs/img1.png";
 import img2 from "../imgs/img2.png";
 import img3 from "../imgs/img3.png";
-import CarRepairIcon from '@mui/icons-material/CarRepair';
-import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
-import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
+import CarRepairIcon from "@mui/icons-material/CarRepair";
+import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
+import BookOnlineOutlinedIcon from "@mui/icons-material/BookOnlineOutlined";
 export const SidebarDataCenter = [
   {
     icon: UilChart,
@@ -100,19 +99,27 @@ export const SidebarDataAdmin = [
   },
   {
     icon: UilLocationPoint,
-    heading: "Sân bóng",
+    heading: "Trung Tâm",
   },
   {
     icon: UilClipboardAlt,
-    heading: "Thêm Sân bóng",
+    heading: "Gói Dịch Vụ",
   },
   {
     icon: UilReceipt,
-    heading: "Lịch sử Đặt",
+    heading: "Hãng Xe",
   },
   {
     icon: UilSchedule,
-    heading: "Thời gian biểu",
+    heading: "Loại Xe",
+  },
+  {
+    icon: UilUser,
+    heading: "Phụ Tùng",
+  },
+  {
+    icon: UilUser,
+    heading: "Dịch Vụ",
   },
   {
     icon: UilUser,

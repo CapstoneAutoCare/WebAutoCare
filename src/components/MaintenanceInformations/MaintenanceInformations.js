@@ -186,7 +186,11 @@ const MaintenanceInformations = () => {
                             {item.informationMaintenanceName}
                           </TableCell>
                           <TableCell>{formatDate(item.createdDate)}</TableCell>
-                          <TableCell>{formatDate(item.finishedDate)}</TableCell>
+                          <TableCell>
+                            {item.finishedDate === "0001-01-01T00:00:00"
+                              ? ""
+                              : formatDate(item.finishedDate)}
+                          </TableCell>
                           <TableCell>
                             <span
                               className="status"
@@ -220,7 +224,11 @@ const MaintenanceInformations = () => {
                             </Tooltip>
                           </TableCell>
                           <TableCell className="Details">
-                            <Button onClick={() => handleClickOpen(item)} variant="contained" color="success">
+                            <Button
+                              onClick={() => handleClickOpen(item)}
+                              variant="contained"
+                              color="success"
+                            >
                               Hiển Thị
                             </Button>
                           </TableCell>

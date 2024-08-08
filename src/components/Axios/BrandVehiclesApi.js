@@ -1,6 +1,6 @@
 import axiosApi from "./AxiosApi";
 
-const ServicesApi = {
+const BrandVehiclesApi = {
   async getAll(token) {
     const config = {
       headers: {
@@ -8,11 +8,11 @@ const ServicesApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/Services/GetAll";
+    const url = "/VehicleBrand/GetAll";
     return await axiosApi.get(url, config);
   },
   async getById(id) {
-    const url = "/Services/GetById?id=" + id;
+    const url = "/VehicleBrand/GetById?id=" + id;
     return await axiosApi.get(url);
   },
   //   getListByCenter({ token, centerId }) {
@@ -26,17 +26,7 @@ const ServicesApi = {
 
   //     return axiosApi.get(url, config);
   //   },
-  async GetServiceCaresNotInMaintenanceServices({ token, centerId }) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const url =
-      "/Services/GetServiceCaresNotInMaintenanceServices?id=" + centerId;
-    return await axiosApi.get(url, config);
-  },
+
   async post(token, data) {
     token = token || "";
     const config = {
@@ -45,8 +35,8 @@ const ServicesApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/Services/Post";
+    const url = "/VehicleBrand/Post";
     return await axiosApi.post(url, data, config);
   },
 };
-export default ServicesApi;
+export default BrandVehiclesApi;

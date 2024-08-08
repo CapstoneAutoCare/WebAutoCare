@@ -138,19 +138,19 @@ export const GetByIdMaintenanceServiceActiveCost = createAsyncThunk(
 );
 
 export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
-  "maintenanceservice/GetListByDifMaintenanceServiceAndInforId",
+  "maintenanceservice/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse",
   async ({ token, centerId, inforId }, { rejectWithValue }) => {
     try {
       console.log("centerId", centerId);
       console.log("inforId", inforId);
 
-      const list = await CostItemApi.GetListByDifMainServiceAndInforId({
+      const list = await CostItemApi.GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse({
         token,
         centerId,
         inforId,
       });
       console.log(
-        "maintenanceservice/GetListByDifMaintenanceServiceAndInforId",
+        "maintenanceservice/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse",
         list.data
       );
       return list.data;

@@ -94,11 +94,11 @@ export const GetListByCenterAndStatus = createAsyncThunk(
 );
 export const GetListByCenterAndStatusCheckinAndTaskInactive = createAsyncThunk(
   "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",
-  async (token, { rejectWithValue }) => {
+  async ({token,centerId}, { rejectWithValue }) => {
     try {
       const list =
         await MaintenanceInformationsApi.GetListByCenterAndStatusCheckinAndTaskInactive(
-          token
+          {token,centerId}
         );
       console.log(
         "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",

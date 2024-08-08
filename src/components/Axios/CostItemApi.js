@@ -149,9 +149,9 @@ const CostItemApi = {
       throw error;
     }
   },
-  async GetListByDifMainServiceAndInforId({ token, centerId, inforId }) {
+  async GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse({ token, centerId, inforId }) {
     const url =
-      "/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforId";
+      "/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse";
 
     const config = {
       headers: {
