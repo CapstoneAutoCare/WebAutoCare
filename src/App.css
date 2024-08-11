@@ -65,9 +65,9 @@ html, body, #root {
 
 @media screen and (max-width: 1200px) {
   .AppGlass {
-    grid-template-columns: 12% 90% auto;
+    grid-template-columns: 12% 80% auto;
     overflow-y: auto;
-    overflow-x: auto;
+    /* overflow-x: auto; */
   }
 }
 
