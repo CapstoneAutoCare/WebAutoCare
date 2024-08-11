@@ -25,7 +25,6 @@ html, body, #root {
   font-family: "Inter", sans-serif;
 }
 
-/* CSS cho Login */
 .login-page {
   height: 100vh;
   display: flex;
@@ -42,19 +41,16 @@ html, body, #root {
   justify-content: center;
   background: #ffffff;
 }
-
-/* CSS cho Sidebar */
 .sidebar-page {
   height: 100vh;
   display: flex;
-  flex-direction: column; /* Đảm bảo Sidebar không bị bóp */
+  flex-direction: column; 
   align-items: center;
   justify-content: center;
   background: var(--glass);
-  padding: 1rem; /* Để thêm không gian nếu cần */
+  padding: 1rem; 
 }
 
-/* CSS cho các phần khác */
 .AppGlass {
   display: grid;
   min-height: 100%;
@@ -71,11 +67,14 @@ html, body, #root {
   .AppGlass {
     grid-template-columns: 12% 90% auto;
     overflow-y: auto;
+    overflow-x: auto;
   }
 }
 
 @media screen and (max-width: 768px) {
   .AppGlass {
     grid-template-columns: 1fr;
+    overflow-y: auto;
+    overflow-x: auto;
   }
 }

@@ -28,8 +28,8 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import * as Yup from "yup";
 import ClearIcon from "@mui/icons-material/Clear";
+import * as Yup from "yup";
 
 import {
   AddSparePartItemCost,
@@ -65,7 +65,10 @@ import HorizontalLinearStepper from "../components/MaintenanceInformations/Horiz
 import { BookingById } from "../redux/bookingSlice";
 import { storage } from "./firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { SparePartsAll } from "../redux/sparepartsSlice";
+import {
+  GetSpartPartNotSparePartItemId,
+  SparePartsAll,
+} from "../redux/sparepartsSlice";
 import { GetServiceCaresNotInMaintenanceServices } from "../redux/servicesSlice";
 import { CardCostComponent } from "../components/MaintenanceInformations/OutlinedCard";
 import { makeStyle } from "../components/Booking/Booking";
@@ -81,6 +84,7 @@ import { formatDate } from "./Pagination";
 import { CreateReceipt } from "../redux/receiptSlice";
 import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInfoesSlice";
 import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesSlice";
+import { CreateBrandVehicles } from "../redux/brandSlice";
 const validationSchemaSparePart = Yup.object({
   sparePartsItemName: Yup.string().required("Name is required"),
   sparePartsId: Yup.string(),
@@ -121,11 +125,11 @@ export const AddSparePartDialog = ({
           // dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
           handleClose();
-          setReload((p) => !p);
         })
         .catch((error) => {
           console.error("Failed to add item:", error);
         });
+      setReload((p) => !p);
     },
   });
   const handleClear = () => {
@@ -155,7 +159,7 @@ export const AddSparePartDialog = ({
     setSelectedOdo(e.target.value);
   };
   useEffect(() => {
-    dispatch(SparePartsAll(token));
+    dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
 
     let results = spareparts;
     if (selectedBrand) {
@@ -2164,7 +2168,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       option.sparePartsItemName
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) &&
-      option.vehicleModelName.includes(main.responseVehicles.vehicleModelName)
+      option.vehicleModelId.includes(main.responseVehicles.vehicleModelId)
   );
 
   console.log("inforcare", main.responseVehicles.vehiclesBrandName);
@@ -2403,8 +2407,8 @@ export const AddMaintenanceServiceInfoesDialog = ({
   const { main } = useSelector((state) => state.maintenanceInformation);
 
   const filteredOptions = maintenanceservicescost.filter((option) => {
-    const vehicleModelName = option.vehicleModelName || "";
-    const searchVehicleModelName = main.responseVehicles.vehicleModelName || "";
+    const vehicleModelName = option.vehicleModelId || "";
+    const searchVehicleModelName = main.responseVehicles.vehicleModelId || "";
 
     return (
       option.maintenanceServiceName

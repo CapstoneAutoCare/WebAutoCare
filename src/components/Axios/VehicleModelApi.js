@@ -1,6 +1,6 @@
 import axiosApi from "./AxiosApi";
 
-const BrandVehiclesApi = {
+const VehicleModelApi = {
   async getAll(token) {
     const config = {
       headers: {
@@ -8,11 +8,11 @@ const BrandVehiclesApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/VehicleBrand/GetAll";
+    const url = "/VehicleModel/GetAll";
     return await axiosApi.get(url, config);
   },
   async getById(id) {
-    const url = "/VehicleBrand/GetById?id=" + id;
+    const url = "/VehicleModel/GetById?id=" + id;
     return await axiosApi.get(url);
   },
   //   getListByCenter({ token, centerId }) {
@@ -35,8 +35,8 @@ const BrandVehiclesApi = {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/VehicleBrand/Post";
+    const url = "/VehicleModel/Post";
     return await axiosApi.post(url, data, config);
   },
 };
-export default BrandVehiclesApi;
+export default VehicleModelApi;

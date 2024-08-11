@@ -29,6 +29,11 @@ import BrandVehicle from "./PageAdmin/BrandVehicle";
 import VehicleModel from "./PageAdmin/VehicleModel";
 import SparePart from "./PageAdmin/SparePart";
 import ServiceCare from "./PageAdmin/ServiceCare";
+import { useDispatch } from "react-redux";
+import { BrandGetAllList } from "../redux/brandSlice";
+import { VehicleModelsGetAllList } from "../redux/vehiclemodelsSlice";
+import { ScheduleListGetall } from "../redux/scheduleSlice";
+import { SparePartsAll } from "../redux/sparepartsSlice";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -82,7 +87,8 @@ const Sidebar = () => {
       <MaintenanceServices />,
     ],
     ADMIN: [
-      <MainDash />,
+      // <MainDash />,
+      <></>,
       <Center />,
       <ScheduleList />,
       <BrandVehicle />,
@@ -92,11 +98,18 @@ const Sidebar = () => {
       <ProfilePage />,
     ],
   };
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const code = decodeToken(tokenlocal);
     const role =
       code["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    if (role === "ADMIN") {
+      dispatch(BrandGetAllList(tokenlocal));
+      dispatch(VehicleModelsGetAllList(tokenlocal));
+      dispatch(ScheduleListGetall(tokenlocal));
+      dispatch(SparePartsAll(tokenlocal));
+    }
     localStorage.setItem("AccountId", code.sub);
     localStorage.setItem("ROLE", role);
     CheckRole(tokenlocal, role);
@@ -155,8 +168,9 @@ const Sidebar = () => {
               <span>{item.heading}</span>
             </div>
           ))}
-          <div className="menuItem">
-            <UilSignOutAlt onClick={handleSubmitLogOut}>Logout</UilSignOutAlt>
+          <div className="menuItem" onClick={handleSubmitLogOut}>
+            <UilSignOutAlt />
+            <span>Đăng Xuất</span>
           </div>
         </div>
       </motion.div>

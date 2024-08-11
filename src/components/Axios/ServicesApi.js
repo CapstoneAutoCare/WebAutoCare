@@ -37,7 +37,7 @@ const ServicesApi = {
       "/Services/GetServiceCaresNotInMaintenanceServices?id=" + centerId;
     return await axiosApi.get(url, config);
   },
-  async post(token, data) {
+  async post({ token, data }) {
     token = token || "";
     const config = {
       headers: {

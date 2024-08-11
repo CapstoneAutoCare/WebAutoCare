@@ -32,6 +32,18 @@ export const ScheduleListGetall = createAsyncThunk(
     }
   }
 );
+export const CreateSchedulePost = createAsyncThunk(
+  "schedules/CreateSchedulePost",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await ScheduleApi.createpost({ token, data });
+      console.log("schedules/CreateSchedulePost", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const scheduleSlice = createSlice({
   name: "schedules",
   initialState,
@@ -50,6 +62,20 @@ const scheduleSlice = createSlice({
         state.schedules = action.payload;
       })
       .addCase(ScheduleListGetall.rejected, (state, action) => {
+        state.statusschedules = "failed";
+        state.errorschedules = action.payload;
+      })
+      .addCase(CreateSchedulePost.pending, (state) => {
+        state.statusschedules = "loading";
+        state.schedule = null;
+        state.errorschedules = null;
+        state.schedules = [];
+      })
+      .addCase(CreateSchedulePost.fulfilled, (state, action) => {
+        state.statusschedules = "succeeded";
+        state.schedule = action.payload;
+      })
+      .addCase(CreateSchedulePost.rejected, (state, action) => {
         state.statusschedules = "failed";
         state.errorschedules = action.payload;
       });

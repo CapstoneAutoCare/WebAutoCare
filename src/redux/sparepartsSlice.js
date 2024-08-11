@@ -10,9 +10,9 @@ const initialState = {
 
 export const SparePartsAll = createAsyncThunk(
   "sparepart/GetAll",
-  async ({ token }, { rejectWithValue }) => {
+  async (token, { rejectWithValue }) => {
     try {
-      const list = await SparePartsApi.getAll({ token });
+      const list = await SparePartsApi.getAll(token);
       console.log("sparepart/GetAll", list.data);
       return list.data;
     } catch (error) {
@@ -20,30 +20,30 @@ export const SparePartsAll = createAsyncThunk(
     }
   }
 );
-// export const SparePartItemsByCenterId = createAsyncThunk(
-//   "sparepartitem/GetListByCenter",
-//   async (centerId, token) => {
-//     try {
-//       const list = await SparePartItemsApi.getListByCenter(centerId, token);
-//       console.log(list.data);
-//       return list.data;
-//     } catch (error) {
-//       throw new Error(error.message);
-//     }
-//   }
-// );
-// export const AddSparePartItemsByCenter = createAsyncThunk(
-//   "sparepartitem/AddSparePartItemsByCenter",
-//   async ({token, data}) => {
-//     try {
-//       const list = await SparePartItemsApi.addSpartPartItem(token, data);
-//       console.log(list);
-//       return list;
-//     } catch (error) {
-//       throw new Error(error.message);
-//     }
-//   }
-// );
+export const GetSpartPartNotSparePartItemId = createAsyncThunk(
+  "sparepart/GetSpartPartNotSparePartItemId",
+  async ({ token, id }, { rejectWithValue }) => {
+    try {
+      const list = await SparePartsApi.GetListNotSparePartItemId({ token, id });
+      console.log("sparepart/GetAll", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const CreateSpartPartPost = createAsyncThunk(
+  "sparepart/CreateSpartPartPost",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await SparePartsApi.post({ token, data });
+      console.log("sparepart/CreateSpartPartPost", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const sparepartsSlice = createSlice({
   name: "sparepart",
   initialState,
@@ -61,6 +61,34 @@ const sparepartsSlice = createSlice({
         state.spareparts = action.payload;
       })
       .addCase(SparePartsAll.rejected, (state, action) => {
+        state.statussparepart = "failed";
+        state.error = action.payload;
+      })
+      .addCase(CreateSpartPartPost.pending, (state) => {
+        state.statussparepart = "loading";
+        state.sparepart = null;
+        state.spareparts = [];
+        state.errorsparepart = null;
+      })
+      .addCase(CreateSpartPartPost.fulfilled, (state, action) => {
+        state.statussparepart = "succeeded";
+        state.sparepart = action.payload;
+      })
+      .addCase(CreateSpartPartPost.rejected, (state, action) => {
+        state.statussparepart = "failed";
+        state.error = action.payload;
+      })
+      .addCase(GetSpartPartNotSparePartItemId.pending, (state) => {
+        state.statussparepart = "loading";
+        state.sparepart = null;
+        state.spareparts = [];
+        state.errorsparepart = null;
+      })
+      .addCase(GetSpartPartNotSparePartItemId.fulfilled, (state, action) => {
+        state.statussparepart = "succeeded";
+        state.spareparts = action.payload;
+      })
+      .addCase(GetSpartPartNotSparePartItemId.rejected, (state, action) => {
         state.statussparepart = "failed";
         state.error = action.payload;
       });

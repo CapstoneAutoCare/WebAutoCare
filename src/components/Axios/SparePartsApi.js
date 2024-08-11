@@ -1,13 +1,35 @@
 import axiosApi from "./AxiosApi";
 
 const SparePartsApi = {
- async getAll() {
+  async getAll(token) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     const url = "/SparePart/GetAll";
-    return await axiosApi.get(url);
+    return await axiosApi.get(url, config);
   },
- async getById(id) {
+  async getById({ token, id }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     const url = "/SparePart/GetById?id=" + id;
-    return await axiosApi.get(url);
+    return await axiosApi.get(url, config);
+  },
+  async GetListNotSparePartItemId({ token, id }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/SparePart/GetSpartPartNotSparePartItemId?id=" + id;
+    return await axiosApi.get(url, config);
   },
   //   getListByCenter({ token, centerId }) {
   //     const config = {
@@ -20,7 +42,7 @@ const SparePartsApi = {
 
   //     return axiosApi.get(url, config);
   //   },
- async post(token, data) {
+  async post({ token, data }) {
     token = token || "";
     const config = {
       headers: {

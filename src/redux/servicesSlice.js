@@ -38,7 +38,18 @@ export const GetServiceCaresNotInMaintenanceServices = createAsyncThunk(
     }
   }
 );
-
+export const CreateServicePost = createAsyncThunk(
+  "services/CreateServicePost",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await ServicesApi.post({ token, data });
+      console.log("services/CreateServicePost", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const servicesSlice = createSlice({
   name: "services",
   initialState,
@@ -71,20 +82,28 @@ const servicesSlice = createSlice({
         state.errorservices = null;
         state.service = null;
       })
-      .addCase(
-        ServicesListGetAll.fulfilled,
-        (state, action) => {
-          state.statusservices = "succeeded";
-          state.services = action.payload;
-        }
-      )
-      .addCase(
-        ServicesListGetAll.rejected,
-        (state, action) => {
-          state.statusservices = "failed";
-          state.errorservices = action.payload;
-        }
-      );
+      .addCase(ServicesListGetAll.fulfilled, (state, action) => {
+        state.statusservices = "succeeded";
+        state.services = action.payload;
+      })
+      .addCase(ServicesListGetAll.rejected, (state, action) => {
+        state.statusservices = "failed";
+        state.errorservices = action.payload;
+      })
+      .addCase(CreateServicePost.pending, (state) => {
+        state.statusservices = "loading";
+        state.services = [];
+        state.errorservices = null;
+        state.service = null;
+      })
+      .addCase(CreateServicePost.fulfilled, (state, action) => {
+        state.statusservices = "succeeded";
+        state.service = action.payload;
+      })
+      .addCase(CreateServicePost.rejected, (state, action) => {
+        state.statusservices = "failed";
+        state.errorservices = action.payload;
+      });
   },
 });
 export const {} = servicesSlice.actions;

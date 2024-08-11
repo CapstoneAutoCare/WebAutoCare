@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CircularProgress,
   DialogContent,
   Grid,
@@ -156,7 +157,7 @@ const Center = () => {
                     <TableCell>Giới Tính</TableCell>
                     <TableCell>Đánh Giá</TableCell>
                     <TableCell>Status</TableCell>
-                    {/* <TableCell>Details</TableCell> */}
+                    <TableCell>Chi Tiết</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -241,38 +242,38 @@ const Center = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          {item.status === "WAITING" ? (
-                            <Select
-                              value={item.status}
-                              onChange={(event) => {
-                                const newStatus = event.target.value;
-                                handleStatusChange(
-                                  item.maintenanceCenterId,
-                                  newStatus
-                                );
-                              }}
-                              style={{
-                                ...makeStyle(item.status),
-                                borderRadius: "10px",
-                                width: "125px",
-                                fontSize: "10px",
-                                height: "50px",
-                              }}
-                            >
-                              {statusOptions.map((status) => (
-                                <MenuItem key={status} value={status}>
-                                  {status}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          ) : (
-                            <span
-                              className="status"
-                              style={{ ...makeStyle(item.status) }}
-                            >
-                              {item.status}
-                            </span>
-                          )}
+                          <Select
+                            value={item.status}
+                            onChange={(event) => {
+                              const newStatus = event.target.value;
+                              handleStatusChange(
+                                item.maintenanceCenterId,
+                                newStatus
+                              );
+                            }}
+                            style={{
+                              ...makeStyle(item.status),
+                              borderRadius: "10px",
+                              width: "125px",
+                              fontSize: "10px",
+                              height: "50px",
+                            }}
+                          >
+                            {statusOptions.map((status) => (
+                              <MenuItem key={status} value={status}>
+                                {status}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </TableCell>
+                        <TableCell className="Details">
+                          <Button
+                            // onClick={() => handleClickOpen(item)}
+                            variant="contained"
+                            color="success"
+                          >
+                            Chi Tiết
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

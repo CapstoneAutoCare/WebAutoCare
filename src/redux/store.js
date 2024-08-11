@@ -16,6 +16,8 @@ import maintenanceServicetInfoesReducer from "./maintenanceServiceInfoesSlice";
 import paymentsReducer from "./paymentSlice";
 import centersReducer from "./centerSlice";
 import schedulesReducer from "./scheduleSlice";
+import brandReducer from "./brandSlice";
+import vehiclemodelsReducer from "./vehiclemodelsSlice";
 
 const store = configureStore({
   reducer: {
@@ -29,13 +31,15 @@ const store = configureStore({
     technician: technicianReducer,
     maintenanceInformation: maintenanceInformationsReducer,
     services: servicesReducer,
-    tasks:tasksReducer,
-    receipts:receiptSlice,
+    tasks: tasksReducer,
+    receipts: receiptSlice,
     maintenanceSparePartInfoes: maintenanceSparePartInfoesReducer,
-    maintenanceServicetInfoes :maintenanceServicetInfoesReducer,
+    maintenanceServicetInfoes: maintenanceServicetInfoesReducer,
     payments: paymentsReducer,
     centers: centersReducer,
     schedules: schedulesReducer,
+    brands: brandReducer,
+    vehiclemodels: vehiclemodelsReducer,
   },
 });
 

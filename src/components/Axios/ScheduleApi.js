@@ -33,40 +33,40 @@ const ScheduleApi = {
 
     return await axiosApi.get(url, config);
   },
-//   async CreateReceiptPost({ token, data }) {
-//     const config = {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//     };
-//     const url = "/MaintenanceSchedule/Post";
+  async createpost({ token, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/MaintenanceSchedule/Post";
 
-//     return await axiosApi.post(url, data, config);
-//   },
-//   async ReceiptRemove({ token, id }) {
-//     const config = {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       params: { id },
-//     };
-//     const url = "/MaintenanceSchedule/Remove";
+    return await axiosApi.post(url, data, config);
+  },
+  //   async ReceiptRemove({ token, id }) {
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       params: { id },
+  //     };
+  //     const url = "/MaintenanceSchedule/Remove";
 
-//     return await axiosApi.delete(url, config);
-//   },
-//   async ChangeStatusReceipt({ token, id, status }) {
-//     const config = {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       params: { id, status },
-//     };
-//     const url = "/MaintenanceSchedule/ChangeStatus";
+  //     return await axiosApi.delete(url, config);
+  //   },
+  //   async ChangeStatusReceipt({ token, id, status }) {
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       params: { id, status },
+  //     };
+  //     const url = "/MaintenanceSchedule/ChangeStatus";
 
-//     return await axiosApi.patch(url, null,config);
-//   },
+  //     return await axiosApi.patch(url, null,config);
+  //   },
 };
 export default ScheduleApi;

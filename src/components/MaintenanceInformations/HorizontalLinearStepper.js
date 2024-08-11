@@ -11,7 +11,7 @@ import {
   OutlinedCardReceipt,
 } from "./OutlinedCard";
 import { Fragment, useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { Fade, Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { ReceiptByInforId } from "../../redux/receiptSlice";
 import {
@@ -212,9 +212,11 @@ export default function HorizontalLinearStepper({
               {activeStep === stepLabels.length - 1 ? "Finish" : "Tiếp Tục"}
             </Button>
           </Box>
-          {activeStep === 0 && (
-            <OutlinedCardBooking data={bookingData} setReload={setReload} />
-          )}
+          <Fade in={activeStep === 0}>
+            <Box>
+              <OutlinedCardBooking data={bookingData} setReload={setReload} />
+            </Box>
+          </Fade>
           {activeStep === 1 && (
             <OutlinedCardMain data={mainData} setReload={setReload} />
           )}
