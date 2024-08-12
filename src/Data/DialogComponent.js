@@ -38,6 +38,7 @@ import {
   GetByIdSparePartActiveCost,
   GetListByDifSparePartAndInforId,
   SparePartItemById,
+  SparePartItemsByCenterId,
   UpdateSparePartItemByCenter,
 } from "../redux/sparepartItemsSlice";
 import {
@@ -122,9 +123,10 @@ export const AddSparePartDialog = ({
 
       await dispatch(AddSparePartItemsByCenter({ data, token }))
         .then(() => {
-          // dispatch(SparePartItemsByCenterId({ centerId, token }));
+          dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
           handleClose();
+          setReload((p) => !p);
         })
         .catch((error) => {
           console.error("Failed to add item:", error);
@@ -139,45 +141,9 @@ export const AddSparePartDialog = ({
   const filteredOptions = spareparts.filter((option) =>
     option.sparePartName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedOdo, setSelectedOdo] = useState("");
-  const [filteredParts, setFilteredParts] = useState([]);
 
-  const handleBrandChange = (e) => {
-    setSelectedBrand(e.target.value);
-    setSelectedModel("");
-    setSelectedOdo("");
-  };
-
-  const handleModelChange = (e) => {
-    setSelectedModel(e.target.value);
-    setSelectedOdo("");
-  };
-
-  const handleOdoChange = (e) => {
-    setSelectedOdo(e.target.value);
-  };
   useEffect(() => {
     dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
-
-    let results = spareparts;
-    if (selectedBrand) {
-      results = results.filter(
-        (part) => part.reponseVehicleModel.vehiclesBrandName === selectedBrand
-      );
-    }
-    if (selectedModel) {
-      results = results.filter(
-        (part) => part.vehicleModelName === selectedModel
-      );
-    }
-    if (selectedOdo) {
-      results = results.filter(
-        (part) => part.maintananceScheduleName === selectedOdo
-      );
-    }
-    setFilteredParts(results);
   }, [dispatch, token, open, setReload]);
   return (
     <Dialog
@@ -229,102 +195,6 @@ export const AddSparePartDialog = ({
               />
             )}
           />
-          {/* 
-          <div>
-            <label>Chọn Brand: </label>
-            <select value={selectedBrand} onChange={handleBrandChange}>
-              <option value="">Chọn Brand</option>
-              {[
-                ...new Set(
-                  spareparts.map(
-                    (part) => part.reponseVehicleModel.vehiclesBrandName
-                  )
-                ),
-              ].map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedBrand && (
-            <div>
-              <label>Chọn Model: </label>
-              <select value={selectedModel} onChange={handleModelChange}>
-                <option value="">Chọn Model</option>
-                {[
-                  ...new Set(
-                    spareparts
-                      .filter(
-                        (part) =>
-                          part.reponseVehicleModel.vehiclesBrandName ===
-                          selectedBrand
-                      )
-                      .map((part) => part.reponseVehicleModel.vehicleModelName)
-                  ),
-                ].map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {selectedModel && (
-            <div>
-              <label>Chọn Odo: </label>
-              <select value={selectedOdo} onChange={handleOdoChange}>
-                <option value="">Chọn Odo</option>
-                {[
-                  ...new Set(
-                    spareparts
-                      .filter(
-                        (part) =>
-                          part.reponseVehicleModel.vehicleModelName ===
-                          selectedModel
-                      )
-                      .map((part) => part.maintananceScheduleName)
-                  ),
-                ].map((odo) => (
-                  <option key={odo} value={odo}>
-                    {odo}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )} */}
-
-          {/* {selectedOdo && (
-            <div>
-              <label>Chọn Phụ Tùng: </label>
-              <select
-                value={filteredParts}
-                onChange={(e) => setFilteredParts(e.target.value)}
-              >
-                <option value="">Chọn Phụ Tùng</option>
-                {[
-                  ...new Set(
-                    spareparts
-                      .filter(
-                        (part) => part.maintananceScheduleName === selectedOdo
-                         && part.reponseVehicleModel.vehicleModelName === selectedModel
-                         &&part.reponseVehicleModel.vehiclesBrandName === selectedBrand
-                      )
-                      .map((part) => ({
-                        id: part.sparePartId,
-                        name: ` ${part.sparePartName} - ${part.maintananceScheduleName} - ${part.reponseVehicleModel.vehicleModelName}`,
-                      }))
-                  ),
-                ].map((sparePart) => (
-                  <option key={sparePart.id} value={sparePart.id}>
-                    {sparePart.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )} */}
 
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
@@ -635,8 +505,8 @@ export const MaintenanceInformationsDetailDialog = ({
       fullWidth
       PaperProps={{
         style: {
-          width: "80%",
-          maxWidth: "80%",
+          width: "70%",
+          maxWidth: "70%",
           height: "80%",
           maxHeight: "100%",
         },
@@ -679,6 +549,7 @@ export const UpdateSparePartItemDialog = ({
   handleClose,
   token,
   item,
+  setReload,
 }) => {
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
@@ -699,7 +570,7 @@ export const UpdateSparePartItemDialog = ({
         .min(1, "Capacity must be at least 1")
         .required("Capacity is required"),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         let imageUrl = values.image;
         if (imageFile) {
@@ -716,7 +587,10 @@ export const UpdateSparePartItemDialog = ({
           })
         ).then(() => {
           handleClose();
+          resetForm();
+          setReload((c) => !c);
         });
+        setReload((c) => !c);
       } catch (error) {
         console.error("Failed to update spare part item", error);
       }
@@ -736,7 +610,7 @@ export const UpdateSparePartItemDialog = ({
         capacity: item.capacity || 50,
       });
     }
-  }, [dispatch, item, token]);
+  }, [dispatch, item, token, setReload]);
   return (
     <Dialog
       open={open}
@@ -820,7 +694,14 @@ export const UpdateSparePartItemDialog = ({
                 <Button type="submit" color="primary">
                   Update
                 </Button>
-                <Button onClick={handleClose}>Close</Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+                    formik.resetForm();
+                  }}
+                >
+                  Close
+                </Button>
               </DialogActions>
             </form>
           </DialogContent>
@@ -838,6 +719,7 @@ export const UpdateMaintenanceServiceDialog = ({
   handleClose,
   token,
   item,
+  setReload,
 }) => {
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
@@ -851,7 +733,7 @@ export const UpdateMaintenanceServiceDialog = ({
         boolean: item.boolean,
       });
     }
-  }, [item]);
+  }, [dispatch, item, setReload]);
 
   const formik = useFormik({
     initialValues: {
@@ -867,7 +749,7 @@ export const UpdateMaintenanceServiceDialog = ({
       ),
       boolean: Yup.string(),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         let imageUrl = values.image;
 
@@ -886,7 +768,9 @@ export const UpdateMaintenanceServiceDialog = ({
           })
         ).then(() => {
           handleClose();
+          resetForm();
         });
+        setReload((p) => !p);
       } catch (error) {
         console.error("Failed to update spare part item", error);
       }
@@ -987,7 +871,14 @@ export const UpdateMaintenanceServiceDialog = ({
                 <Button type="submit" color="primary">
                   Update
                 </Button>
-                <Button onClick={handleClose}>Close</Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+                    formik.resetForm();
+                  }}
+                >
+                  Close
+                </Button>
               </DialogActions>
             </form>
           </DialogContent>
@@ -1163,7 +1054,7 @@ export const ViewSparePartItemsCostDialog = ({
 };
 
 const validationSchemaMaintenanceServicesCost = Yup.object({
-  acturalCost: Yup.string().required("Name is required"),
+  acturalCost: Yup.number().required("Nhập Tiền").min(1000,"Thấp nhất là 1000 VND"),
   maintenanceServiceId: Yup.string().required("Name is required"),
   note: Yup.string(),
 });
@@ -1478,7 +1369,7 @@ export const ViewMaintenanceServicesCostDialog = ({
   );
 };
 const validationSchemaSparePartItemsCost = Yup.object({
-  acturalCost: Yup.string().required("Name is required"),
+  acturalCost: Yup.number().required("Nhập Tiền").min(1000,"Thấp nhất là 1000 VND"),
   sparePartsItemId: Yup.string().required("Name is required"),
   note: Yup.string(),
 });

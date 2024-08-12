@@ -21,8 +21,9 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyle, truncateNote } from "../Booking/Booking";
-import { CenterGetAll } from "../../redux/centerSlice";
+import { CenterGetAll, ChangeStatusPut } from "../../redux/centerSlice";
 import { formatDate } from "../../Data/Pagination";
+import { RegisterDialog } from "../../Data/DialogAdmin";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const Center = () => {
@@ -34,10 +35,9 @@ const Center = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 7;
   const pageCount = Math.ceil(centerlists.length / itemsPerPage);
+  const [open, setOpen] = useState(false);
 
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterVehicle, setFilterVehicle] = useState("");
-  const [filterLicensePlate, setFilterLicensePlate] = useState("");
   const [filterDistrict, setFilterDistrict] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterPhone, setFilterPhone] = useState("");
@@ -45,16 +45,21 @@ const Center = () => {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setReload(!reload);
+  };
   const handleStatusChange = async (maintenanceCenterId, newStatus) => {
     try {
-      //   await dispatch(
-      //     PatchStatusBookingByCenter({ maintenanceCenterId, status: newStatus, token })
-      //   );
-      //   dispatch(BookingByCenter({ token: token, id: maintenanceCenterId }));
-      setReload(true);
+      await dispatch(
+        ChangeStatusPut({ id: maintenanceCenterId, status: newStatus, token })
+      );
+      dispatch(CenterGetAll(token));
+      setReload(!reload);
     } catch (error) {
-      // console.error("Error updating status:", errors);
     }
   };
 
@@ -64,16 +69,7 @@ const Center = () => {
 
   const filteredcenterlists = centerlists.filter((center) => {
     const statusMatch = filterStatus ? center.status === filterStatus : true;
-    const vehicleMatch = filterVehicle
-      ? center.responseVehicles?.vehicleModelName
-          .toLowerCase()
-          .includes(filterVehicle.toLowerCase())
-      : true;
-    const licensePlateMatch = filterLicensePlate
-      ? center.responseVehicles?.licensePlate
-          .toLowerCase()
-          .includes(filterLicensePlate.toLowerCase())
-      : true;
+
     const districtMatch = filterDistrict
       ? center.district?.toLowerCase().includes(filterDistrict.toLowerCase())
       : true;
@@ -86,8 +82,6 @@ const Center = () => {
 
     return (
       statusMatch &&
-      vehicleMatch &&
-      licensePlateMatch &&
       districtMatch &&
       cityMatch &&
       phoneMatch
@@ -97,6 +91,15 @@ const Center = () => {
   return (
     <Box>
       <h3>Danh Sách Trung Tâm</h3>
+      <Button variant="contained" color="success" onClick={handleClickOpen}>
+        Tạo Trung Tâm
+      </Button>
+      <RegisterDialog
+        open={open}
+        handleClose={handleClose}
+        token={token}
+        setReload={setReload}
+      />
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Select
           value={filterStatus}
@@ -154,10 +157,10 @@ const Center = () => {
                     <TableCell>Quận</TableCell>
                     <TableCell>Thành Phố</TableCell>
                     <TableCell>Mô Tả</TableCell>
-                    <TableCell>Giới Tính</TableCell>
+                    {/* <TableCell>Giới Tính</TableCell> */}
                     <TableCell>Đánh Giá</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Chi Tiết</TableCell>
+                    {/* <TableCell>Chi Tiết</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -232,7 +235,7 @@ const Center = () => {
                             </span>
                           </Tooltip>
                         </TableCell>
-                        <TableCell>{item.gender}</TableCell>
+                        {/* <TableCell>{item.gender}</TableCell> */}
                         <TableCell>
                           <Rating
                             name="size-medium"
@@ -266,7 +269,7 @@ const Center = () => {
                             ))}
                           </Select>
                         </TableCell>
-                        <TableCell className="Details">
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -274,7 +277,7 @@ const Center = () => {
                           >
                             Chi Tiết
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                 </TableBody>

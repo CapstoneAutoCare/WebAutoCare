@@ -44,6 +44,18 @@ export const CreateSpartPartPost = createAsyncThunk(
     }
   }
 );
+export const UpdateSpartPartPut = createAsyncThunk(
+  "sparepart/UpdateSpartPartPut",
+  async ({ token, id, data }, { rejectWithValue }) => {
+    try {
+      const list = await SparePartsApi.updateSparePart({ token, id, data });
+      console.log("sparepart/UpdateSpartPartPut", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const sparepartsSlice = createSlice({
   name: "sparepart",
   initialState,
@@ -89,6 +101,20 @@ const sparepartsSlice = createSlice({
         state.spareparts = action.payload;
       })
       .addCase(GetSpartPartNotSparePartItemId.rejected, (state, action) => {
+        state.statussparepart = "failed";
+        state.error = action.payload;
+      })
+      .addCase(UpdateSpartPartPut.pending, (state) => {
+        state.statussparepart = "loading";
+        state.sparepart = null;
+        state.spareparts = [];
+        state.errorsparepart = null;
+      })
+      .addCase(UpdateSpartPartPut.fulfilled, (state, action) => {
+        state.statussparepart = "succeeded";
+        state.sparepart = action.payload;
+      })
+      .addCase(UpdateSpartPartPut.rejected, (state, action) => {
         state.statussparepart = "failed";
         state.error = action.payload;
       });

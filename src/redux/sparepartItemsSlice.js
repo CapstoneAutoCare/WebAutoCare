@@ -198,7 +198,7 @@ const sparepartitemsSlice = createSlice({
       })
       .addCase(AddSparePartItemsByCenter.fulfilled, (state, action) => {
         state.statussparepartitem = "succeeded";
-        state.sparepartitems = action.payload;
+        state.sparepartitem = action.payload;
         console.log("payload", state.sparepartitems);
       })
       .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {

@@ -31,17 +31,16 @@ const SparePartsApi = {
     const url = "/SparePart/GetSpartPartNotSparePartItemId?id=" + id;
     return await axiosApi.get(url, config);
   },
-  //   getListByCenter({ token, centerId }) {
-  //     const config = {
-  //       headers: {
-  //         accept: "text/plain",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     };
-  //     const url = "/SparePart/GetListByCenter?centerId=" + centerId;
-
-  //     return axiosApi.get(url, config);
-  //   },
+  async updateSparePart({ token, id, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/SparePart/Update?id=${id}`;
+    return await axiosApi.put(url, data, config);
+  },
   async post({ token, data }) {
     token = token || "";
     const config = {

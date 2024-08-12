@@ -176,7 +176,7 @@ const ScheduleList = () => {
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Mô Tả</TableCell>
                     <TableCell>Trạng Thái</TableCell>
-                    <TableCell>Chi Tiết</TableCell>
+                    {/* <TableCell>Chi Tiết</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -204,7 +204,7 @@ const ScheduleList = () => {
 
                         <TableCell>{item?.description}</TableCell>
                         <TableCell>
-                          <Select
+                          {/* <Select
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
@@ -226,9 +226,15 @@ const ScheduleList = () => {
                                 {status}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </Select> */}
+                          <span
+                            className="status"
+                            style={{ ...makeStyle(item.status) }}
+                          >
+                            {item.status}
+                          </span>
                         </TableCell>
-                        <TableCell className="Details">
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -236,7 +242,7 @@ const ScheduleList = () => {
                           >
                             Hiển Thị
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                 </TableBody>

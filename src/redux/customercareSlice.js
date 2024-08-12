@@ -30,6 +30,18 @@ export const CustomerCareByCenterId = createAsyncThunk(
     }
   }
 );
+export const CreateCustomerCarePost = createAsyncThunk(
+  "centers/CreateCustomerCarePost",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await CustomerCareApi.CreateCustomerCare({ token, data });
+      console.log("centers/CreateCustomerCarePost", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const customercareSlice = createSlice({
   name: "customercare",
   initialState,
@@ -47,9 +59,9 @@ const customercareSlice = createSlice({
     builder
       .addCase(CustomerCareAll.pending, (state) => {
         state.status = "loading";
-        state.customercares=[];
-        state.errorcustomercare=null;
-        state.customercare=null;
+        state.customercares = [];
+        state.errorcustomercare = null;
+        state.customercare = null;
       })
       .addCase(CustomerCareAll.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -61,9 +73,9 @@ const customercareSlice = createSlice({
       })
       .addCase(CustomerCareByCenterId.pending, (state) => {
         state.status = "loading";
-        state.customercares=[];
-        state.errorcustomercare=null;
-        state.customercare=null;
+        state.customercares = [];
+        state.errorcustomercare = null;
+        state.customercare = null;
       })
       .addCase(CustomerCareByCenterId.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -73,6 +85,22 @@ const customercareSlice = createSlice({
       .addCase(CustomerCareByCenterId.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(CreateCustomerCarePost.pending, (state) => {
+        state.status = "loading";
+        state.customercares = [];
+        state.errorcustomercare = null;
+        state.customercare = null;
+      })
+      .addCase(CreateCustomerCarePost.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.customercare = action.payload;
+        console.log("payload", state.customercares);
+      })
+      .addCase(CreateCustomerCarePost.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        alert(action.payload);
       });
   },
 });

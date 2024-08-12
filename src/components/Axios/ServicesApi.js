@@ -15,17 +15,16 @@ const ServicesApi = {
     const url = "/Services/GetById?id=" + id;
     return await axiosApi.get(url);
   },
-  //   getListByCenter({ token, centerId }) {
-  //     const config = {
-  //       headers: {
-  //         accept: "text/plain",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     };
-  //     const url = "/SparePart/GetListByCenter?centerId=" + centerId;
-
-  //     return axiosApi.get(url, config);
-  //   },
+  async updateService({ token, id, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/Services/Update?id=${id}`;
+    return await axiosApi.put(url, data, config);
+  },
   async GetServiceCaresNotInMaintenanceServices({ token, centerId }) {
     const config = {
       headers: {
@@ -48,5 +47,6 @@ const ServicesApi = {
     const url = "/Services/Post";
     return await axiosApi.post(url, data, config);
   },
+
 };
 export default ServicesApi;

@@ -37,7 +37,7 @@ const BrandVehicle = () => {
   const [open, setOpen] = useState(false);
 
   const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 4;
   const pageCount = Math.ceil(brands.length / itemsPerPage);
   const [filterStatus, setFilterStatus] = useState("");
 
@@ -116,6 +116,7 @@ const BrandVehicle = () => {
                   <TableCell>Ngày Tạo</TableCell>
                   <TableCell>Mô Tả</TableCell>
                   <TableCell>Trạng Thái</TableCell>
+                  {/* <TableCell>Chi Tiết</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -134,12 +135,12 @@ const BrandVehicle = () => {
                             src={item.logo}
                             alt="Item Logo"
                             className="item-logo"
-                            style={{ width: "75px", height: "75px" }}
+                            style={{ width: "80px", height: "80px" }}
                           />
                         ) : (
                           <div
                             className="no-image-placeholder"
-                            style={{ width: "75px", height: "75px" }}
+                            style={{ width: "80px", height: "80px" }}
                           >
                             No Image Available
                           </div>
@@ -149,7 +150,7 @@ const BrandVehicle = () => {
                       <TableCell>{formatDate(item?.createdDate)}</TableCell>
                       <TableCell>{item?.vehiclesBrandDescription}</TableCell>
                       <TableCell>
-                        <Select
+                        {/* <Select
                           value={item.status}
                           onChange={(event) => {
                             const newStatus = event.target.value;
@@ -168,8 +169,24 @@ const BrandVehicle = () => {
                               {status}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </Select> */}
+
+                        <span
+                          className="status"
+                          style={{ ...makeStyle(item.status) }}
+                        >
+                          {item.status}
+                        </span>
                       </TableCell>
+                      {/* <TableCell className="Details">
+                        <Button
+                          // onClick={() => handleClickOpen(item)}
+                          variant="contained"
+                          color="success"
+                        >
+                          Hiển Thị
+                        </Button>
+                      </TableCell> */}
                     </TableRow>
                   ))}
               </TableBody>

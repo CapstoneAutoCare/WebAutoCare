@@ -99,7 +99,7 @@ const VehicleModel = () => {
                     <TableCell>Tên Loại Xe</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Trạng Thái</TableCell>
-                    <TableCell>Chi Tiết</TableCell>
+                    {/* <TableCell>Chi Tiết</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -119,7 +119,7 @@ const VehicleModel = () => {
                         <TableCell>{formatDate(item?.createdDate)}</TableCell>
 
                         <TableCell>
-                          <Select
+                          {/* <Select
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
@@ -141,9 +141,15 @@ const VehicleModel = () => {
                                 {status}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </Select> */}
+                          <span
+                            className="status"
+                            style={{ ...makeStyle(item.status) }}
+                          >
+                            {item.status}
+                          </span>
                         </TableCell>
-                        <TableCell className="Details">
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -151,7 +157,7 @@ const VehicleModel = () => {
                           >
                             Hiển Thị
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                 </TableBody>

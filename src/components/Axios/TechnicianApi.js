@@ -22,5 +22,15 @@ const TechinicanApi = {
 
     return await axiosApi.get(url, config);
   },
+  async CreateTech({ token, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "Technicians/Post";
+    return axiosApi.post(url, data, config);
+  },
 };
 export default TechinicanApi;

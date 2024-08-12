@@ -11,7 +11,7 @@ export const Profile = createAsyncThunk(
   async (token, role) => {
     try {
       const profile = await AccountApi.getProfile(token);
-      return profile;
+      return profile.data;
     } catch (error) {
       throw new Error(error.Messages);
     }

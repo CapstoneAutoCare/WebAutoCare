@@ -10,7 +10,7 @@ const initialState = {
   statuscenter: "idle",
   errorcenter: null,
   center: null,
-  centerlists:[],
+  centerlists: [],
 };
 export const PostCenter = createAsyncThunk(
   "centers/CreateCenter",
@@ -109,6 +109,19 @@ export const CenterGetAll = createAsyncThunk(
     }
   }
 );
+export const ChangeStatusPut = createAsyncThunk(
+  "centers/ChangeStatusPut",
+  async ({ token, id, status }, { rejectWithValue }) => {
+    try {
+      const list = await CenterApi.patchStatus({ id, status, token });
+      console.log("centers/ChangeStatusPut", list.data);
+
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const centersSlice = createSlice({
   name: "centers",
   initialState,
@@ -124,7 +137,6 @@ const centersSlice = createSlice({
         state.errorcenter = null;
         state.center = null;
         state.centerlists = [];
-
       })
       .addCase(CenterTotalGetListByMainInfor.fulfilled, (state, action) => {
         state.statuscenter = "succeeded";
@@ -145,7 +157,6 @@ const centersSlice = createSlice({
           state.errorcenter = null;
           state.center = null;
           state.centerlists = [];
-
         }
       )
       .addCase(
@@ -173,7 +184,6 @@ const centersSlice = createSlice({
           state.errorcenter = null;
           state.center = null;
           state.centerlists = [];
-
         }
       )
       .addCase(
@@ -199,7 +209,6 @@ const centersSlice = createSlice({
         state.errorcenter = null;
         state.center = null;
         state.centerlists = [];
-
       })
       .addCase(
         CenterTotalGetListByStatusPaidReceipt.fulfilled,
@@ -224,7 +233,6 @@ const centersSlice = createSlice({
         state.errorcenter = null;
         state.center = null;
         state.centerlists = [];
-
       })
       .addCase(PostCenter.fulfilled, (state, action) => {
         state.statuscenter = "succeeded";
@@ -250,6 +258,25 @@ const centersSlice = createSlice({
         state.centerlists = action.payload;
       })
       .addCase(CenterGetAll.rejected, (state, action) => {
+        state.statuscenter = "failed";
+        state.errorcenter = action.payload;
+        alert(action.payload);
+      })
+      .addCase(ChangeStatusPut.pending, (state) => {
+        state.statuscenter = "loading";
+        state.serviceItems = [];
+        state.sparepartItems = [];
+        state.maininforss = [];
+        state.payments = [];
+        state.errorcenter = null;
+        state.center = null;
+        state.centerlists = [];
+      })
+      .addCase(ChangeStatusPut.fulfilled, (state, action) => {
+        state.statuscenter = "succeeded";
+        state.center = action.payload;
+      })
+      .addCase(ChangeStatusPut.rejected, (state, action) => {
         state.statuscenter = "failed";
         state.errorcenter = action.payload;
         alert(action.payload);

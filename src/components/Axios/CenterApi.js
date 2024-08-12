@@ -64,5 +64,17 @@ const CenterApi = {
     const url = "MaintenanceCenters/GetAll";
     return axiosApi.get(url, config);
   },
+  async patchStatus({ id, status, token }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, status },
+    };
+    const url = "/MaintenanceCenters/UpdateStatus";
+
+    return await axiosApi.patch(url, null, config);
+  },
 };
 export default CenterApi;

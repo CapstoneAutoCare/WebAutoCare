@@ -22,12 +22,15 @@ import {
   Tooltip,
   Select,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import "./Staff.css";
 import AccountApi from "../Axios/AccountApi";
 import usePagination, { formatDate } from "../../Data/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomerCareByCenterId } from "../../redux/customercareSlice";
+import { RegisterCustomerCare, RegisterDialog } from "../../Data/DialogAdmin";
+import { truncateNote } from "../Booking/Booking";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCPET") {
@@ -72,211 +75,230 @@ export default function CustomerCare() {
   const { customercares, status, error } = useSelector(
     (state) => state.customercare
   );
+  const [reload, setReload] = useState(false);
+
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
-  useEffect(() => {
-    dispatch(CustomerCareByCenterId({ centerId, token }));
-    console.log("da call", customercares);
-  }, [dispatch, centerId, token]);
 
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 7;
   const [open, setOpen] = useState(false);
-  const [accountInfo, setAccountInfo] = useState({
-    companyName: "",
-    accountNumber: "",
-  });
 
-  const handleOpen = () => {
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterDistrict, setFilterDistrict] = useState("");
+  const [filterCity, setFilterCity] = useState("");
+  const [filterPhone, setFilterPhone] = useState("");
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleClickOpen = () => {
     setOpen(true);
   };
-
   const handleClose = () => {
     setOpen(false);
-  };
-  const handleAddAccount = () => {
-    console.log("Thêm thông tin tài khoản:", accountInfo);
-    handleClose();
-  };
-  let [page, setPage] = useState(1);
-  const PER_PAGE = 7;
-  const count = Math.ceil(customercares.length / PER_PAGE);
-  const sortDate = [...customercares].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
-  const _Data = usePagination(sortDate, PER_PAGE);
-
-  const handlePageChange = (event, newPage) => {
-    setPage(newPage);
-    _Data.jump(newPage);
+    setReload(!reload);
   };
 
+  const filteredlists = customercares.filter((center) => {
+    const statusMatch = filterStatus ? center.status === filterStatus : true;
+
+    const districtMatch = filterDistrict
+      ? center.address?.toLowerCase().includes(filterDistrict.toLowerCase())
+      : true;
+
+    const phoneMatch = filterPhone
+      ? center.phone?.toLowerCase().includes(filterPhone.toLowerCase())
+      : true;
+
+    return statusMatch && districtMatch && phoneMatch;
+  });
+
+  const pageCount = Math.ceil(filteredlists.length / itemsPerPage);
+  useEffect(() => {
+    dispatch(CustomerCareByCenterId({ centerId, token }));
+  }, [dispatch, centerId, token, reload]);
   return (
-    <>
-      <Box>
-        <h3>Manager</h3>
+    <Box>
+      <h3>Danh Sách Trung Tâm</h3>
+      <Button variant="contained" color="success" onClick={handleClickOpen}>
+        Tạo Trung Tâm
+      </Button>
+      <RegisterCustomerCare
+        open={open}
+        handleClose={handleClose}
+        token={token}
+        setReload={setReload}
+      />
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Select
+          value={filterStatus}
+          onChange={(event) => setFilterStatus(event.target.value)}
+          displayEmpty
+        >
+          <MenuItem value="">
+            <em>Trạng Thái</em>
+          </MenuItem>
+          {statusOptions.map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+        <TextField
+          label="Địa Chỉ"
+          value={filterDistrict}
+          onChange={(event) => setFilterDistrict(event.target.value)}
+        />
+        <TextField
+          label="Số Điện Thoại"
+          value={filterPhone}
+          onChange={(event) => setFilterPhone(event.target.value)}
+        />
+      </Box>
+      {status === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {status === "succeeded" && customercares && customercares.length > 0 && (
         <Grid>
           <TableContainer
             component={Paper}
-            style={{
-              boxShadow: "0px 13px 20px 0px #80808029",
-            }}
+            style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
           >
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Avatar</TableCell>
-                  <TableCell>Email </TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Full Name</TableCell>
-                  <TableCell>ROLE</TableCell>
-                  <TableCell>BIRTHDAY</TableCell>
-                  <TableCell>GENDER</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Information</TableCell>
+                  {/* <TableCell>Mã Đặt Lịch</TableCell> */}
+                  <TableCell>Avatart </TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Mật Khẩu</TableCell>
+                  <TableCell>Họ Tên</TableCell>
+                  <TableCell>Số Điện Thoại</TableCell>
+                  <TableCell>Ngày Sinh</TableCell>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Địa Chỉ</TableCell>
+                  <TableCell>Giới Tính</TableCell>
+                  <TableCell>Mô Tả</TableCell>
+                  <TableCell>Trạng Thái</TableCell>
+                  <TableCell>Chi Tiết</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {customercares.map((account) => (
-                  <TableRow
-                    key={account.customerCareId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>
-                        {account.logo ? (
+                {filteredlists
+                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                  .map((item) => (
+                    <TableRow
+                      key={item.maintenanceCenterId}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell>
+                        {item?.logo ? (
                           <img
-                            src={account.logo}
+                            src={item?.logo}
                             alt="Item Logo"
                             className="item-logo"
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: "#f0f0f0",
+                            }}
                           />
                         ) : (
-                          <div className="no-image-placeholder">
+                          <div
+                            className="no-image-placeholder"
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: "#f0f0f0",
+                            }}
+                          >
                             No Image Available
                           </div>
                         )}
-                    </TableCell>
-                    <TableCell>{account.email}</TableCell>
-                    <TableCell>{account.phone}</TableCell>
-                    <TableCell>
-                      {account.firstName} {account.lastName}
-                    </TableCell>
-                    <TableCell>
-                      <Tooltip
-                        className="status"
-                        style={makeRole(account.role)}
-                      >
-                        {account.role}
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell>{formatDate(account.birthday)}</TableCell>
-                    <TableCell>{account.gender}</TableCell>
-                    <TableCell>
-                      <Select
-                        value={account.status}
-                        onChange={(event) => {
-                          const newStatus = event.target.value;
-                          // handleStatusChange(account.accountId, newStatus);
-                        }}
-                        className="status"
-                        style={{
-                          ...makeStyle(account.status),
-                          borderRadius: "10px",
-                          width: "121px",
-                          fontSize: "12px",
-                          height: "50px",
-                        }}
-                      >
-                        {statusOptions.map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {status}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell className="Details">
-                      <ButtonBase>SHOW</ButtonBase>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.password}</TableCell>
+                      <TableCell>
+                        {item.firstName} {item.lastName}
+                      </TableCell>
+                      <TableCell>{item.phone}</TableCell>
+                      <TableCell>{item.birthday}</TableCell>
+                      <TableCell>{item.role}</TableCell>
+                      <TableCell>
+                        <Tooltip title={item?.address} arrow>
+                          <span>{truncateNote(item?.address)}</span>
+                        </Tooltip>
+                      </TableCell>
+
+                      <TableCell>{item?.gender}</TableCell>
+                      <TableCell>
+                        <Tooltip title={item?.customerCareDescription} arrow>
+                          <span>
+                            {truncateNote(item?.customerCareDescription)}
+                          </span>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={item.status}
+                          onChange={(event) => {
+                            const newStatus = event.target.value;
+                            // handleStatusChange(
+                            //   item.maintenanceCenterId,
+                            //   newStatus
+                            // );
+                          }}
+                          style={{
+                            ...makeStyle(item.status),
+                            borderRadius: "10px",
+                            width: "125px",
+                            fontSize: "10px",
+                            height: "50px",
+                          }}
+                        >
+                          {statusOptions.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell className="Details">
+                        <Button
+                          // onClick={() => handleClickOpen(item)}
+                          variant="contained"
+                          color="success"
+                        >
+                          Chi Tiết
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={handleChangePage}
+            variant="outlined"
+            shape="rounded"
+            style={{ marginTop: "20px", paddingBottom: "30px" }}
+          />
         </Grid>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Add Account Company</DialogTitle>
-          <DialogContent>
-            {/* Input fields */}
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Company Name"
-              fullWidth
-              value={accountInfo.companyName}
-              onChange={(e) =>
-                setAccountInfo({
-                  ...accountInfo,
-                  companyName: e.target.value,
-                })
-              }
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Company Name"
-              fullWidth
-              value={accountInfo.companyName}
-              onChange={(e) =>
-                setAccountInfo({
-                  ...accountInfo,
-                  companyName: e.target.value,
-                })
-              }
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Company Name"
-              fullWidth
-              value={accountInfo.companyName}
-              onChange={(e) =>
-                setAccountInfo({
-                  ...accountInfo,
-                  companyName: e.target.value,
-                })
-              }
-            />
-            <TextField
-              margin="dense"
-              label="Account Number"
-              fullWidth
-              value={accountInfo.accountNumber}
-              onChange={(e) =>
-                setAccountInfo({
-                  ...accountInfo,
-                  accountNumber: e.target.value,
-                })
-              }
-            />
-            {/* Thêm các trường thông tin tài khoản khác tại đây nếu cần thiết */}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleAddAccount} color="primary">
-              Add
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Pagination
-          variant="outlined"
-          color="primary"
-          showFirstButton
-          showLastButton
-          count={count}
-          size="large"
-          page={page}
-          onChange={handlePageChange}
-        />
-      </Box>
-    </>
+      )}
+    </Box>
   );
 }

@@ -46,6 +46,7 @@ const makeStyle = (status) => {
       return { background: "#59bfff", color: "white" };
   }
 };
+const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const SparePartItems = () => {
   const dispatch = useDispatch();
@@ -65,12 +66,15 @@ const SparePartItems = () => {
 
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
 
-  useEffect(() => {
-    dispatch(SparePartItemsByCenterId({ centerId, token }));
-  }, [dispatch, centerId, token, reload]);
-
-  const pageCount = Math.ceil(sparepartitems.length / itemsPerPage);
+  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
+    useSelector((state) => state.vehiclemodels);
+  const { schedules, statusschedules, errorschedules } = useSelector(
+    (state) => state.schedules
+  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -90,6 +94,12 @@ const SparePartItems = () => {
     setSelectedItem(null);
     setOpenDialog(false);
   };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenDialog(true);
+  };
+
   const handleViewClose = () => {
     setReload(!reload);
     setSelectedItem(null);
@@ -100,46 +110,37 @@ const SparePartItems = () => {
     setOpenView(true);
   };
 
-  const handleEdit = (item) => {
-    setSelectedItem(item);
-    setOpenDialog(true);
-  };
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterName, setFilterName] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
-  const [filterVehicle, setFilterVehicle] = useState("");
-  const [filterOdo, setFilterOdo] = useState("");
+  const [filterVehicleModel, setFilterVehicleModel] = useState("");
+  const [filterName, setFilterName] = useState("");
+
+  const filteredVehicleModels = vehiclemodels.filter(
+    (model) => model.vehiclesBrandId === filterBrand
+  );
+
   const role = localStorage.getItem("ROLE");
 
-  const filteredItems =
-    sparepartitems.length > 0
-      ? sparepartitems.filter((sparepartitem) => {
-          return (
-            (filterStatus ? sparepartitem.status === filterStatus : true) &&
-            (filterName
-              ? sparepartitem?.sparePartsItemName
-                  .toLowerCase()
-                  .includes(filterName.toLowerCase())
-              : true) &&
-            (filterBrand
-              ? sparepartitem?.vehiclesBrandName
-                  .toLowerCase()
-                  .includes(filterBrand.toLowerCase())
-              : true) &&
-            (filterVehicle
-              ? sparepartitem?.vehicleModelName
-                  .toLowerCase()
-                  .includes(filterVehicle.toLowerCase())
-              : true) &&
-            (filterOdo
-              ? sparepartitem?.maintananceScheduleName
-                  .toLowerCase()
-                  .includes(filterOdo.toLowerCase())
-              : true)
-          );
-        })
-      : [];
+  const filteredsparepartslists = sparepartitems.filter((service) => {
+    const statusMatch = filterStatus ? service?.status === filterStatus : true;
+    const fitBrand = filterBrand
+      ? service?.vehiclesBrandId === filterBrand
+      : true;
+    const fitVehicleModels = filterVehicleModel
+      ? service?.vehicleModelId === filterVehicleModel
+      : true;
+    const searchName = filterName
+      ? service?.sparePartsItemName
+          .toLowerCase()
+          .includes(filterName.toLowerCase())
+      : true;
+    return statusMatch && fitBrand && fitVehicleModels && searchName;
+  });
+  const pageCount = Math.ceil(filteredsparepartslists.length / itemsPerPage);
 
+  useEffect(() => {
+    dispatch(SparePartItemsByCenterId({ centerId, token }));
+  }, [dispatch, centerId, token, reload]);
   return (
     <Box>
       <h3>Danh Sách Các Phụ Tùng Từng Xe</h3>
@@ -166,32 +167,66 @@ const SparePartItems = () => {
         sparepartitems &&
         sparepartitems.length > 0 && (
           <DialogContent dividers>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              paddingTop={"5px"}
-              mb={4}
-            >
+            <Box display="flex" justifyContent="space-between" mb={4}>
+              <Select
+                value={filterStatus}
+                onChange={(event) => setFilterStatus(event.target.value)}
+                displayEmpty
+              >
+                <MenuItem value="">
+                  <em>Trạng Thái</em>
+                </MenuItem>
+                {statusOptions.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
               <TextField
                 label="Tên Phụ Tùng"
                 value={filterName}
                 onChange={(event) => setFilterName(event.target.value)}
               />
-              <TextField
-                label="Hãng Xe"
+              <Select
                 value={filterBrand}
-                onChange={(event) => setFilterBrand(event.target.value)}
-              />
-              <TextField
-                label="Loại Xe"
-                value={filterVehicle}
-                onChange={(event) => setFilterVehicle(event.target.value)}
-              />
-              <TextField
-                label="Odo"
-                value={filterOdo}
-                onChange={(event) => setFilterOdo(event.target.value)}
-              />
+                onChange={(event) => {
+                  setFilterBrand(event.target.value);
+                  setFilterVehicleModel("");
+                }}
+                displayEmpty
+              >
+                <MenuItem value="">
+                  <em>Hãng Xe</em>
+                </MenuItem>
+                {brands.map((brand) => (
+                  <MenuItem
+                    key={brand.vehiclesBrandId}
+                    value={brand.vehiclesBrandId}
+                  >
+                    {brand.vehiclesBrandName}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                value={filterVehicleModel}
+                onChange={(event) => {
+                  setFilterVehicleModel(event.target.value);
+                }}
+                displayEmpty
+                disabled={!filterBrand}
+              >
+                <MenuItem value="">
+                  <em>Loại Xe</em>
+                </MenuItem>
+                {filteredVehicleModels.map((model) => (
+                  <MenuItem
+                    key={model.vehicleModelId}
+                    value={model.vehicleModelId}
+                  >
+                    {model.vehicleModelName}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
             <Grid>
               <TableContainer
@@ -205,7 +240,6 @@ const SparePartItems = () => {
                       <TableCell>Tên Phụ Tùng</TableCell>
                       <TableCell>Hãng Xe </TableCell>
                       <TableCell>Loại Xe</TableCell>
-                      <TableCell>Odo </TableCell>
                       <TableCell>Ngày Tạo</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Chỉnh Sửa</TableCell>
@@ -213,8 +247,8 @@ const SparePartItems = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {filteredItems.length > 0 &&
-                      filteredItems
+                    {filteredsparepartslists.length > 0 &&
+                      filteredsparepartslists
                         .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                         .map((item) => (
                           <TableRow key={item.sparePartsItemId}>
@@ -239,11 +273,6 @@ const SparePartItems = () => {
                             <TableCell>{item.sparePartsItemName}</TableCell>
                             <TableCell>{item.vehiclesBrandName}</TableCell>
                             <TableCell>{item.vehicleModelName}</TableCell>
-                            <TableCell>
-                              {formatNumberWithDots(
-                                item?.maintananceScheduleName
-                              )}
-                            </TableCell>
                             <TableCell>
                               {formatDate(item.createdDate)}
                             </TableCell>
@@ -296,6 +325,7 @@ const SparePartItems = () => {
           handleClose={handleEditClose}
           token={token}
           item={selectedItem}
+          setReload={setReload}
         />
       )}
       {selectedItem && (

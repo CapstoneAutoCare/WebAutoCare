@@ -23,7 +23,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
-import { AddScheduleDialog, AddSparePartDialog } from "../../Data/DialogAdmin";
+import {
+  AddSparePartDialog,
+  UpdateSparePartDialog,
+} from "../../Data/DialogAdmin";
 import { SparePartsAll } from "../../redux/sparepartsSlice";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
@@ -33,7 +36,10 @@ const SparePart = () => {
     (state) => state.spareparts
   );
   const [open, setOpen] = useState(false);
-
+  const [page, setPage] = useState(1);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [openView, setOpenView] = useState(false);
   const { brands, statusbrands, errorbrands } = useSelector(
     (state) => state.brands
   );
@@ -46,16 +52,18 @@ const SparePart = () => {
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
 
-  const [page, setPage] = useState(1);
   const itemsPerPage = 7;
   const pageCount = Math.ceil(spareparts.length / itemsPerPage);
 
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
+  const [filterName, setFilterName] = useState("");
+
   const filteredVehicleModels = vehiclemodels.filter(
     (model) => model.vehiclesBrandId === filterBrand
   );
+
   const filteredsparepartslists = spareparts.filter((service) => {
     const statusMatch = filterStatus ? service.status === filterStatus : true;
     const fitBrand = filterBrand
@@ -64,8 +72,10 @@ const SparePart = () => {
     const fitVehicleModels = filterVehicleModel
       ? service.reponseVehicleModel.vehicleModelId === filterVehicleModel
       : true;
-
-    return statusMatch && fitBrand && fitVehicleModels;
+    const searchName = filterName
+      ? service?.sparePartName.toLowerCase().includes(filterName.toLowerCase())
+      : true;
+    return statusMatch && fitBrand && fitVehicleModels && searchName;
   });
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -73,9 +83,31 @@ const SparePart = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setReload(!reload);
+  };
+
+  const handleEditClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenDialog(false);
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenDialog(true);
+  };
+
+  const handleViewClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenView(false);
+  };
+  const handleClickShow = (item) => {
+    setSelectedItem(item);
+    setOpenView(true);
   };
   const handleStatusChange = async (maintenanceCenterId, newStatus) => {
     try {
@@ -119,7 +151,11 @@ const SparePart = () => {
             </MenuItem>
           ))}
         </Select>
-
+        <TextField
+          label="Tên Phụ Tùng"
+          value={filterName}
+          onChange={(event) => setFilterName(event.target.value)}
+        />
         <Select
           value={filterBrand}
           onChange={(event) => {
@@ -171,14 +207,18 @@ const SparePart = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Mã Phụ Tùng </TableCell>
+                    {/* <TableCell>Mã Phụ Tùng </TableCell> */}
                     <TableCell>Tên Phụ Tùng</TableCell>
-                    <TableCell>Loại Phụ Tùng</TableCell>
+                    <TableCell>Loại </TableCell>
+                    <TableCell>Hãng Xe</TableCell>
+                    <TableCell>Loại Xe</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Mô Tả</TableCell>
                     <TableCell>Giá Tiền</TableCell>
                     <TableCell>Trạng Thái</TableCell>
-                    <TableCell>Chi Tiết</TableCell>
+                    <TableCell>Chỉnh Sửa</TableCell>
+
+                    {/* <TableCell>Chi Tiết</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -191,11 +231,27 @@ const SparePart = () => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{item?.sparePartId}</TableCell>
+                        {/* <TableCell>{item?.sparePartId}</TableCell> */}
                         <TableCell>{item?.sparePartName}</TableCell>
-                        <TableCell>{item?.sparePartType}</TableCell>
+                        <TableCell>
+                          <Tooltip title={item?.sparePartType} arrow>
+                            <span>{truncateNote(item?.sparePartType)}</span>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                          {item?.reponseVehicleModel.vehiclesBrandName}
+                        </TableCell>
+                        <TableCell>
+                          {item?.reponseVehicleModel.vehicleModelName}
+                        </TableCell>
                         <TableCell>{formatDate(item?.createdDate)}</TableCell>
-                        <TableCell>{item?.sparePartDescription}</TableCell>
+                        <TableCell>
+                          <Tooltip title={item?.sparePartDescription} arrow>
+                            <span>
+                              {truncateNote(item?.sparePartDescription)}
+                            </span>
+                          </Tooltip>
+                        </TableCell>
                         <TableCell
                           style={{
                             fontWeight: "bold",
@@ -204,7 +260,7 @@ const SparePart = () => {
                           {formatNumberWithDots(item.originalPrice)} VND
                         </TableCell>
                         <TableCell>
-                          <Select
+                          {/* <Select
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
@@ -223,9 +279,24 @@ const SparePart = () => {
                                 {status}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </Select> */}
+                          <span
+                            className="status"
+                            style={{ ...makeStyle(item.status) }}
+                          >
+                            {item.status}
+                          </span>
                         </TableCell>
                         <TableCell className="Details">
+                          <Button
+                            onClick={() => handleEdit(item)}
+                            variant="contained"
+                            color="success"
+                          >
+                            Chỉnh Sửa
+                          </Button>
+                        </TableCell>
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -233,7 +304,7 @@ const SparePart = () => {
                           >
                             Hiển Thị
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                 </TableBody>
@@ -249,6 +320,15 @@ const SparePart = () => {
             />
           </Grid>
         )}
+      {selectedItem && (
+        <UpdateSparePartDialog
+          open={openDialog}
+          handleClose={handleEditClose}
+          token={token}
+          item={selectedItem}
+          setReload={setReload}
+        />
+      )}
     </Box>
   );
 };

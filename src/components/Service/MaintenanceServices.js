@@ -55,6 +55,15 @@ const MaintenanceServices = () => {
     statusmaintenanceservices,
     error,
   } = useSelector((state) => state.maintenanceservice);
+
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
+  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
+    useSelector((state) => state.vehiclemodels);
+  const { schedules, statusschedules, errorschedules } = useSelector(
+    (state) => state.schedules
+  );
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
   const [reload, setReload] = useState(false);
@@ -62,7 +71,6 @@ const MaintenanceServices = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
-  const pageCount = Math.ceil(maintenanceservices.length / itemsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -97,40 +105,47 @@ const MaintenanceServices = () => {
     setOpenView(true);
   };
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterName, setFilterName] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
-  const [filterVehicle, setFilterVehicle] = useState("");
-  const [filterOdo, setFilterOdo] = useState("");
+  const [filterVehicleModel, setFilterVehicleModel] = useState("");
+  const [filterSchedule, setFilterSchedule] = useState("");
+  const [filterName, setFilterName] = useState("");
   const [filterBoolean, setFilterBoolean] = useState("");
-
-  const filteredItems = maintenanceservices.filter((ms) => {
-    const serviceName = ms.maintenanceServiceName
-      ? ms.maintenanceServiceName.toLowerCase()
+  
+  const filteredVehicleModels = vehiclemodels.filter(
+    (model) => model.vehiclesBrandId === filterBrand
+  );
+  const filteredSchedule = schedules.filter(
+    (model) => model.vehicleModelId === filterVehicleModel
+  );
+  const filteredservicelists = maintenanceservices.filter((service) => {
+    const serviceName = service.maintenanceServiceName
+      ? service.maintenanceServiceName.toLowerCase()
       : "";
-    const brandName = ms.vehiclesBrandName
-      ? ms.vehiclesBrandName.toLowerCase()
-      : "";
-    const vehicleModelName = ms.vehicleModelName
-      ? ms.vehicleModelName.toLowerCase()
-      : "";
-    const odoName = ms.maintananceScheduleName
-      ? ms.maintananceScheduleName.toLowerCase()
-      : "";
+    const statusMatch = filterStatus ? service.status === filterStatus : true;
+    const fitBrand = filterBrand
+      ? service.vehiclesBrandId === filterBrand
+      : true;
+    const fitVehicleModels = filterVehicleModel
+      ? service.vehicleModelId === filterVehicleModel
+      : true;
+    const fitschedule = filterSchedule
+      ? service.maintananceScheduleId === filterSchedule
+      : true;
     const booleanCondition =
       filterBoolean === "" ||
-      (filterBoolean === "Có Gói" && ms.boolean) ||
-      (filterBoolean === "Không Có Gói" && !ms.boolean);
-
+      (filterBoolean === "Có Gói" && service.boolean) ||
+      (filterBoolean === "Không Có Gói" && !service.boolean);
     return (
       booleanCondition &&
-      (!filterStatus || ms.status === filterStatus) &&
-      (!filterName || serviceName.includes(filterName.toLowerCase())) &&
-      (!filterBrand || brandName.includes(filterBrand.toLowerCase())) &&
-      (!filterVehicle ||
-        vehicleModelName.includes(filterVehicle.toLowerCase())) &&
-      (!filterOdo || odoName.includes(filterOdo.toLowerCase()))
+      statusMatch &&
+      fitBrand &&
+      fitVehicleModels &&
+      fitschedule &&
+      (!filterName || serviceName.includes(filterName.toLowerCase()))
     );
   });
+  const pageCount = Math.ceil(filteredservicelists.length / itemsPerPage);
+
   const role = localStorage.getItem("ROLE");
   useEffect(() => {
     dispatch(MaintenanceServicesByCenterId({ centerId, token }));
@@ -200,21 +215,67 @@ const MaintenanceServices = () => {
                   value={filterName}
                   onChange={(event) => setFilterName(event.target.value)}
                 />
-                <TextField
-                  label="Hãng Xe"
+                <Select
                   value={filterBrand}
-                  onChange={(event) => setFilterBrand(event.target.value)}
-                />
-                <TextField
-                  label="Loại Xe"
-                  value={filterVehicle}
-                  onChange={(event) => setFilterVehicle(event.target.value)}
-                />
-                <TextField
-                  label="Gói Odo Xe"
-                  value={filterOdo}
-                  onChange={(event) => setFilterOdo(event.target.value)}
-                />
+                  onChange={(event) => {
+                    setFilterBrand(event.target.value);
+                    setFilterVehicleModel("");
+                    setFilterSchedule("");
+                  }}
+                  displayEmpty
+                >
+                  <MenuItem value="">
+                    <em>Hãng Xe</em>
+                  </MenuItem>
+                  {brands.map((brand) => (
+                    <MenuItem
+                      key={brand.vehiclesBrandId}
+                      value={brand.vehiclesBrandId}
+                    >
+                      {brand.vehiclesBrandName}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={filterVehicleModel}
+                  onChange={(event) => {
+                    setFilterVehicleModel(event.target.value);
+                    setFilterSchedule("");
+                  }}
+                  displayEmpty
+                  disabled={!filterBrand}
+                >
+                  <MenuItem value="">
+                    <em>Loại Xe</em>
+                  </MenuItem>
+                  {filteredVehicleModels.map((model) => (
+                    <MenuItem
+                      key={model.vehicleModelId}
+                      value={model.vehicleModelId}
+                    >
+                      {model.vehicleModelName}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={filterSchedule}
+                  onChange={(event) => setFilterSchedule(event.target.value)}
+                  displayEmpty
+                  disabled={!filterVehicleModel}
+                >
+                  <MenuItem value="">
+                    <em>Gói Odo Km</em>
+                  </MenuItem>
+                  {filteredSchedule.map((schedule) => (
+                    <MenuItem
+                      key={schedule.maintananceScheduleId}
+                      value={schedule.maintananceScheduleId}
+                    >
+                      {formatNumberWithDots(schedule.maintananceScheduleName)}{" "}
+                      Km
+                    </MenuItem>
+                  ))}
+                </Select>
               </Box>
               <Grid>
                 <TableContainer
@@ -239,7 +300,7 @@ const MaintenanceServices = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {filteredItems
+                      {filteredservicelists
                         .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                         .map((item) => (
                           <TableRow

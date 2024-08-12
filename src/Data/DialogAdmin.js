@@ -1,26 +1,44 @@
 import {
   Autocomplete,
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  Grid,
   InputLabel,
+  MenuItem,
+  Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { BrandGetAllList, CreateBrandVehicles } from "../redux/brandSlice";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage } from "./firebase";
 import { ref, set } from "firebase/database";
-import { useFormik } from "formik";
+import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { CreateVehiclesModelPost } from "../redux/vehiclemodelsSlice";
 import { CreateSchedulePost } from "../redux/scheduleSlice";
-import { CreateSpartPartPost } from "../redux/sparepartsSlice";
-import { CreateServicePost } from "../redux/servicesSlice";
+import {
+  CreateSpartPartPost,
+  SparePartsAll,
+  UpdateSpartPartPut,
+} from "../redux/sparepartsSlice";
+import {
+  CreateServicePost,
+  ServicesListGetAll,
+  UpdateServicePut,
+} from "../redux/servicesSlice";
+import { UpdateSparePartItemByCenter } from "../redux/sparepartItemsSlice";
+import { PostCenter } from "../redux/centerSlice";
+import { CreateCustomerCarePost } from "../redux/customercareSlice";
+import { CreateTechPost } from "../redux/techinicansSlice";
+const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
   open,
@@ -1314,6 +1332,1293 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
             <Button type="submit">Add</Button>
           </DialogActions>
         </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const UpdateSparePartDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+
+  const formik = useFormik({
+    initialValues: {
+      status: item?.status || "ACTIVE",
+      sparePartName: item?.sparePartName,
+      sparePartType: item?.sparePartType || "",
+      sparePartDescription: item?.sparePartDescription || "",
+      originalPrice: item?.originalPrice,
+    },
+    validationSchema: Yup.object({
+      status: Yup.string().required("Status is required"),
+      sparePartName: Yup.string().required("SparePartName is required"),
+      sparePartType: Yup.string().required("sparePartType is required"),
+      sparePartDescription: Yup.string().required(
+        "sparePartDescription is required"
+      ),
+      originalPrice: Yup.number()
+        .required("originalPrice is required")
+        .min(10000, "Min 10000"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        // let imageUrl = values.image;
+        // if (imageFile) {
+        //   const storageRef = ref(storage, `images/${imageFile.name}`);
+        //   await uploadBytes(storageRef, imageFile);
+        //   imageUrl = await getDownloadURL(storageRef);
+        // }
+
+        dispatch(
+          UpdateSpartPartPut({
+            token: token,
+            id: item.sparePartId,
+            data: { ...values },
+          })
+        ).then(() => {
+          dispatch(SparePartsAll(token));
+          handleClose();
+          resetForm();
+        });
+        setReload((p) => !p);
+        resetForm();
+      } catch (error) {
+        console.error("Failed to update spare part item", error);
+      }
+    },
+  });
+
+  // const handleFileChange = (e) => {
+  //   setImageFile(e.target.files[0]);
+  //   formik.setFieldValue("image", e.target.files[0].name);
+  // };
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        status: item?.status,
+        sparePartName: item?.sparePartName,
+        sparePartType: item?.sparePartType,
+        sparePartDescription: item?.sparePartDescription,
+        originalPrice: item?.originalPrice,
+      });
+    }
+  }, [dispatch, item, token]);
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Cập Nhật Phụ Tùng Trung Tâm
+      </DialogTitle>
+
+      {item && (
+        <>
+          <DialogContent dividers>
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  label="Status"
+                  name="status"
+                  value={formik.values.status}
+                  onChange={formik.handleChange}
+                  error={formik.touched.status && Boolean(formik.errors.status)}
+                >
+                  {statusOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="Spare Part Name"
+                name="sparePartName"
+                value={formik.values.sparePartName}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.sparePartName &&
+                  Boolean(formik.errors.sparePartName)
+                }
+                helperText={
+                  formik.touched.sparePartName && formik.errors.sparePartName
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="sparePartType"
+                name="sparePartType"
+                value={formik.values.sparePartType}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.sparePartType &&
+                  Boolean(formik.errors.sparePartType)
+                }
+                helperText={
+                  formik.touched.sparePartType && formik.errors.sparePartType
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="sparePartDescription"
+                name="sparePartDescription"
+                value={formik.values.sparePartDescription}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.sparePartDescription &&
+                  Boolean(formik.errors.sparePartDescription)
+                }
+                helperText={
+                  formik.touched.sparePartDescription &&
+                  formik.errors.sparePartDescription
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="Price"
+                name="originalPrice"
+                type="number"
+                value={formik.values.originalPrice}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.capacity &&
+                  Boolean(formik.errors.originalPrice)
+                }
+                helperText={
+                  formik.touched.capacity && formik.errors.originalPrice
+                }
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+
+              <DialogActions>
+                <Button type="submit" color="primary">
+                  Update
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+                    formik.resetForm();
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  );
+};
+
+export const UpdateServiceDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+
+  const formik = useFormik({
+    initialValues: {
+      status: item?.status || "ACTIVE",
+      serviceCareName: item?.serviceCareName,
+      serviceCareType: item?.serviceCareType || "",
+      serviceCareDescription: item?.serviceCareDescription || "",
+      originalPrice: item?.originalPrice,
+    },
+    validationSchema: Yup.object({
+      status: Yup.string().required("Status is required"),
+      serviceCareName: Yup.string().required("serviceCareName is required"),
+      serviceCareType: Yup.string().required("serviceCareType is required"),
+      serviceCareDescription: Yup.string().required(
+        "serviceCareDescription is required"
+      ),
+      originalPrice: Yup.number()
+        .required("originalPrice is required")
+        .min(10000, "Min 10000"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        // let imageUrl = values.image;
+        // if (imageFile) {
+        //   const storageRef = ref(storage, `images/${imageFile.name}`);
+        //   await uploadBytes(storageRef, imageFile);
+        //   imageUrl = await getDownloadURL(storageRef);
+        // }
+
+        dispatch(
+          UpdateServicePut({
+            token: token,
+            id: item.serviceCareId,
+            data: { ...values },
+          })
+        ).then(() => {
+          dispatch(ServicesListGetAll(token));
+          handleClose();
+          resetForm();
+        });
+        setReload((p) => !p);
+        resetForm();
+      } catch (error) {
+        console.error("Failed to update spare part item", error);
+      }
+    },
+  });
+
+  // const handleFileChange = (e) => {
+  //   setImageFile(e.target.files[0]);
+  //   formik.setFieldValue("image", e.target.files[0].name);
+  // };
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        status: item?.status,
+        serviceCareName: item?.serviceCareName,
+        serviceCareType: item?.serviceCareType,
+        serviceCareDescription: item?.serviceCareDescription,
+        originalPrice: item?.originalPrice,
+      });
+    }
+  }, [dispatch, item, token]);
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Cập Nhật Phụ Tùng Trung Tâm
+      </DialogTitle>
+
+      {item && (
+        <>
+          <DialogContent dividers>
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  label="Status"
+                  name="status"
+                  value={formik.values.status}
+                  onChange={formik.handleChange}
+                  error={formik.touched.status && Boolean(formik.errors.status)}
+                >
+                  {statusOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="serviceCareName"
+                name="serviceCareName"
+                value={formik.values.serviceCareName}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.serviceCareName &&
+                  Boolean(formik.errors.serviceCareName)
+                }
+                helperText={
+                  formik.touched.serviceCareName &&
+                  formik.errors.serviceCareName
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="serviceCareType"
+                name="serviceCareType"
+                value={formik.values.serviceCareType}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.serviceCareType &&
+                  Boolean(formik.errors.serviceCareType)
+                }
+                helperText={
+                  formik.touched.serviceCareType &&
+                  formik.errors.serviceCareType
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="serviceCareDescription"
+                name="serviceCareDescription"
+                value={formik.values.serviceCareDescription}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.serviceCareDescription &&
+                  Boolean(formik.errors.serviceCareDescription)
+                }
+                helperText={
+                  formik.touched.serviceCareDescription &&
+                  formik.errors.serviceCareDescription
+                }
+                fullWidth
+                margin="normal"
+              />
+
+              <TextField
+                label="Price"
+                name="originalPrice"
+                type="number"
+                value={formik.values.originalPrice}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.capacity &&
+                  Boolean(formik.errors.originalPrice)
+                }
+                helperText={
+                  formik.touched.capacity && formik.errors.originalPrice
+                }
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+
+              <DialogActions>
+                <Button type="submit" color="primary">
+                  Update
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+                    formik.resetForm();
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  );
+};
+export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
+  const [step, setStep] = useState(1);
+  const dispatch = useDispatch();
+
+  const initialValues = {
+    email: "",
+    password: "",
+    confirmPassword: "",
+    gender: "",
+    phone: "",
+    maintenanceCenterName: "",
+    maintenanceCenterDescription: "",
+    address: "",
+    district: "",
+    city: "",
+    country: "",
+    logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+  };
+
+  const validationSchemaStep1 = Yup.object().shape({
+    email: Yup.string().email("Invalid email address").required("Required"),
+    password: Yup.string().required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Required"),
+  });
+
+  const validationSchemaStep2 = Yup.object().shape({
+    gender: Yup.string().required("Required"),
+    phone: Yup.string().required("Required"),
+    maintenanceCenterName: Yup.string().required("Required"),
+    maintenanceCenterDescription: Yup.string().required("Required"),
+    address: Yup.string().required("Required"),
+    district: Yup.string().required("Required"),
+    city: Yup.string().required("Required"),
+    country: Yup.string().required("Required"),
+  });
+
+  const handleSubmit = (values, { setSubmitting, setErrors }) => {
+    if (step === 1) {
+      setStep(2);
+      setSubmitting(false);
+    } else {
+      dispatch(PostCenter(values))
+        .then((result) => {
+          if (PostCenter.fulfilled.match(result)) {
+            handleClose();
+          } else {
+            setErrors(result.payload || {});
+          }
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
+    }
+  };
+
+  const renderStep1Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Email"
+          name="email"
+          error={touched.email && errors.email}
+          helperText={touched.email && errors.email}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Password"
+          name="password"
+          type="password"
+          error={touched.password && errors.password}
+          helperText={touched.password && errors.password}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          error={touched.confirmPassword && errors.confirmPassword}
+          helperText={touched.confirmPassword && errors.confirmPassword}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  const renderStep2Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
+          <InputLabel id="gender-label" shrink>
+            Gender
+          </InputLabel>
+          <Field
+            as={Select}
+            labelId="gender-label"
+            name="gender"
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">
+              <em>Chọn giới tính</em>
+            </MenuItem>
+            <MenuItem value="Nam">Nam</MenuItem>
+            <MenuItem value="Nữ">Nữ</MenuItem>
+          </Field>
+          {touched.gender && errors.gender && (
+            <span style={{ color: "red" }}>{errors.gender}</span>
+          )}
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Phone"
+          name="phone"
+          error={touched.phone && errors.phone}
+          helperText={touched.phone && errors.phone}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Maintenance Center Name"
+          name="maintenanceCenterName"
+          error={touched.maintenanceCenterName && errors.maintenanceCenterName}
+          helperText={
+            touched.maintenanceCenterName && errors.maintenanceCenterName
+          }
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Maintenance Center Description"
+          name="maintenanceCenterDescription"
+          error={
+            touched.maintenanceCenterDescription &&
+            errors.maintenanceCenterDescription
+          }
+          helperText={
+            touched.maintenanceCenterDescription &&
+            errors.maintenanceCenterDescription
+          }
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Address"
+          name="address"
+          error={touched.address && errors.address}
+          helperText={touched.address && errors.address}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="District"
+          name="district"
+          error={touched.district && errors.district}
+          helperText={touched.district && errors.district}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="City"
+          name="city"
+          error={touched.city && errors.city}
+          helperText={touched.city && errors.city}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Country"
+          name="country"
+          error={touched.country && errors.country}
+          helperText={touched.country && errors.country}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
+      <DialogTitle></DialogTitle>
+      <DialogContent>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={
+            step === 1 ? validationSchemaStep1 : validationSchemaStep2
+          }
+          onSubmit={handleSubmit}
+          validateOnMount={false}
+          validateOnChange={false}
+          validateOnBlur={true}
+        >
+          {({
+            errors,
+            touched,
+            isSubmitting,
+            validateForm,
+            setTouched,
+            submitForm,
+          }) => (
+            <Form>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h4"
+                  component="h2"
+                  sx={{
+                    color: "#030304",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    letterSpacing: "0.1em",
+                    mb: 4,
+                  }}
+                >
+                  Tạo Trung Tâm
+                </Typography>
+                {step === 1
+                  ? renderStep1Fields(errors, touched)
+                  : renderStep2Fields(errors, touched)}
+              </Box>
+              <DialogActions>
+                {step === 2 && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setStep(1)}
+                    disabled={isSubmitting}
+                  >
+                    Back
+                  </Button>
+                )}
+                {step === 1 && (
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          setStep(2);
+                        } else {
+                          setTouched(errors);
+                        }
+                      });
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+                {step === 2 && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={submitForm}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const RegisterCustomerCare = ({
+  open,
+  handleClose,
+  token,
+  setReload,
+}) => {
+  const [step, setStep] = useState(1);
+  const dispatch = useDispatch();
+
+  const initialValues = {
+    email: "",
+    password: "",
+    confirmPassword: "",
+    gender: "",
+    phone: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+    birthday: Yup.date,
+  };
+
+  const validationSchemaStep1 = Yup.object().shape({
+    email: Yup.string().email("Invalid email address").required("Required"),
+    password: Yup.string().required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Required"),
+  });
+
+  const validationSchemaStep2 = Yup.object().shape({
+    firstName: Yup.string().required("Required"),
+    lastName: Yup.string().required("Required"),
+    gender: Yup.string().required("Required"),
+    phone: Yup.string().required("Required"),
+    birthday: Yup.date().required("Required").nullable(),
+    address: Yup.string().required("Required"),
+  });
+
+  const handleSubmit = (values, { setSubmitting, setErrors, resetForm }) => {
+    if (step === 1) {
+      setStep(2);
+      setSubmitting(false);
+    } else {
+      dispatch(CreateCustomerCarePost({ token, data: values }))
+        .then((result) => {
+          if (CreateCustomerCarePost.fulfilled.match(result)) {
+            handleClose();
+            resetForm();
+            setStep(1);
+            setReload((r) => !r);
+          } else {
+            setErrors(result.payload || {});
+          }
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
+      setReload((r) => !r);
+    }
+  };
+
+  const renderStep1Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Email"
+          name="email"
+          error={touched.email && errors.email}
+          helperText={touched.email && errors.email}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Password"
+          name="password"
+          type="password"
+          error={touched.password && errors.password}
+          helperText={touched.password && errors.password}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          error={touched.confirmPassword && errors.confirmPassword}
+          helperText={touched.confirmPassword && errors.confirmPassword}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  const renderStep2Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="firstName"
+          name="firstName"
+          error={touched.firstName && errors.firstName}
+          helperText={touched.firstName && errors.firstName}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="lastName"
+          name="lastName"
+          error={touched.lastName && errors.lastName}
+          helperText={touched.lastName && errors.lastName}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
+          <InputLabel id="gender-label" shrink>
+            Gender
+          </InputLabel>
+          <Field
+            as={Select}
+            labelId="gender-label"
+            name="gender"
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">
+              <em>Chọn giới tính</em>
+            </MenuItem>
+            <MenuItem value="Nam">Nam</MenuItem>
+            <MenuItem value="Nữ">Nữ</MenuItem>
+          </Field>
+          {touched.gender && errors.gender && (
+            <span style={{ color: "red" }}>{errors.gender}</span>
+          )}
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={4}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Phone"
+          name="phone"
+          error={touched.phone && errors.phone}
+          helperText={touched.phone && errors.phone}
+        />
+      </Grid>
+      <Grid item xs={12} sm={4}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Birthday"
+          name="birthday"
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          error={touched.birthday && errors.birthday}
+          helperText={touched.birthday && errors.birthday}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Address"
+          name="address"
+          error={touched.address && errors.address}
+          helperText={touched.address && errors.address}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
+      <DialogTitle></DialogTitle>
+      <DialogContent>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={
+            step === 1 ? validationSchemaStep1 : validationSchemaStep2
+          }
+          onSubmit={handleSubmit}
+          validateOnMount={false}
+          validateOnChange={false}
+          validateOnBlur={true}
+        >
+          {({
+            errors,
+            touched,
+            isSubmitting,
+            validateForm,
+            setTouched,
+            submitForm,
+          }) => (
+            <Form>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h4"
+                  component="h2"
+                  sx={{
+                    color: "#030304",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    letterSpacing: "0.1em",
+                    mb: 4,
+                  }}
+                >
+                  Tạo Trung Tâm
+                </Typography>
+                {step === 1
+                  ? renderStep1Fields(errors, touched)
+                  : renderStep2Fields(errors, touched)}
+              </Box>
+              <DialogActions>
+                {step === 2 && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setStep(1)}
+                    disabled={isSubmitting}
+                  >
+                    Back
+                  </Button>
+                )}
+                {step === 1 && (
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          setStep(2);
+                        } else {
+                          setTouched(errors);
+                        }
+                      });
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+                {step === 2 && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={submitForm}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+export const RegisterTechCare = ({
+  open,
+  handleClose,
+  token,
+  setReload,
+}) => {
+  const [step, setStep] = useState(1);
+  const dispatch = useDispatch();
+
+  const initialValues = {
+    email: "",
+    password: "",
+    confirmPassword: "",
+    gender: "",
+    phone: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+    birthday: Yup.date,
+  };
+
+  const validationSchemaStep1 = Yup.object().shape({
+    email: Yup.string().email("Invalid email address").required("Required"),
+    password: Yup.string().required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Required"),
+  });
+
+  const validationSchemaStep2 = Yup.object().shape({
+    firstName: Yup.string().required("Required"),
+    lastName: Yup.string().required("Required"),
+    gender: Yup.string().required("Required"),
+    phone: Yup.string().required("Required"),
+    birthday: Yup.date().required("Required").nullable(),
+    address: Yup.string().required("Required"),
+  });
+
+  const handleSubmit = (values, { setSubmitting, setErrors, resetForm }) => {
+    if (step === 1) {
+      setStep(2);
+      setSubmitting(false);
+    } else {
+      dispatch(CreateTechPost({ token, data: values }))
+        .then((result) => {
+          if (CreateTechPost.fulfilled.match(result)) {
+            handleClose();
+            resetForm();
+            setStep(1);
+            setReload((r) => !r);
+          } else {
+            setErrors(result.payload || {});
+          }
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
+      setReload((r) => !r);
+    }
+  };
+
+  const renderStep1Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Email"
+          name="email"
+          error={touched.email && errors.email}
+          helperText={touched.email && errors.email}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Password"
+          name="password"
+          type="password"
+          error={touched.password && errors.password}
+          helperText={touched.password && errors.password}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          error={touched.confirmPassword && errors.confirmPassword}
+          helperText={touched.confirmPassword && errors.confirmPassword}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  const renderStep2Fields = (errors, touched) => (
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="firstName"
+          name="firstName"
+          error={touched.firstName && errors.firstName}
+          helperText={touched.firstName && errors.firstName}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="lastName"
+          name="lastName"
+          error={touched.lastName && errors.lastName}
+          helperText={touched.lastName && errors.lastName}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
+          <InputLabel id="gender-label" shrink>
+            Gender
+          </InputLabel>
+          <Field
+            as={Select}
+            labelId="gender-label"
+            name="gender"
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">
+              <em>Chọn giới tính</em>
+            </MenuItem>
+            <MenuItem value="Nam">Nam</MenuItem>
+            <MenuItem value="Nữ">Nữ</MenuItem>
+          </Field>
+          {touched.gender && errors.gender && (
+            <span style={{ color: "red" }}>{errors.gender}</span>
+          )}
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={4}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Phone"
+          name="phone"
+          error={touched.phone && errors.phone}
+          helperText={touched.phone && errors.phone}
+        />
+      </Grid>
+      <Grid item xs={12} sm={4}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Birthday"
+          name="birthday"
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          error={touched.birthday && errors.birthday}
+          helperText={touched.birthday && errors.birthday}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12}>
+        <Field
+          as={TextField}
+          fullWidth
+          label="Address"
+          name="address"
+          error={touched.address && errors.address}
+          helperText={touched.address && errors.address}
+        />
+      </Grid>
+    </Grid>
+  );
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
+      <DialogTitle></DialogTitle>
+      <DialogContent>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={
+            step === 1 ? validationSchemaStep1 : validationSchemaStep2
+          }
+          onSubmit={handleSubmit}
+          validateOnMount={false}
+          validateOnChange={false}
+          validateOnBlur={true}
+        >
+          {({
+            errors,
+            touched,
+            isSubmitting,
+            validateForm,
+            setTouched,
+            submitForm,
+          }) => (
+            <Form>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h4"
+                  component="h2"
+                  sx={{
+                    color: "#030304",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    letterSpacing: "0.1em",
+                    mb: 4,
+                  }}
+                >
+                  Tạo Trung Tâm
+                </Typography>
+                {step === 1
+                  ? renderStep1Fields(errors, touched)
+                  : renderStep2Fields(errors, touched)}
+              </Box>
+              <DialogActions>
+                {step === 2 && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setStep(1)}
+                    disabled={isSubmitting}
+                  >
+                    Back
+                  </Button>
+                )}
+                {step === 1 && (
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          setStep(2);
+                        } else {
+                          setTouched(errors);
+                        }
+                      });
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+                {step === 2 && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    onClick={submitForm}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>
       </DialogContent>
     </Dialog>
   );

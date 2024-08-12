@@ -29,11 +29,13 @@ import BrandVehicle from "./PageAdmin/BrandVehicle";
 import VehicleModel from "./PageAdmin/VehicleModel";
 import SparePart from "./PageAdmin/SparePart";
 import ServiceCare from "./PageAdmin/ServiceCare";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BrandGetAllList } from "../redux/brandSlice";
 import { VehicleModelsGetAllList } from "../redux/vehiclemodelsSlice";
 import { ScheduleListGetall } from "../redux/scheduleSlice";
 import { SparePartsAll } from "../redux/sparepartsSlice";
+import { Profile } from "../redux/accountSlice";
+import ProfilePageV1 from "./Authen/Profile";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -77,7 +79,7 @@ const Sidebar = () => {
       <MaintenanceServices />,
       <CustomerCare />,
       <Technician />,
-      <HorizontalNonLinearStepper />,
+      <ProfilePageV1 />,
     ],
     CUSTOMERCARE: [
       <MaintenanceInformations />,
@@ -85,6 +87,7 @@ const Sidebar = () => {
       <Task />,
       <SparePartItems />,
       <MaintenanceServices />,
+      <ProfilePageV1 />,
     ],
     ADMIN: [
       // <MainDash />,
@@ -95,21 +98,22 @@ const Sidebar = () => {
       <VehicleModel />,
       <SparePart />,
       <ServiceCare />,
-      <ProfilePage />,
+      <ProfilePageV1 />,
     ],
   };
   const dispatch = useDispatch();
+  // const { profile } = useSelector((t) => t.account);
 
   useEffect(() => {
     const code = decodeToken(tokenlocal);
     const role =
       code["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    if (role === "ADMIN") {
-      dispatch(BrandGetAllList(tokenlocal));
-      dispatch(VehicleModelsGetAllList(tokenlocal));
-      dispatch(ScheduleListGetall(tokenlocal));
-      dispatch(SparePartsAll(tokenlocal));
-    }
+    // if (role === "ADMIN") {
+    dispatch(BrandGetAllList(tokenlocal));
+    dispatch(VehicleModelsGetAllList(tokenlocal));
+    dispatch(ScheduleListGetall(tokenlocal));
+    dispatch(SparePartsAll(tokenlocal));
+    dispatch(Profile(tokenlocal));
     localStorage.setItem("AccountId", code.sub);
     localStorage.setItem("ROLE", role);
     CheckRole(tokenlocal, role);
@@ -145,18 +149,48 @@ const Sidebar = () => {
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
-        <div className="logo">
-          <img
-            src="https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg"
-            alt="logo"
-            style={{
-              width: "120px",
-              height: "120px",
-              borderRadius: "70%",
-              border: "1px solid #000",
-            }}
-          />
-        </div>
+        {userRole === "CENTER" && (
+          <div className="logo">
+            <img
+              src="https://img.pikbest.com/origin/10/14/70/27tpIkbEsThjY.jpg!sw800"
+              alt="logo"
+              style={{
+                width: "150px",
+                height: "120px",
+                borderRadius: "50%",
+                border: "1px solid #000",
+              }}
+            />
+          </div>
+        )}
+        {userRole === "ADMIN" && (
+          <div className="logo">
+            <img
+              src="https://thumbs.dreamstime.com/b/red-admin-sign-pc-laptop-vector-illustration-administrator-icon-screen-controller-man-system-box-88756468.jpg"
+              alt="logo"
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "70%",
+                border: "1px solid #000",
+              }}
+            />
+          </div>
+        )}
+        {userRole === "CUSTOMERCARE" && (
+          <div className="logo">
+            <img
+              src="{profile?.Logo}"
+              alt="logo"
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "70%",
+                border: "1px solid #000",
+              }}
+            />
+          </div>
+        )}
         <div className="menu">
           {getSidebarData().map((item, index) => (
             <div

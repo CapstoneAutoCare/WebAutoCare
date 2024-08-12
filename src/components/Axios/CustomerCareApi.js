@@ -1,7 +1,7 @@
 import axiosApi from "./AxiosApi";
 
 const CustomerCareApi = {
-  async  getAll(token) {
+  async getAll(token) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -21,6 +21,17 @@ const CustomerCareApi = {
     const url = "/CustomerCares/GetListByCenter?centerId=" + centerId;
 
     return await axiosApi.get(url, config);
+  },
+  async CreateCustomerCare({ token, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+
+      },
+    };
+    const url = "CustomerCares/Post";
+    return axiosApi.post(url, data, config);
   },
 };
 export default CustomerCareApi;

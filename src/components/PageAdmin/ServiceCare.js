@@ -28,6 +28,7 @@ import {
   AddScheduleDialog,
   AddServiceDialog,
   AddVehicleModelDialog,
+  UpdateServiceDialog,
 } from "../../Data/DialogAdmin";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
@@ -35,18 +36,21 @@ const ServiceCare = () => {
   const dispatch = useDispatch();
   const { services, statusservices } = useSelector((state) => state.services);
   const [reload, setReload] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [openView, setOpenView] = useState(false);
   const token = localStorage.getItem("localtoken");
   const { brands, statusbrands, errorbrands } = useSelector(
     (state) => state.brands
   );
-  const [open, setOpen] = useState(false);
-
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
   const { schedules, statusschedules, errorschedules } = useSelector(
     (state) => state.schedules
   );
-  const [page, setPage] = useState(1);
   const itemsPerPage = 6;
   const pageCount = Math.ceil(services.length / itemsPerPage);
 
@@ -54,6 +58,8 @@ const ServiceCare = () => {
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
   const [filterSchedule, setFilterSchedule] = useState("");
+  const [filterName, setFilterName] = useState("");
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -72,9 +78,31 @@ const ServiceCare = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setReload(!reload);
+  };
+
+  const handleEditClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenDialog(false);
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenDialog(true);
+  };
+
+  const handleViewClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenView(false);
+  };
+  const handleClickShow = (item) => {
+    setSelectedItem(item);
+    setOpenView(true);
   };
 
   const filteredVehicleModels = vehiclemodels.filter(
@@ -83,8 +111,13 @@ const ServiceCare = () => {
   const filteredSchedule = schedules.filter(
     (model) => model.vehicleModelId === filterVehicleModel
   );
+
   const filteredservicelists = services.filter((service) => {
+    const serviceName = service.serviceCareName
+      ? service.serviceCareName.toLowerCase()
+      : "";
     const statusMatch = filterStatus ? service.status === filterStatus : true;
+
     const fitBrand = filterBrand
       ? service.reponseVehicleModel.vehiclesBrandId === filterBrand
       : true;
@@ -94,7 +127,13 @@ const ServiceCare = () => {
     const fitschedule = filterSchedule
       ? service.maintananceScheduleId === filterSchedule
       : true;
-    return statusMatch && fitBrand && fitVehicleModels && fitschedule;
+    return (
+      statusMatch &&
+      fitBrand &&
+      fitVehicleModels &&
+      fitschedule &&
+      (!filterName || serviceName.includes(filterName.toLowerCase()))
+    );
   });
   useEffect(() => {
     dispatch(ServicesListGetAll(token));
@@ -126,7 +165,11 @@ const ServiceCare = () => {
             </MenuItem>
           ))}
         </Select>
-
+        <TextField
+          label="Tên Dịch Vụ"
+          value={filterName}
+          onChange={(event) => setFilterName(event.target.value)}
+        />
         <Select
           value={filterBrand}
           onChange={(event) => {
@@ -198,16 +241,18 @@ const ServiceCare = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Mã Dịch Vụ </TableCell>
+                    {/* <TableCell>Mã Dịch Vụ </TableCell> */}
                     <TableCell>Tên Dịch Vụ</TableCell>
-                    <TableCell>Loại Dịch Vụ</TableCell>
+                    <TableCell>Loại</TableCell>
+                    <TableCell>Hãng Xe</TableCell>
+                    <TableCell>Loại Xe</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Mô Tả</TableCell>
                     <TableCell>Odo</TableCell>
-
                     <TableCell>Giá</TableCell>
                     <TableCell>Trạng Thái</TableCell>
-                    <TableCell>Chi Tiết</TableCell>
+                    <TableCell>Chỉnh Sửa</TableCell>
+                    {/* <TableCell>Chi Tiết</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -220,7 +265,7 @@ const ServiceCare = () => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{item?.serviceCareId}</TableCell>
+                        {/* <TableCell>{item?.serviceCareId}</TableCell> */}
 
                         <TableCell>
                           <Tooltip title={item?.serviceCareName} arrow>
@@ -231,6 +276,12 @@ const ServiceCare = () => {
                           <Tooltip title={item?.serviceCareType} arrow>
                             <span>{truncateNote(item?.serviceCareType)}</span>
                           </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                          {item?.reponseVehicleModel.vehiclesBrandName}
+                        </TableCell>
+                        <TableCell>
+                          {item?.reponseVehicleModel.vehicleModelName}
                         </TableCell>
                         <TableCell>{formatDate(item?.createdDate)}</TableCell>
                         <TableCell>
@@ -256,7 +307,7 @@ const ServiceCare = () => {
                           {formatNumberWithDots(item.originalPrice)} VND
                         </TableCell>
                         <TableCell>
-                          <Select
+                          {/* <Select
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
@@ -275,9 +326,24 @@ const ServiceCare = () => {
                                 {status}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </Select> */}
+                          <span
+                            className="status"
+                            style={{ ...makeStyle(item.status) }}
+                          >
+                            {item.status}
+                          </span>
                         </TableCell>
                         <TableCell className="Details">
+                          <Button
+                            onClick={() => handleEdit(item)}
+                            variant="contained"
+                            color="success"
+                          >
+                            Chỉnh Sửa
+                          </Button>
+                        </TableCell>
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -285,7 +351,7 @@ const ServiceCare = () => {
                           >
                             Hiển Thị
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                 </TableBody>
@@ -301,6 +367,15 @@ const ServiceCare = () => {
             />
           </Grid>
         )}
+      {selectedItem && (
+        <UpdateServiceDialog
+          open={openDialog}
+          handleClose={handleEditClose}
+          token={token}
+          item={selectedItem}
+          setReload={setReload}
+        />
+      )}
     </Box>
   );
 };
