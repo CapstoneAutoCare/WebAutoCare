@@ -8,13 +8,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 const defaultLocation = {
   lat: 10.7769,
   lng: 106.6951,
 };
-// const API_KEY = "AIzaSyAI9kPkskayYti5ttrZL_UfBlL3OkMEbvs";
+const API_KEY = "AIzaSyBuMOV4Kn0ZBwJwO5MYTR4k7G9tcixD33s";
 const address = "43E, đường 6, khu phố 3 , Tằng Nhơn Phú B, Tp Th";
 
 const ProfilePageV1 = () => {
@@ -42,29 +44,29 @@ const ProfilePageV1 = () => {
     }
   };
   useEffect(() => {
-    // const fetchCoordinates = async () => {
-    //   try {
-    //     const response = await axios.get(
-    //       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-    //         address
-    //       )}&key=${API_KEY}`
-    //     );
-    //     const { results } = response.data;
-    //     if (results.length > 0) {
-    //       const { geometry } = results[0];
-    //       setLocation({
-    //         lat: geometry.location.lat,
-    //         lng: geometry.location.lng,
-    //       });
-    //     } else {
-    //       console.error("Không tìm thấy địa chỉ.");
-    //     }
-    //     console.log("googlemap ", response);
-    //   } catch (error) {
-    //     console.error("Lỗi khi lấy tọa độ:", error);
-    //   }
-    // };
-    // fetchCoordinates();
+    const fetchCoordinates = async () => {
+      try {
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+            address
+          )}&key=${API_KEY}`
+        );
+        const { results } = response.data;
+        if (results.length > 0) {
+          const { geometry } = results[0];
+          setLocation({
+            lat: geometry.location.lat,
+            lng: geometry.location.lng,
+          });
+        } else {
+          console.error("Không tìm thấy địa chỉ.");
+        }
+        console.log("googlemap ", response);
+      } catch (error) {
+        console.error("Lỗi khi lấy tọa độ:", error);
+      }
+    };
+    fetchCoordinates();
   }, []);
   return (
     <Box sx={{ padding: 4 }}>
@@ -152,7 +154,7 @@ const ProfilePageV1 = () => {
       </Box>
 
       {/* Thêm Google Map */}
-      {/* <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>
           Địa điểm của bạn
         </Typography>
@@ -165,7 +167,7 @@ const ProfilePageV1 = () => {
             <Marker position={defaultLocation} />
           </GoogleMap>
         </LoadScript>
-      </Box> */}
+      </Box>
     </Box>
   );
 };
