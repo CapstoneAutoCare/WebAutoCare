@@ -14,7 +14,7 @@ const defaultLocation = {
   lat: 10.7769,
   lng: 106.6951,
 };
-const API_KEY = "AIzaSyAI9kPkskayYti5ttrZL_UfBlL3OkMEbvs";
+// const API_KEY = "AIzaSyAI9kPkskayYti5ttrZL_UfBlL3OkMEbvs";
 const address = "43E, đường 6, khu phố 3 , Tằng Nhơn Phú B, Tp Th";
 
 const ProfilePageV1 = () => {
