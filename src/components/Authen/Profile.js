@@ -8,8 +8,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 const defaultLocation = {
@@ -154,7 +152,7 @@ const ProfilePageV1 = () => {
       </Box>
 
       {/* Thêm Google Map */}
-      <Box sx={{ mt: 4 }}>
+      {/* <Box sx={{ mt: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>
           Địa điểm của bạn
         </Typography>
@@ -167,7 +165,7 @@ const ProfilePageV1 = () => {
             <Marker position={defaultLocation} />
           </GoogleMap>
         </LoadScript>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
