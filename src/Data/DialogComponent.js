@@ -4,12 +4,15 @@ import {
   Button,
   ButtonBase,
   Card,
+  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   Grid,
   IconButton,
   InputLabel,
@@ -87,8 +90,7 @@ import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInf
 import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesSlice";
 import { CreateBrandVehicles } from "../redux/brandSlice";
 const validationSchemaSparePart = Yup.object({
-  sparePartsItemName: Yup.string().required("Name is required"),
-  sparePartsId: Yup.string(),
+  sparePartsId: Yup.array(),
 });
 const validationSchemaService = Yup.object({
   maintenanceServiceName: Yup.string().required("Name is required"),
@@ -104,47 +106,90 @@ export const AddSparePartDialog = ({
   token,
   setReload,
 }) => {
-  const { spareparts, errorsparepart } = useSelector(
-    (state) => state.spareparts
-  );
   const dispatch = useDispatch();
+  const { spareparts } = useSelector((state) => state.spareparts);
+  const { brands } = useSelector((state) => state.brands);
+  const { vehiclemodels } = useSelector((state) => state.vehiclemodels);
+
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedSpareParts, setSelectedSpareParts] = useState([]);
+  const [brandSearchTerm, setBrandSearchTerm] = useState("");
+  const [modelSearchTerm, setModelSearchTerm] = useState("");
+  const filteredOptionsBrand = brands.filter((option) =>
+    option.vehiclesBrandName
+      .toLowerCase()
+      .includes(brandSearchTerm.toLowerCase())
+  );
+
+  const filteredOptionsModel = selectedBrand
+    ? vehiclemodels.filter(
+        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      )
+    : [];
+  const filteredOptionsSparePart = selectedModel
+    ? spareparts.filter(
+        (part) =>
+          part.reponseVehicleModel.vehicleModelId ===
+          selectedModel.vehicleModelId
+      )
+    : [];
 
   const formik = useFormik({
     initialValues: {
-      sparePartsItemName: "",
-      sparePartsId: "",
+      sparePartsIds: [],
     },
-    validationSchema: validationSchemaSparePart,
     onSubmit: async (values, { resetForm }) => {
       const data = {
-        sparePartsItemName: values.sparePartsItemName,
-        sparePartsId: values.sparePartId ? values.sparePartId : null,
+        SparePartsId: values.sparePartsIds,
       };
 
-      await dispatch(AddSparePartItemsByCenter({ data, token }))
-        .then(() => {
+      try {
+        await dispatch(AddSparePartItemsByCenter({ token, data })).then(() => {
           dispatch(SparePartItemsByCenterId({ centerId, token }));
           resetForm();
           handleClose();
           setReload((p) => !p);
-        })
-        .catch((error) => {
-          console.error("Failed to add item:", error);
+          setModelSearchTerm(null);
+          setSelectedBrand(null);
+          setSelectedModel(null);
+          setSelectedSpareParts(null);
+          dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
         });
-      setReload((p) => !p);
+        handleClose();
+        setReload((p) => !p);
+        dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
+      } catch (error) {
+        console.error("Failed to add item:", error);
+      }
     },
   });
-  const handleClear = () => {
-    formik.setFieldValue("sparePartsId", "");
-  };
-  const [searchTerm, setSearchTerm] = useState("");
-  const filteredOptions = spareparts.filter((option) =>
-    option.sparePartName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   useEffect(() => {
-    dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
-  }, [dispatch, token, open, setReload]);
+    if (open) {
+      setSelectedSpareParts([]);
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setBrandSearchTerm("");
+      setModelSearchTerm("");
+      dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
+    }
+  }, [dispatch, token, centerId, open, setReload]);
+
+  const handleSparePartChange = (event, option) => {
+    if (event.target.checked) {
+      setSelectedSpareParts([...selectedSpareParts, option.sparePartId]);
+    } else {
+      setSelectedSpareParts(
+        selectedSpareParts.filter((id) => id !== option.sparePartId)
+      );
+    }
+    formik.setFieldValue("sparePartsIds", [
+      ...selectedSpareParts,
+      option.sparePartId,
+    ]);
+  };
+
   return (
     <Dialog
       open={open}
@@ -163,92 +208,146 @@ export const AddSparePartDialog = ({
       <DialogTitle>Thêm Phụ Tùng Trung Tâm</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <Autocomplete
-            label="SparePartsId"
-            fullWidth
-            margin="normal"
-            disablePortal
-            id="sparePartsId"
-            options={filteredOptions}
-            getOptionLabel={(option) =>
-              `Name: ${option.sparePartName} - Vehicle: ${option.reponseVehicleModel.vehiclesBrandName} ${option.reponseVehicleModel.vehicleModelName}`
-            }
-            onChange={(event, newValue) => {
-              const selectedId = newValue;
-              formik.setFieldValue(
-                "sparePartId",
-                selectedId?.sparePartId || ""
-              );
-              formik.setFieldValue(
-                "sparePartsItemName",
-                selectedId?.sparePartName || ""
-              );
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Name"
-                name="sparePartsId"
-                value={searchTerm}
-                variant="outlined"
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            )}
-          />
-
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="sparePartId"
-              label="Spare Part Id"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formik.values.sparePartId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.sparePartsId &&
-                Boolean(formik.errors.sparePartsId)
-              }
-              disabled={true}
-              helperText={
-                formik.touched.sparePartsId && formik.errors.sparePartsId
-              }
-              InputLabelProps={{
-                shrink: true,
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel
+              shrink
+              htmlFor="vehiclesBrandId"
+              style={{
+                backgroundColor: "white",
+                padding: "0 8px",
               }}
+            >
+              Select Brand
+            </InputLabel>
+            <Autocomplete
+              id="vehiclesBrandId"
+              fullWidth
+              options={filteredOptionsBrand}
+              getOptionLabel={(option) =>
+                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+              }
+              onChange={(event, newValue) => {
+                setSelectedBrand(newValue);
+                setSelectedModel(null);
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={option.vehiclesBrandId}>
+                  <img
+                    src={option?.logo}
+                    alt={option.vehiclesBrandName}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      marginRight: 10,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <div>
+                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div style={{ fontSize: "0.8em", color: "gray" }}>
+                      Mã: {option.vehiclesBrandId}
+                    </div>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  onChange={(e) => setBrandSearchTerm(e.target.value)}
+                />
+              )}
             />
-            {formik.values.sparePartsId && (
-              <IconButton onClick={handleClear} size="small">
-                <ClearIcon />
-              </IconButton>
-            )}
-          </div>
+          </FormControl>
 
-          <TextField
-            margin="dense"
-            name="sparePartsItemName"
-            label="Spare Parts Item Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formik.values.sparePartsItemName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.sparePartsItemName &&
-              Boolean(formik.errors.sparePartsItemName)
-            }
-            helperText={
-              formik.touched.sparePartsItemName &&
-              formik.errors.sparePartsItemName
-            }
-          />
+          {selectedBrand && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Loại Xe
+              </InputLabel>
+              <Autocomplete
+                id="vehiclesModelId"
+                fullWidth
+                options={filteredOptionsModel}
+                getOptionLabel={(option) =>
+                  `Loại xe:  ${option.vehicleModelName} (Mã: ${option.vehicleModelId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectedModel(newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.vehicleModelId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.vehicleModelName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Xe {option.vehicleModelName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.vehicleModelId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => setModelSearchTerm(e.target.value)}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+
+          {selectedModel && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel shrink htmlFor="sparePartId">
+                Chọn Phụ Tùng
+              </InputLabel>
+              <FormGroup>
+                {filteredOptionsSparePart.map((option) => (
+                  <FormControlLabel
+                    key={option.sparePartId}
+                    control={
+                      <Checkbox
+                        checked={selectedSpareParts.includes(
+                          option.sparePartId
+                        )}
+                        onChange={(event) =>
+                          handleSparePartChange(event, option)
+                        }
+                      />
+                    }
+                    label={`${option.sparePartName} - Giá ${option?.originalPrice} VND (Mã: ${option.sparePartId})`}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+          )}
 
           <DialogActions>
-            <Button onClick={handleClose}>Trả Về</Button>
+            <Button
+              onClick={() => {
+                handleClose();
+                formik.resetForm();
+              }}
+            >
+              Trả Về
+            </Button>
             <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
@@ -342,37 +441,7 @@ export const AddMaintenanceServiceDialog = ({
               />
             )}
           />
-          {/* <FormControl fullWidth margin="normal">
-            <InputLabel>Tên Dịch Vụ</InputLabel>
-            <Select
-              label="Service Care Id"
-              name="serviceCareId"
-              value={formik.values.serviceCareId}
-              onChange={(event) => {
-                formik.handleChange(event);
-                const selectedServices = services.find(
-                  (part) => part.serviceCareId === event.target.value
-                );
-                formik.setFieldValue(
-                  "maintenanceServiceName",
-                  selectedServices?.serviceCareName || ""
-                );
-              }}
-              error={
-                formik.touched.serviceCareId &&
-                Boolean(formik.errors.serviceCareId)
-              }
-            >
-              {services.map((option) => (
-                <MenuItem
-                  key={option.serviceCareId}
-                  value={option.serviceCareId}
-                >
-                  {option.maintananceScheduleName} {option.serviceCareName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
+
           <div style={{ display: "flex", alignItems: "center" }}>
             <TextField
               autoFocus
@@ -1054,7 +1123,9 @@ export const ViewSparePartItemsCostDialog = ({
 };
 
 const validationSchemaMaintenanceServicesCost = Yup.object({
-  acturalCost: Yup.number().required("Nhập Tiền").min(1000,"Thấp nhất là 1000 VND"),
+  acturalCost: Yup.number()
+    .required("Nhập Tiền")
+    .min(1000, "Thấp nhất là 1000 VND"),
   maintenanceServiceId: Yup.string().required("Name is required"),
   note: Yup.string(),
 });
@@ -1369,7 +1440,9 @@ export const ViewMaintenanceServicesCostDialog = ({
   );
 };
 const validationSchemaSparePartItemsCost = Yup.object({
-  acturalCost: Yup.number().required("Nhập Tiền").min(1000,"Thấp nhất là 1000 VND"),
+  acturalCost: Yup.number()
+    .required("Nhập Tiền")
+    .min(1000, "Thấp nhất là 1000 VND"),
   sparePartsItemId: Yup.string().required("Name is required"),
   note: Yup.string(),
 });

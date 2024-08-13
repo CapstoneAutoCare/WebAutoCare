@@ -204,6 +204,7 @@ const sparepartitemsSlice = createSlice({
       .addCase(AddSparePartItemsByCenter.rejected, (state, action) => {
         state.statussparepartitem = "failed";
         state.errorsparepartitem = action.payload;
+        alert(state.errorsparepartitem);
       })
       .addCase(UpdateSparePartItemByCenter.pending, (state) => {
         state.statussparepartitem = "loading";

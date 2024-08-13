@@ -37,10 +37,11 @@ const SparePartItemsApi = {
     const config = {
       headers: {
         "Content-Type": "application/json",
+        "Accept": "text/plain", 
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = "/SparePartItem/Post";
+    const url = "/SparePartItem/PostList";
 
     return await axiosApi.post(url, data, config);
   },

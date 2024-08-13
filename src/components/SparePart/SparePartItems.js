@@ -33,6 +33,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
+import { GetSpartPartNotSparePartItemId } from "../../redux/sparepartsSlice";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -57,7 +58,12 @@ const SparePartItems = () => {
   const [openView, setOpenView] = useState(false);
   const itemsPerPage = 5;
   const [reload, setReload] = useState(false);
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
 
+  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
+    useSelector((state) => state.vehiclemodels);
   const {
     sparepartitems = [],
     statussparepartitem,
@@ -66,15 +72,6 @@ const SparePartItems = () => {
 
   const centerId = localStorage.getItem("CenterId");
   const token = localStorage.getItem("localtoken");
-  const { brands, statusbrands, errorbrands } = useSelector(
-    (state) => state.brands
-  );
-
-  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
-    useSelector((state) => state.vehiclemodels);
-  const { schedules, statusschedules, errorschedules } = useSelector(
-    (state) => state.schedules
-  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
