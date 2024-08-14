@@ -25,53 +25,32 @@ export default function HorizontalLinearStepper({
   bookingData,
   setReload,
 }) {
-  const [activeStep, setActiveStep] = useState(0);
-  const [skipped, setSkipped] = useState(new Set());
   const dispatch = useDispatch();
   const token = localStorage.getItem("localtoken");
   const [inforId, setInforId] = useState(null);
-  const { receipt, errorreceipt, statusreceipt } = useSelector(
-    (state) => state.receipts
-  );
+  const { receipt, statusreceipt } = useSelector((state) => state.receipts);
   const [open, setOpen] = useState(false);
   const [openAddMainSparePartInfor, setOpenAddMainSparePartInfor] =
     useState(false);
   const [openAddMainServiceInfor, setOpenAddMainServiceInfor] = useState(false);
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
 
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
+  const statusOptions = [
+    "CREATEDBYClIENT",
+    "WAITINGBYCAR",
+    "CHECKIN",
+    "REPAIRING",
+    "PAYMENT",
+    "YETPAID",
+    "PAID",
+  ];
 
-  const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
   const HandleAddReceipt = ({ informationMaintenanceId }) => {
-    console.log("HandleAddReceipt", informationMaintenanceId);
     setInforId(informationMaintenanceId);
     setOpen(true);
   };
 
   const HandleAddMainServiceInfor = ({ informationMaintenanceId }) => {
     setInforId(informationMaintenanceId);
-    console.log("HandleAddMainServiceInfor", informationMaintenanceId);
     setOpenAddMainServiceInfor(true);
   };
 
@@ -80,9 +59,9 @@ export default function HorizontalLinearStepper({
     setReload((p) => !p);
     setInforId(null);
   };
+
   const HandleAddSparePartInfor = ({ informationMaintenanceId }) => {
     setInforId(informationMaintenanceId);
-    console.log("HandleAddSparePartInfor", informationMaintenanceId);
     setOpenAddMainSparePartInfor(true);
   };
 
@@ -91,150 +70,127 @@ export default function HorizontalLinearStepper({
     setReload((p) => !p);
     setInforId(null);
   };
-  const stepLabels = mainData.responseMaintenanceHistoryStatuses.map(
-    (step) => step.status
-  );
+
   const handleClose = () => {
     setOpen(false);
     setReload((p) => !p);
     setInforId(null);
   };
+
   useEffect(() => {
     dispatch(
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
     );
   }, [dispatch]);
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Stepper activeStep={activeStep}>
-        {stepLabels.map((label, index) => {
-          const stepProps = {};
-          const labelProps = {};
-          if (isStepOptional(index)) {
-            labelProps.optional = (
-              <Typography variant="caption">Optional</Typography>
-            );
-          }
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
-          return (
-            <Step key={label} {...stepProps}>
-              <StepLabel {...labelProps}>{label}</StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      {activeStep === stepLabels.length ? (
-        <Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>
-            All steps completed - you're finished
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Box sx={{ flex: "1 1 auto" }} />
-            <Button onClick={handleReset}>Reset</Button>
-          </Box>
-        </Fragment>
-      ) : (
-        <Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Button
-              color="info"
-              disabled={activeStep === 0}
-              variant="outlined"
-              onClick={handleBack}
-              sx={{ mr: 0 }}
-            >
-              Trả Về
-            </Button>
+      <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
+        {statusOptions.map((status) => (
+          <Typography
+            key={status}
+            sx={{
+              color:
+                mainData.status === status ? "primary.main" : "text.secondary",
+              fontWeight: mainData.status === status ? "bold" : "normal",
+            }}
+          ></Typography>
+        ))}
+      </Box>
 
-            <Box sx={{ flex: "1 1 auto" }}>
-              {activeStep === 2 &&
-                (mainData.status === "CHECKIN" ||
-                  mainData.status === "REPAIRING") && (
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Button
-                        // color="inherit"
-                        onClick={() => {
-                          HandleAddSparePartInfor({
-                            informationMaintenanceId:
-                              mainData.informationMaintenanceId,
-                          });
-                        }}
-                        sx={{ width: "100%" }}
-                        variant="outlined"
-                        color="success"
-                      >
-                        Thêm Phụ Tùng Mới
-                      </Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Button
-                        // color="inherit"
-                        onClick={() => {
-                          HandleAddMainServiceInfor({
-                            informationMaintenanceId:
-                              mainData.informationMaintenanceId,
-                          });
-                        }}
-                        sx={{ width: "100%" }}
-                        variant="outlined"
-                        color="success"
-                      >
-                        Thêm Dịch Vụ Mới
-                      </Button>
-                    </Grid>
-                  </Grid>
-                )}
-              {activeStep === 4 && statusreceipt === "failed" && (
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Button
-                      onClick={() => {
-                        HandleAddReceipt({
-                          informationMaintenanceId:
-                            mainData.informationMaintenanceId,
-                        });
-                      }}
-                      sx={{ width: "100%" }}
-                      variant="outlined"
-                      color="success"
-                    >
-                      Tạo Biên Lai
-                    </Button>
-                  </Grid>
-                </Grid>
-              )}
-            </Box>
-            <Button onClick={handleNext} variant="outlined" color="primary">
-              {activeStep === stepLabels.length - 1 ? "Finish" : "Tiếp Tục"}
-            </Button>
+      <Stepper
+        activeStep={statusOptions.indexOf(mainData.status)}
+        alternativeLabel
+      >
+        {statusOptions.map((label, index) => (
+          <Step
+            key={label}
+            completed={index <= statusOptions.indexOf(mainData.status)}
+          >
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Grid container spacing={2}>
+          {["CHECKIN", "REPAIRING"].includes(mainData.status) && (
+            <>
+              <Grid item xs={6}>
+                <Button
+                  onClick={() =>
+                    HandleAddSparePartInfor({
+                      informationMaintenanceId:
+                        mainData.informationMaintenanceId,
+                    })
+                  }
+                  sx={{ width: "100%" }}
+                  variant="outlined"
+                  color="success"
+                >
+                  Thêm Phụ Tùng Mới
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  onClick={() =>
+                    HandleAddMainServiceInfor({
+                      informationMaintenanceId:
+                        mainData.informationMaintenanceId,
+                    })
+                  }
+                  sx={{ width: "100%" }}
+                  variant="outlined"
+                  color="success"
+                >
+                  Thêm Dịch Vụ Mới
+                </Button>
+              </Grid>
+            </>
+          )}
+        </Grid>
+
+        {statusreceipt === "failed" && mainData.status === "PAYMENT" && (
+          <Grid container spacing={1} sx={{ mt: 2 }}>
+            <Grid item xs={12}>
+              <Button
+                onClick={() =>
+                  HandleAddReceipt({
+                    informationMaintenanceId: mainData.informationMaintenanceId,
+                  })
+                }
+                sx={{ width: "100%" }}
+                variant="outlined"
+                color="success"
+              >
+                Tạo Biên Lai
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+      </Box>
+
+      <Box sx={{ mt: 4 }}>
+        <Fade in={true}>
+          <Box>
+            <OutlinedCardBooking data={bookingData} setReload={setReload} />
           </Box>
-          <Fade in={activeStep === 0}>
-            <Box>
-              <OutlinedCardBooking data={bookingData} setReload={setReload} />
-            </Box>
-          </Fade>
-          {activeStep === 1 && (
-            <OutlinedCardMain data={mainData} setReload={setReload} />
-          )}
-          {activeStep === 2 && (
-            <OutlinedCardMain data={mainData} setReload={setReload} />
-          )}
-          {activeStep === 3 && (
-            <OutlinedCardListTask data={mainData} setReload={setReload} />
-          )}
-          {activeStep === 4 && receipt && statusreceipt === "succeeded" && (
-            <OutlinedCardReceipt
-              data={receipt}
-              main={mainData}
-              setReload={setReload}
-            />
-          )}
-        </Fragment>
-      )}
+        </Fade>
+
+        <OutlinedCardMain data={mainData} setReload={setReload} />
+
+        <OutlinedCardListTask data={mainData} setReload={setReload} />
+
+        {receipt && statusreceipt === "succeeded" && (
+          <OutlinedCardReceipt
+            data={receipt}
+            main={mainData}
+            setReload={setReload}
+          />
+        )}
+      </Box>
+
+      {/* Dialogs */}
       <UseFormikCreateReceipt
         open={open}
         handleClose={handleClose}

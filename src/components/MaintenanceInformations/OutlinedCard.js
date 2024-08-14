@@ -750,6 +750,9 @@ export const OutlinedCardMain = ({ data, setReload }) => {
       <Card variant="outlined">
         <MainComponent data={data} setReload={setReload}></MainComponent>
       </Card>
+      {/* <Card variant="outlined">
+        <MainComponent data={data} setReload={setReload}></MainComponent>
+      </Card> */}
       {data.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableMainServiceInforComponent
@@ -1269,7 +1272,7 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
       <Card variant="outlined">
         <ReceiptComponent data={data} setReload={setReload}></ReceiptComponent>
       </Card>
-
+{/* 
       {main.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableMainServiceInforComponent
@@ -1303,7 +1306,7 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
             id={item.maintenanceSparePartInfoId}
           />
         </Card>
-      ))}
+      ))} */}
     </Box>
   );
 };
