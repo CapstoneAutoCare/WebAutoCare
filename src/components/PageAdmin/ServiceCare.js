@@ -51,7 +51,7 @@ const ServiceCare = () => {
   const { schedules, statusschedules, errorschedules } = useSelector(
     (state) => state.schedules
   );
-  const itemsPerPage = 6;
+  const itemsPerPage = 5;
   const pageCount = Math.ceil(services.length / itemsPerPage);
 
   const [filterStatus, setFilterStatus] = useState("");
@@ -241,7 +241,7 @@ const ServiceCare = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell>Mã Dịch Vụ </TableCell> */}
+                    <TableCell>Avatar </TableCell>
                     <TableCell>Tên Dịch Vụ</TableCell>
                     <TableCell>Loại</TableCell>
                     <TableCell>Hãng Xe</TableCell>
@@ -266,7 +266,23 @@ const ServiceCare = () => {
                         }}
                       >
                         {/* <TableCell>{item?.serviceCareId}</TableCell> */}
-
+                        <TableCell>
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt="Item Logo"
+                              className="item-logo"
+                              style={{ width: "80px", height: "80px" }}
+                            />
+                          ) : (
+                            <div
+                              className="no-image-placeholder"
+                              style={{ width: "80px", height: "80px" }}
+                            >
+                              No Image Available
+                            </div>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Tooltip title={item?.serviceCareName} arrow>
                             <span>{truncateNote(item?.serviceCareName)}</span>

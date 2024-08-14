@@ -144,15 +144,33 @@ export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
       console.log("centerId", centerId);
       console.log("inforId", inforId);
 
-      const list = await CostItemApi.GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse({
-        token,
-        centerId,
-        inforId,
-      });
+      const list =
+        await CostItemApi.GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse(
+          {
+            token,
+            centerId,
+            inforId,
+          }
+        );
       console.log(
         "maintenanceservice/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse",
         list.data
       );
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const AddMaintenanceServicListPost = createAsyncThunk(
+  "maintenanceservice/AddMaintenanceServicListPost",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await MaintenanceServicesApi.addMaintenanceServicesItemList({
+        token,
+        data,
+      });
+      console.log("maintenanceservice/AddMaintenanceServicListPost", list.data);
       return list.data;
     } catch (error) {
       return rejectWithValue(error.response.data.Exception);
@@ -318,7 +336,23 @@ const mainserviceSlice = createSlice({
           state.statusmaintenanceservices = "failed";
           state.errormaintenanceservices = action.error.message;
         }
-      );
+      )
+      .addCase(AddMaintenanceServicListPost.pending, (state) => {
+        state.statusmaintenanceservices = "loading";
+        state.maintenanceservices = [];
+        state.maintenanceservice = null;
+        state.errormaintenanceservices = null;
+        state.maintenanceservicescost = [];
+      })
+      .addCase(AddMaintenanceServicListPost.fulfilled, (state, action) => {
+        state.statusmaintenanceservices = "succeeded";
+        state.maintenanceservices = action.payload;
+        // console.log("payload", state.maintenanceservices);
+      })
+      .addCase(AddMaintenanceServicListPost.rejected, (state, action) => {
+        state.statusmaintenanceservices = "failed";
+        state.errormaintenanceservices = action.error.message;
+      });
   },
 });
 export const { GetAll } = mainserviceSlice.actions;

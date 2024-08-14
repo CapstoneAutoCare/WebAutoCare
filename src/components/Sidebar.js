@@ -36,6 +36,7 @@ import { ScheduleListGetall } from "../redux/scheduleSlice";
 import { SparePartsAll } from "../redux/sparepartsSlice";
 import { Profile } from "../redux/accountSlice";
 import ProfilePageV1 from "./Authen/Profile";
+import { ServicesListGetAll } from "../redux/servicesSlice";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -114,6 +115,7 @@ const Sidebar = () => {
     dispatch(ScheduleListGetall(tokenlocal));
     dispatch(SparePartsAll(tokenlocal));
     dispatch(Profile(tokenlocal));
+    dispatch(ServicesListGetAll(tokenlocal));
     localStorage.setItem("AccountId", code.sub);
     localStorage.setItem("ROLE", role);
     CheckRole(tokenlocal, role);

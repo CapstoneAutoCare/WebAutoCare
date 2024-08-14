@@ -15,9 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { BrandGetAllList, CreateBrandVehicles } from "../redux/brandSlice";
-import { getDownloadURL, uploadBytes } from "firebase/storage";
-import { storage } from "./firebase";
-import { ref, set } from "firebase/database";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -38,6 +36,11 @@ import { UpdateSparePartItemByCenter } from "../redux/sparepartItemsSlice";
 import { PostCenter } from "../redux/centerSlice";
 import { CreateCustomerCarePost } from "../redux/customercareSlice";
 import { CreateTechPost } from "../redux/techinicansSlice";
+import { storage } from "./firebase";
+import {
+  AddMaintenanceServiceByCenter,
+  MaintenanceServicesByCenterId,
+} from "../redux/mainserviceSlice";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
@@ -1336,7 +1339,6 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
     </Dialog>
   );
 };
-
 export const UpdateSparePartDialog = ({
   open,
   handleClose,
@@ -1350,10 +1352,11 @@ export const UpdateSparePartDialog = ({
   const formik = useFormik({
     initialValues: {
       status: item?.status || "ACTIVE",
-      sparePartName: item?.sparePartName,
+      sparePartName: item?.sparePartName || "",
       sparePartType: item?.sparePartType || "",
       sparePartDescription: item?.sparePartDescription || "",
-      originalPrice: item?.originalPrice,
+      originalPrice: item?.originalPrice || 0,
+      image: item?.image || "",
     },
     validationSchema: Yup.object({
       status: Yup.string().required("Status is required"),
@@ -1368,47 +1371,49 @@ export const UpdateSparePartDialog = ({
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        // let imageUrl = values.image;
-        // if (imageFile) {
-        //   const storageRef = ref(storage, `images/${imageFile.name}`);
-        //   await uploadBytes(storageRef, imageFile);
-        //   imageUrl = await getDownloadURL(storageRef);
-        // }
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
 
         dispatch(
           UpdateSpartPartPut({
             token: token,
             id: item.sparePartId,
-            data: { ...values },
+            data: { ...values, image: imageUrl },
           })
         ).then(() => {
           dispatch(SparePartsAll(token));
           handleClose();
           resetForm();
+          setReload((p) => !p);
         });
-        setReload((p) => !p);
-        resetForm();
       } catch (error) {
         console.error("Failed to update spare part item", error);
       }
     },
   });
 
-  // const handleFileChange = (e) => {
-  //   setImageFile(e.target.files[0]);
-  //   formik.setFieldValue("image", e.target.files[0].name);
-  // };
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
+
   useEffect(() => {
     if (item) {
       formik.setValues({
-        status: item?.status,
-        sparePartName: item?.sparePartName,
-        sparePartType: item?.sparePartType,
-        sparePartDescription: item?.sparePartDescription,
-        originalPrice: item?.originalPrice,
+        status: item?.status || "ACTIVE",
+        sparePartName: item?.sparePartName || "",
+        sparePartType: item?.sparePartType || "",
+        sparePartDescription: item?.sparePartDescription || "",
+        originalPrice: item?.originalPrice || 0,
+        image: item?.image || "",
       });
     }
   }, [dispatch, item, token]);
+
   return (
     <Dialog
       open={open}
@@ -1429,114 +1434,122 @@ export const UpdateSparePartDialog = ({
       </DialogTitle>
 
       {item && (
-        <>
-          <DialogContent dividers>
-            <form onSubmit={formik.handleSubmit}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  label="Status"
-                  name="status"
-                  value={formik.values.status}
-                  onChange={formik.handleChange}
-                  error={formik.touched.status && Boolean(formik.errors.status)}
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="Spare Part Name"
-                name="sparePartName"
-                value={formik.values.sparePartName}
+        <DialogContent dividers>
+          <form onSubmit={formik.handleSubmit}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Status</InputLabel>
+              <Select
+                label="Status"
+                name="status"
+                value={formik.values.status}
                 onChange={formik.handleChange}
-                error={
-                  formik.touched.sparePartName &&
-                  Boolean(formik.errors.sparePartName)
-                }
-                helperText={
-                  formik.touched.sparePartName && formik.errors.sparePartName
-                }
-                fullWidth
-                margin="normal"
-              />
+                error={formik.touched.status && Boolean(formik.errors.status)}
+              >
+                {statusOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-              <TextField
-                label="sparePartType"
-                name="sparePartType"
-                value={formik.values.sparePartType}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.sparePartType &&
-                  Boolean(formik.errors.sparePartType)
-                }
-                helperText={
-                  formik.touched.sparePartType && formik.errors.sparePartType
-                }
-                fullWidth
-                margin="normal"
-              />
+            <TextField
+              label="Spare Part Name"
+              name="sparePartName"
+              value={formik.values.sparePartName}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.sparePartName &&
+                Boolean(formik.errors.sparePartName)
+              }
+              helperText={
+                formik.touched.sparePartName && formik.errors.sparePartName
+              }
+              fullWidth
+              margin="normal"
+            />
 
-              <TextField
-                label="sparePartDescription"
-                name="sparePartDescription"
-                value={formik.values.sparePartDescription}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.sparePartDescription &&
-                  Boolean(formik.errors.sparePartDescription)
-                }
-                helperText={
-                  formik.touched.sparePartDescription &&
-                  formik.errors.sparePartDescription
-                }
-                fullWidth
-                margin="normal"
-              />
+            <TextField
+              label="sparePartType"
+              name="sparePartType"
+              value={formik.values.sparePartType}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.sparePartType &&
+                Boolean(formik.errors.sparePartType)
+              }
+              helperText={
+                formik.touched.sparePartType && formik.errors.sparePartType
+              }
+              fullWidth
+              margin="normal"
+            />
 
-              <TextField
-                label="Price"
-                name="originalPrice"
-                type="number"
-                value={formik.values.originalPrice}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.capacity &&
-                  Boolean(formik.errors.originalPrice)
-                }
-                helperText={
-                  formik.touched.capacity && formik.errors.originalPrice
-                }
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-              />
+            <TextField
+              label="sparePartDescription"
+              name="sparePartDescription"
+              value={formik.values.sparePartDescription}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.sparePartDescription &&
+                Boolean(formik.errors.sparePartDescription)
+              }
+              helperText={
+                formik.touched.sparePartDescription &&
+                formik.errors.sparePartDescription
+              }
+              fullWidth
+              margin="normal"
+            />
 
-              <DialogActions>
-                <Button type="submit" color="primary">
-                  Update
-                </Button>
-                <Button
-                  onClick={() => {
-                    handleClose();
-                    formik.resetForm();
-                  }}
-                >
-                  Close
-                </Button>
-              </DialogActions>
-            </form>
-          </DialogContent>
-        </>
+            <TextField
+              label="Price"
+              name="originalPrice"
+              type="number"
+              value={formik.values.originalPrice}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.originalPrice &&
+                Boolean(formik.errors.originalPrice)
+              }
+              helperText={
+                formik.touched.originalPrice && formik.errors.originalPrice
+              }
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+
+            <TextField
+              label="Image"
+              name="image"
+              type="file"
+              onChange={handleFileChange}
+              error={formik.touched.image && Boolean(formik.errors.image)}
+              helperText={formik.touched.image && formik.errors.image}
+              fullWidth
+              margin="normal"
+            />
+
+            <DialogActions>
+              <Button type="submit" color="primary">
+                Update
+              </Button>
+              <Button
+                onClick={() => {
+                  handleClose();
+                  formik.resetForm();
+                }}
+              >
+                Close
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
       )}
     </Dialog>
   );
 };
-
 export const UpdateServiceDialog = ({
   open,
   handleClose,
@@ -1568,18 +1581,18 @@ export const UpdateServiceDialog = ({
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        // let imageUrl = values.image;
-        // if (imageFile) {
-        //   const storageRef = ref(storage, `images/${imageFile.name}`);
-        //   await uploadBytes(storageRef, imageFile);
-        //   imageUrl = await getDownloadURL(storageRef);
-        // }
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
 
         dispatch(
           UpdateServicePut({
             token: token,
             id: item.serviceCareId,
-            data: { ...values },
+            data: { ...values, image: imageUrl },
           })
         ).then(() => {
           dispatch(ServicesListGetAll(token));
@@ -1594,10 +1607,10 @@ export const UpdateServiceDialog = ({
     },
   });
 
-  // const handleFileChange = (e) => {
-  //   setImageFile(e.target.files[0]);
-  //   formik.setFieldValue("image", e.target.files[0].name);
-  // };
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
   useEffect(() => {
     if (item) {
       formik.setValues({
@@ -1717,7 +1730,16 @@ export const UpdateServiceDialog = ({
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
               />
-
+              <TextField
+                label="Image"
+                name="image"
+                type="file"
+                onChange={handleFileChange}
+                error={formik.touched.image && Boolean(formik.errors.image)}
+                helperText={formik.touched.image && formik.errors.image}
+                fullWidth
+                margin="normal"
+              />
               <DialogActions>
                 <Button type="submit" color="primary">
                   Update
@@ -2334,13 +2356,7 @@ export const RegisterCustomerCare = ({
   );
 };
 
-
-export const RegisterTechCare = ({
-  open,
-  handleClose,
-  token,
-  setReload,
-}) => {
+export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
   const [step, setStep] = useState(1);
   const dispatch = useDispatch();
 
@@ -2619,6 +2635,230 @@ export const RegisterTechCare = ({
             </Form>
           )}
         </Formik>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const AddMaintenanceServiceDialogOutSide = ({
+  openView,
+  handleCloseOutSide,
+  centerId,
+  token,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
+  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
+    useSelector((state) => state.vehiclemodels);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [brandSearchTerm, setBrandSearchTerm] = useState("");
+  const [modelSearchTerm, setModelSearchTerm] = useState("");
+  const filteredOptionsBrand = brands.filter((option) =>
+    option.vehiclesBrandId.toLowerCase().includes(brandSearchTerm.toLowerCase())
+  );
+
+  const filteredOptionsModel = selectedBrand
+    ? vehiclemodels.filter(
+        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      )
+    : [];
+  const formik = useFormik({
+    initialValues: {
+      vehicleModelId: null,
+      maintenanceServiceName: null,
+    },
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        maintenanceServiceName: values.maintenanceServiceName,
+        vehicleModelId: selectedModel.vehicleModelId,
+      };
+      await dispatch(AddMaintenanceServiceByCenter({ token, data }))
+        .then(() => {
+          dispatch(MaintenanceServicesByCenterId({ centerId, token }));
+          resetForm();
+          setReload((p) => !p);
+          handleCloseOutSide();
+          setSelectedBrand(null);
+          setSelectedModel(null);
+          setBrandSearchTerm("");
+          setModelSearchTerm("");
+          formik.resetForm();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+      setReload((p) => !p);
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setBrandSearchTerm("");
+      setModelSearchTerm("");
+      resetForm();
+    },
+  });
+  useEffect(() => {
+    if (openView) {
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setBrandSearchTerm("");
+      setModelSearchTerm("");
+    }
+  }, [dispatch, token, centerId, openView, setReload]);
+  return (
+    <Dialog
+      open={openView}
+      onClose={handleCloseOutSide}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>Thêm Dịch Vụ Cho Trung Tâm </DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel
+              shrink
+              htmlFor="vehiclesBrandId"
+              style={{
+                backgroundColor: "white",
+                padding: "0 8px",
+              }}
+            >
+              Chọn Hãng
+            </InputLabel>
+            <Autocomplete
+              id="vehiclesBrandId"
+              key={filteredOptionsBrand.vehiclesBrandId}
+              fullWidth
+              options={filteredOptionsBrand}
+              getOptionLabel={(option) =>
+                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+              }
+              onChange={(event, newValue) => {
+                setSelectedBrand(newValue);
+                setSelectedModel(null);
+                setModelSearchTerm(null);
+                console.log("Hãng xe: ", newValue);
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={option.vehiclesBrandId}>
+                  <img
+                    src={option?.logo}
+                    alt={option.vehiclesBrandName}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      marginRight: 10,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <div>
+                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div style={{ fontSize: "0.8em", color: "gray" }}>
+                      Mã: {option.vehiclesBrandId}
+                    </div>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setBrandSearchTerm(e.target.value);
+                    setSelectedModel(null);
+                    setModelSearchTerm(null);
+                  }}
+                />
+              )}
+            />
+          </FormControl>
+
+          {selectedBrand && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Loại Xe
+              </InputLabel>
+              <Autocomplete
+                id="vehiclesModelId"
+                fullWidth
+                options={filteredOptionsModel}
+                key={selectedBrand?.vehiclesBrandId}
+                getOptionLabel={(option) =>
+                  `Loại xe:  ${option.vehicleModelName} (Mã: ${option.vehicleModelId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectedModel(newValue);
+                  console.log("Loai xe: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.vehiclesModelId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.vehiclesBrandName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Xe {option.vehicleModelName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.vehicleModelId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setModelSearchTerm(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+          {selectedModel && (
+            <TextField
+              margin="dense"
+              name="maintenanceServiceName"
+              label="Tên Dịch Vụ"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formik.values.maintenanceServiceName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.maintenanceServiceName &&
+                Boolean(formik.errors.maintenanceServiceName)
+              }
+              helperText={
+                formik.touched.maintenanceServiceName &&
+                formik.errors.maintenanceServiceName
+              }
+            />
+          )}
+          <DialogActions>
+            <Button onClick={handleCloseOutSide}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
+          </DialogActions>
+        </form>
       </DialogContent>
     </Dialog>
   );

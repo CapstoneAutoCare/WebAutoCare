@@ -52,7 +52,7 @@ const SparePart = () => {
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
 
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
   const pageCount = Math.ceil(spareparts.length / itemsPerPage);
 
   const [filterStatus, setFilterStatus] = useState("");
@@ -208,6 +208,7 @@ const SparePart = () => {
                 <TableHead>
                   <TableRow>
                     {/* <TableCell>Mã Phụ Tùng </TableCell> */}
+                    <TableCell>Ảnh</TableCell>
                     <TableCell>Tên Phụ Tùng</TableCell>
                     <TableCell>Loại </TableCell>
                     <TableCell>Hãng Xe</TableCell>
@@ -232,6 +233,23 @@ const SparePart = () => {
                         }}
                       >
                         {/* <TableCell>{item?.sparePartId}</TableCell> */}
+                        <TableCell>
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt="Item Logo"
+                            className="item-logo"
+                            style={{ width: "80px", height: "80px" }}
+                          />
+                        ) : (
+                          <div
+                            className="no-image-placeholder"
+                            style={{ width: "80px", height: "80px" }}
+                          >
+                            No Image Available
+                          </div>
+                        )}
+                      </TableCell>
                         <TableCell>{item?.sparePartName}</TableCell>
                         <TableCell>
                           <Tooltip title={item?.sparePartType} arrow>

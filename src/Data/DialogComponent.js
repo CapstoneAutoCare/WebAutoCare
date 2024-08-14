@@ -47,6 +47,7 @@ import {
 import {
   AddMaintenanceServiceByCenter,
   AddMaintenanceServiceCost,
+  AddMaintenanceServicListPost,
   ChangeStatusMaintenanceServiceCostByCenter,
   GetByIdMaintenanceServiceActiveCost,
   GetListByDifMaintenanceServiceAndInforId,
@@ -68,7 +69,6 @@ import {
 import HorizontalLinearStepper from "../components/MaintenanceInformations/HorizontalLinearStepper";
 import { BookingById } from "../redux/bookingSlice";
 import { storage } from "./firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import {
   GetSpartPartNotSparePartItemId,
   SparePartsAll,
@@ -89,14 +89,8 @@ import { CreateReceipt } from "../redux/receiptSlice";
 import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInfoesSlice";
 import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesSlice";
 import { CreateBrandVehicles } from "../redux/brandSlice";
-const validationSchemaSparePart = Yup.object({
-  sparePartsId: Yup.array(),
-});
-const validationSchemaService = Yup.object({
-  maintenanceServiceName: Yup.string().required("Name is required"),
-  serviceCareId: Yup.string(),
-  vehicleModelId: Yup.string(),
-});
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddSparePartDialog = ({
@@ -356,6 +350,7 @@ export const AddSparePartDialog = ({
   );
 };
 
+
 export const AddMaintenanceServiceDialog = ({
   open,
   handleClose,
@@ -364,163 +359,320 @@ export const AddMaintenanceServiceDialog = ({
   setReload,
 }) => {
   const dispatch = useDispatch();
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
+  const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
+    useSelector((state) => state.vehiclemodels);
+  const { schedules, statusschedules, errorschedules } = useSelector(
+    (state) => state.schedules
+  );
   const { services, statusservices } = useSelector((state) => state.services);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [schedulePackage, setSchedulePackage] = useState(null);
+  const [serviceselects, setServiceselects] = useState([]);
+  const [brandSearchTerm, setBrandSearchTerm] = useState("");
+  const [modelSearchTerm, setModelSearchTerm] = useState("");
+  const [scheduleSearchTerm, setScheduleSearchTerm] = useState("");
+  const filteredOptionsBrand = brands.filter((option) =>
+    option.vehiclesBrandName
+      .toLowerCase()
+      .includes(brandSearchTerm.toLowerCase())
+  );
+
+  const filteredOptionsModel = selectedBrand
+    ? vehiclemodels.filter(
+        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      )
+    : [];
+  const filteredOptionsSchedule = selectedModel
+    ? schedules.filter(
+        (model) => model.vehicleModelId === selectedModel.vehicleModelId
+      )
+    : [];
+  const filteredOptionsService = schedulePackage
+    ? services.filter(
+        (model) =>
+          model.maintananceScheduleId === schedulePackage.maintananceScheduleId
+      )
+    : [];
   const formik = useFormik({
     initialValues: {
-      maintenanceServiceName: "",
-      serviceCareId: "",
+      serviceCareIds: [],
     },
-    validationSchema: validationSchemaService,
     onSubmit: async (values, { resetForm }) => {
       const data = {
-        maintenanceServiceName: values.maintenanceServiceName,
-        serviceCareId: values.serviceCareId ? values.serviceCareId : null,
-        vehicleModelId: values.vehicleModelId ? values.vehicleModelId : null,
+        serviceCareIds: values.serviceCareIds,
       };
-
-      await dispatch(AddMaintenanceServiceByCenter({ data, token }))
+      await dispatch(AddMaintenanceServicListPost({ token, data }))
         .then(() => {
           dispatch(MaintenanceServicesByCenterId({ centerId, token }));
           resetForm();
           handleClose();
+          setReload((p) => !p);
+          handleClose();
+          setSelectedBrand(null);
+          setSelectedModel(null);
+          setSchedulePackage(null);
+          setBrandSearchTerm("");
+          setModelSearchTerm("");
+          setScheduleSearchTerm("");
+          formik.resetForm();
         })
         .catch((error) => {
           console.error("Failed to add item:", error);
         });
       setReload((p) => !p);
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setSchedulePackage(null);
+      setBrandSearchTerm("");
+      setModelSearchTerm("");
+      setScheduleSearchTerm("");
+      resetForm();
     },
   });
   const [searchTerm, setSearchTerm] = useState("");
   const filteredOptions = services.filter((option) =>
     option.serviceCareName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const handleClear = () => {
-    formik.setFieldValue("serviceCareId", "");
+  const handleServiceChange = (event, option) => {
+    if (event.target.checked) {
+      setServiceselects([...serviceselects, option.serviceCareId]);
+    } else {
+      setServiceselects(
+        serviceselects.filter((id) => id !== option.serviceCareId)
+      );
+    }
+    formik.setFieldValue("serviceCareIds", [
+      ...serviceselects,
+      option.serviceCareId,
+    ]);
   };
   useEffect(() => {
-    dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
-  }, [dispatch, token, setReload]);
+    if (open) {
+      setServiceselects([]);
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setBrandSearchTerm("");
+      setModelSearchTerm("");
+      dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
+    }
+  }, [dispatch, token, centerId, open, setReload]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Thêm Dịch Vụ Mới</DialogTitle>
+      <DialogTitle>Thêm Dịch Vụ Trong Gói </DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <Autocomplete
-            label="ServiceCareId"
-            fullWidth
-            margin="normal"
-            disablePortal
-            id="serviceCareId"
-            options={filteredOptions}
-            getOptionLabel={(option) =>
-              `Tên: ${option.serviceCareName} - Odo: ${option?.maintananceScheduleName} - Vehicle: ${option.reponseVehicleModel?.vehiclesBrandName} ${option.reponseVehicleModel?.vehicleModelName}`
-            }
-            onChange={(event, newValue) => {
-              const selectedId = newValue;
-              formik.setFieldValue(
-                "serviceCareId",
-                selectedId?.serviceCareId || ""
-              );
-              formik.setFieldValue(
-                "maintenanceServiceName",
-                selectedId?.serviceCareName || ""
-              );
-              formik.setFieldValue(
-                "vehicleModelId",
-                selectedId?.reponseVehicleModel?.vehicleModelId || ""
-              );
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Name"
-                name="serviceCareId"
-                value={searchTerm}
-                variant="outlined"
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            )}
-          />
-
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="serviceCareId"
-              label="Service Care Id"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formik.values.serviceCareId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.serviceCareId &&
-                Boolean(formik.errors.serviceCareId)
-              }
-              disabled={formik.touched.serviceCareId}
-              helperText={
-                formik.touched.serviceCareId && formik.errors.serviceCareId
-              }
-            />
-            {formik.values.serviceCareId && (
-              <IconButton onClick={handleClear} size="small">
-                <ClearIcon />
-              </IconButton>
-            )}
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="vehicleModelId"
-              label="Vehicle Model"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={
-                filteredOptions.find(
-                  (option) =>
-                    option.reponseVehicleModel?.vehicleModelId ===
-                    formik.values.vehicleModelId
-                )?.reponseVehicleModel?.vehicleModelName || ""
-              }
-              onChange={(e) =>
-                formik.setFieldValue("vehicleModelId", e.target.value)
-              }
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.vehicleModelId &&
-                Boolean(formik.errors.vehicleModelId)
-              }
-              helperText={
-                formik.touched.vehicleModelId && formik.errors.vehicleModelId
-              }
-              disabled
-              InputLabelProps={{
-                shrink: true,
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel
+              shrink
+              htmlFor="vehiclesBrandId"
+              style={{
+                backgroundColor: "white",
+                padding: "0 8px",
               }}
+            >
+              Chọn Hãng
+            </InputLabel>
+            <Autocomplete
+              id="vehiclesBrandId"
+              key={filteredOptionsBrand.vehiclesBrandId}
+              fullWidth
+              options={filteredOptionsBrand}
+              getOptionLabel={(option) =>
+                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+              }
+              onChange={(event, newValue) => {
+                setSelectedBrand(newValue);
+                setSelectedModel(null);
+                setModelSearchTerm(null);
+                setScheduleSearchTerm(null);
+                setSchedulePackage(null);
+                setServiceselects([]);
+                console.log("Hãng xe: ", newValue);
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={option.vehiclesBrandId}>
+                  <img
+                    src={option?.logo}
+                    alt={option.vehiclesBrandName}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      marginRight: 10,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <div>
+                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div style={{ fontSize: "0.8em", color: "gray" }}>
+                      Mã: {option.vehiclesBrandId}
+                    </div>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setBrandSearchTerm(e.target.value);
+                    setSelectedModel(null);
+                    setModelSearchTerm(null);
+                    setScheduleSearchTerm(null);
+                  }}
+                />
+              )}
             />
-          </div>
-          <TextField
-            margin="dense"
-            name="maintenanceServiceName"
-            label="Maintenance Service Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formik.values.maintenanceServiceName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.maintenanceServiceName &&
-              Boolean(formik.errors.maintenanceServiceName)
-            }
-            helperText={
-              formik.touched.maintenanceServiceName &&
-              formik.errors.maintenanceServiceName
-            }
-          />
+          </FormControl>
+
+          {selectedBrand && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Loại Xe
+              </InputLabel>
+              <Autocomplete
+                id="vehiclesModelId"
+                fullWidth
+                options={filteredOptionsModel}
+                key={selectedBrand?.vehiclesBrandId}
+                getOptionLabel={(option) =>
+                  `Loại xe:  ${option.vehicleModelName} (Mã: ${option.vehicleModelId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectedModel(newValue);
+                  setScheduleSearchTerm(null);
+                  setSchedulePackage(null);
+                  setServiceselects([]);
+
+                  console.log("Loai xe: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.vehiclesModelId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.vehiclesBrandName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Xe {option.vehicleModelName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.vehicleModelId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setModelSearchTerm(e.target.value);
+                      setScheduleSearchTerm(null);
+                      setSchedulePackage(null);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+          {selectedModel && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Gói Odo
+              </InputLabel>
+              <Autocomplete
+                id="maintananceScheduleId"
+                fullWidth
+                options={filteredOptionsSchedule}
+                key={selectedModel?.vehicleModelId}
+                getOptionLabel={(option) =>
+                  `Gói odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
+                }
+                onChange={(event, newValue) => {
+                  setSchedulePackage(newValue);
+                  setServiceselects([]);
+
+                  console.log("Gói: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.maintananceScheduleId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.maintananceScheduleName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Gói odo {option.maintananceScheduleName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.maintananceScheduleId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setModelSearchTerm(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+          {schedulePackage && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel shrink htmlFor="serviceCareId">
+                Chọn Dịch Vụ
+              </InputLabel>
+              <FormGroup>
+                {filteredOptionsService.map((option) => (
+                  <FormControlLabel
+                    key={option.serviceCareId}
+                    control={
+                      <Checkbox
+                        checked={serviceselects?.includes(
+                          option?.serviceCareId
+                        )}
+                        onChange={(event) => handleServiceChange(event, option)}
+                      />
+                    }
+                    label={`${option?.serviceCareName} - Giá ${option?.originalPrice} VND (Mã: ${option?.serviceCareId})`}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+          )}
 
           <DialogActions>
             <Button onClick={handleClose}>Trả Về</Button>
@@ -629,11 +781,15 @@ export const UpdateSparePartItemDialog = ({
       sparePartsItemName: item?.sparePartsItemName || "",
       image: item?.image || "",
       capacity: item?.capacity || 50,
+      sparePartsItemType: item?.sparePartsItemType || "",
     },
     validationSchema: Yup.object({
       status: Yup.string().required("Status is required"),
       sparePartsItemName: Yup.string().required(
         "Spare Part Item Name is required"
+      ),
+      sparePartsItemType: Yup.string().required(
+        "sparePartsItemType is required"
       ),
       capacity: Yup.number()
         .min(1, "Capacity must be at least 1")
@@ -676,6 +832,7 @@ export const UpdateSparePartItemDialog = ({
         status: item.status || "ACTIVE",
         sparePartsItemName: item.sparePartsItemName || "",
         image: item.image || "",
+        sparePartsItemType: item.sparePartsItemType || "",
         capacity: item.capacity || 50,
       });
     }
@@ -732,6 +889,22 @@ export const UpdateSparePartItemDialog = ({
                 helperText={
                   formik.touched.sparePartsItemName &&
                   formik.errors.sparePartsItemName
+                }
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="sparePartsItemType"
+                name="sparePartsItemType"
+                value={formik.values.sparePartsItemType}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.sparePartsItemType &&
+                  Boolean(formik.errors.sparePartsItemType)
+                }
+                helperText={
+                  formik.touched.sparePartsItemType &&
+                  formik.errors.sparePartsItemType
                 }
                 fullWidth
                 margin="normal"

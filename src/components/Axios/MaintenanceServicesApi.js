@@ -47,6 +47,17 @@ const MaintenanceServicesApi = {
         throw error;
       });
   },
+  async addMaintenanceServicesItemList({ token, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/MaintenanceServices/PostList";
+
+    return await axiosApi.post(url, data, config);
+  },
   async updateMaintenanceServicesItem({ token, id, data }) {
     const config = {
       headers: {

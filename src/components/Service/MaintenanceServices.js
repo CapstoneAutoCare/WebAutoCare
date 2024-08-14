@@ -28,6 +28,7 @@ import {
   ViewMaintenanceServicesCostDialog,
 } from "../../Data/DialogComponent";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
+import { AddMaintenanceServiceDialogOutSide } from "../../Data/DialogAdmin";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -46,6 +47,7 @@ const totalpackage = ["Có Gói", "Không Có Gói"];
 const MaintenanceServices = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [openOutSide, setOpenOutSide] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openView, setOpenView] = useState(false);
@@ -71,16 +73,26 @@ const MaintenanceServices = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
   const handleClickOpen = () => {
     setOpen(true);
+    setOpenOutSide(false);
   };
 
   const handleClose = () => {
     setOpen(false);
+    setReload(!reload);
+  };
+
+  const handleClickOpenOutside = () => {
+    setOpenOutSide(true);
+    setOpen(false);
+  };
+
+  const handleCloseOutSide = () => {
+    setOpenOutSide(false);
     setReload(!reload);
   };
 
@@ -110,7 +122,7 @@ const MaintenanceServices = () => {
   const [filterSchedule, setFilterSchedule] = useState("");
   const [filterName, setFilterName] = useState("");
   const [filterBoolean, setFilterBoolean] = useState("");
-  
+
   const filteredVehicleModels = vehiclemodels.filter(
     (model) => model.vehiclesBrandId === filterBrand
   );
@@ -154,12 +166,28 @@ const MaintenanceServices = () => {
     <div>
       <Box>
         <h3>Danh Sách Các Dịch Vụ Từng Xe</h3>
-        {role === "CENTER" && (
-          <Button variant="contained" color="success" onClick={handleClickOpen}>
-            Thêm Dịch Mới Cho Xe
-          </Button>
-        )}
-
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          {role === "CENTER" && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleClickOpen}
+                className="chon-goi"
+              >
+                Thêm Dịch Vụ Trong Gói
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleClickOpenOutside}
+                className="Ben-ngoai"
+              >
+                Thêm Dịch Vụ Ngoài
+              </Button>
+            </>
+          )}
+        </div>
         <AddMaintenanceServiceDialog
           open={open}
           handleClose={handleClose}
@@ -167,6 +195,7 @@ const MaintenanceServices = () => {
           token={token}
           setReload={setReload}
         />
+
         {statusmaintenanceservices === "loading" && (
           <DialogContent dividers>
             <CircularProgress />
@@ -404,6 +433,13 @@ const MaintenanceServices = () => {
             item={selectedItem}
           />
         )}
+        <AddMaintenanceServiceDialogOutSide
+          openView={openOutSide}
+          handleCloseOutSide={handleCloseOutSide}
+          centerId={centerId}
+          token={token}
+          setReload={setReload}
+        />
       </Box>
     </div>
   );
