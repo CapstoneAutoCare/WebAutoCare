@@ -37,6 +37,7 @@ import { SparePartsAll } from "../redux/sparepartsSlice";
 import { Profile } from "../redux/accountSlice";
 import ProfilePageV1 from "./Authen/Profile";
 import { ServicesListGetAll } from "../redux/servicesSlice";
+import Dashboard from "./MainDash/Dashboard";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -92,7 +93,7 @@ const Sidebar = () => {
     ],
     ADMIN: [
       // <MainDash />,
-      <></>,
+      // <></>,
       <Center />,
       <ScheduleList />,
       <BrandVehicle />,

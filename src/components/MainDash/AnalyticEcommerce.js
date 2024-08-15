@@ -1,5 +1,6 @@
 import { Box, Chip, Grid, Stack, Typography } from "@mui/material";
 import MainCard from "./MainCard";
+import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 
 export default function AnalyticEcommerce({ color = 'primary', title, price, count, isLoss, extra }) {
     return (
@@ -11,7 +12,7 @@ export default function AnalyticEcommerce({ color = 'primary', title, price, cou
           <Grid container alignItems="center">
             <Grid item>
               <Typography variant="h4" color="inherit">
-                ${price}
+                {formatNumberWithDots(price)} VND
               </Typography>
             </Grid>
             {count && (

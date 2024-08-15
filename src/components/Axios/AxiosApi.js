@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosApi = axios.create({
-  baseURL: "https://autocareversion2.tryasp.net/api",
+  baseURL: "http://solv2.runasp.net/api",
   headers: {
     "Content-Type": "application/json",
   },

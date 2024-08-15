@@ -81,7 +81,7 @@ export default function HorizontalLinearStepper({
     dispatch(
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
     );
-  }, [dispatch]);
+  }, []);
 
   return (
     <Box sx={{ width: "100%" }}>

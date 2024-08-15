@@ -5,6 +5,18 @@ const BookingApi = {
     const url = "/Bookings/GetAll";
     return axiosApi.get(url);
   },
+  async getBookingsByMonthInYearByCenterId({ token, id, year }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, year },
+    };
+    const url = "/Bookings/GetBookingsByMonthInYearByCenterId";
+
+    return axiosApi.get(url, config);
+  },
   async getById({ token, id }) {
     const config = {
       headers: {

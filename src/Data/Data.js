@@ -93,10 +93,10 @@ export const SidebarDataCustomerCare = [
   },
 ];
 export const SidebarDataAdmin = [
-  {
-    icon: UilEstate,
-    heading: "Dashboard",
-  },
+  // {
+  //   icon: UilEstate,
+  //   heading: "Dashboard",
+  // },
   {
     icon: UilLocationPoint,
     heading: "Trung Tâm",
