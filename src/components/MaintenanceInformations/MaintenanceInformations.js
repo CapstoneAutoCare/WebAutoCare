@@ -28,14 +28,14 @@ import { ClearPaymentData } from "../../redux/paymentSlice";
 import { formatNumberWithDots } from "./OutlinedCard";
 
 const statusOptions = [
-  "PAID",
-  "YETPAID",
-  "PAYMENT",
-  "REPAIRING",
-  "CHECKIN",
-  "WAITINGBYCAR",
   "CREATEDBYClIENT",
-  "CANCELLED",
+  "WAITINGBYCAR",
+  "CHECKIN",
+  "REPAIRING",
+  "PAYMENT",
+  "YETPAID",
+  "PAID",
+  "CANCELLED"
 ];
 
 const MaintenanceInformations = () => {

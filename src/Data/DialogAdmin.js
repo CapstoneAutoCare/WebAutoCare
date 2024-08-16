@@ -41,6 +41,7 @@ import {
   AddMaintenanceServiceByCenter,
   MaintenanceServicesByCenterId,
 } from "../redux/mainserviceSlice";
+import { CreateOdoHisotryPost } from "../redux/odohistory";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
@@ -410,8 +411,8 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
 
   const formik = useFormik({
@@ -449,7 +450,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
   });
   console.log("Formik errors: ", formik.errors);
 
-  useEffect(() => {}, [dispatch, open, setReload]);
+  useEffect(() => { }, [dispatch, open, setReload]);
 
   return (
     <Dialog
@@ -664,8 +665,8 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
 
   const formik = useFormik({
@@ -710,7 +711,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
   });
   console.log("Formik errors: ", formik.errors);
 
-  useEffect(() => {}, [dispatch, open, setReload]);
+  useEffect(() => { }, [dispatch, open, setReload]);
 
   return (
     <Dialog
@@ -976,13 +977,13 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
   const filteredOptionsSchedule = selectedModel
     ? schedules.filter(
-        (model) => model.vehicleModelId === selectedModel.vehicleModelId
-      )
+      (model) => model.vehicleModelId === selectedModel.vehicleModelId
+    )
     : [];
   const formik = useFormik({
     initialValues: {
@@ -1033,7 +1034,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
   });
   console.log("Formik errors: ", formik.errors);
 
-  useEffect(() => {}, [dispatch, open, setReload]);
+  useEffect(() => { }, [dispatch, open, setReload]);
 
   return (
     <Dialog
@@ -2663,8 +2664,8 @@ export const AddMaintenanceServiceDialogOutSide = ({
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
   const formik = useFormik({
     initialValues: {
@@ -2861,5 +2862,141 @@ export const AddMaintenanceServiceDialogOutSide = ({
         </form>
       </DialogContent>
     </Dialog>
+  );
+};
+
+
+
+export const UseFormikCreateOdoHisotry = ({
+  open,
+  handleClose,
+  token,
+  informationMaintenanceId,
+  vehicleId,
+}) => {
+  const dispatch = useDispatch();
+
+  const formik = useFormik({
+    initialValues: {
+      maintenanceInformationId: informationMaintenanceId,
+      vehiclesId: vehicleId,
+      description: "",
+      odo: "",
+    },
+    validationSchema: Yup.object({
+      description: Yup.string().required("Yêu cầu thêm"),
+      odo: Yup.number().required("Yêu cầu thêm").min(1, "Thấp nhất là 1")
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        maintenanceInformationId: informationMaintenanceId,
+        description: values.description,
+        vehiclesId: vehicleId,
+        description: values.description,
+        odo: values.odo
+      };
+      console.log("formdata create odohisotry", data);
+      await dispatch(CreateOdoHisotryPost({ token: token, data: data }))
+        .then(() => {
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+    },
+  });
+  useEffect(() => {
+    console.log("informationMaintenanceId formik:", informationMaintenanceId);
+    console.log("vehicleId formik:", vehicleId);
+  }, [dispatch, token, informationMaintenanceId, open, vehicleId]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Lưu lịch sử odo xe</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="informationMaintenanceId"
+              label="InformationMaintenance Id"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={informationMaintenanceId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.informationMaintenanceId &&
+                Boolean(formik.errors.informationMaintenanceId)
+              }
+              disabled={informationMaintenanceId}
+              helperText={
+                formik.touched.informationMaintenanceId &&
+                formik.errors.informationMaintenanceId
+              }
+            />
+          </div>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="vehiclesId"
+            label="vehiclesId Id"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={vehicleId}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.vehicleId &&
+              Boolean(formik.errors.vehicleId)
+            }
+            disabled={vehicleId}
+            helperText={
+              formik.touched.vehicleId &&
+              formik.errors.vehicleId
+            }
+          />
+          <TextField
+            margin="dense"
+            name="odo"
+            label="odo"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.odo}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.odo && Boolean(formik.errors.odo)
+            }
+            helperText={formik.touched.odo && formik.errors.odo}
+          />
+
+          <TextField
+            margin="dense"
+            name="description"
+            label="Description"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
+            helperText={formik.touched.description && formik.errors.description}
+          />
+
+          <DialogActions>
+            <Button onClick={handleClose}>Trả Về</Button>
+            <Button type="submit">Thêm</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog >
   );
 };

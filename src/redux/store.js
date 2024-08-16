@@ -18,6 +18,7 @@ import centersReducer from "./centerSlice";
 import schedulesReducer from "./scheduleSlice";
 import brandReducer from "./brandSlice";
 import vehiclemodelsReducer from "./vehiclemodelsSlice";
+import odohistoryReducer from "./odohistory";
 
 const store = configureStore({
   reducer: {
@@ -40,6 +41,7 @@ const store = configureStore({
     schedules: schedulesReducer,
     brands: brandReducer,
     vehiclemodels: vehiclemodelsReducer,
+    odohistories:odohistoryReducer
   },
 });
 

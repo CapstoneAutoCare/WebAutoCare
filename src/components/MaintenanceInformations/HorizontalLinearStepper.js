@@ -8,6 +8,7 @@ import {
   OutlinedCardBooking,
   OutlinedCardListTask,
   OutlinedCardMain,
+  OutlinedCardOdoHisotry,
   OutlinedCardReceipt,
 } from "./OutlinedCard";
 import { Fragment, useEffect, useState } from "react";
@@ -19,6 +20,8 @@ import {
   AddMaintenanceSparePartInfoesDialog,
   UseFormikCreateReceipt,
 } from "../../Data/DialogComponent";
+import { OdoHistoriesById, OdoHistoriesByInforId } from "../../redux/odohistory";
+import { UseFormikCreateOdoHisotry } from "../../Data/DialogAdmin";
 
 export default function HorizontalLinearStepper({
   mainData,
@@ -28,8 +31,13 @@ export default function HorizontalLinearStepper({
   const dispatch = useDispatch();
   const token = localStorage.getItem("localtoken");
   const [inforId, setInforId] = useState(null);
+  const [vehicle, setVehicle] = useState(null);
+
   const { receipt, statusreceipt } = useSelector((state) => state.receipts);
+  const { odohistory, statusodohisotries } = useSelector((state) => state.odohistories);
+
   const [open, setOpen] = useState(false);
+  const [openAddOdo, setOpenAddOdo] = useState(false);
   const [openAddMainSparePartInfor, setOpenAddMainSparePartInfor] =
     useState(false);
   const [openAddMainServiceInfor, setOpenAddMainServiceInfor] = useState(false);
@@ -43,6 +51,14 @@ export default function HorizontalLinearStepper({
     "YETPAID",
     "PAID",
   ];
+
+
+  const HandleAddOdoHisotry = ({ informationMaintenanceId, vehicleId }) => {
+    setInforId(informationMaintenanceId);
+    setVehicle(vehicleId);
+    setOpenAddOdo(true);
+  };
+
 
   const HandleAddReceipt = ({ informationMaintenanceId }) => {
     setInforId(informationMaintenanceId);
@@ -81,6 +97,7 @@ export default function HorizontalLinearStepper({
     dispatch(
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
     );
+    dispatch(OdoHistoriesByInforId({ token, id: mainData.informationMaintenanceId }))
   }, []);
 
   return (
@@ -137,6 +154,7 @@ export default function HorizontalLinearStepper({
                     HandleAddMainServiceInfor({
                       informationMaintenanceId:
                         mainData.informationMaintenanceId,
+
                     })
                   }
                   sx={{ width: "100%" }}
@@ -147,6 +165,26 @@ export default function HorizontalLinearStepper({
                 </Button>
               </Grid>
             </>
+          )}
+          {statusodohisotries === "failed" && ["CHECKIN", "REPAIRING"].includes(mainData.status) && (
+            <Grid container spacing={1} sx={{ mt: 2 }}>
+              <Grid item xs={12}>
+                <Button
+                  onClick={() =>
+                    HandleAddOdoHisotry({
+                      informationMaintenanceId: mainData.informationMaintenanceId,
+                      vehicleId: mainData.responseVehicles.vehiclesId
+
+                    })
+                  }
+                  sx={{ width: "100%" }}
+                  variant="outlined"
+                  color="success"
+                >
+                  Lưu Lịch Sử Odo Hiện Tại
+                </Button>
+              </Grid>
+            </Grid>
           )}
         </Grid>
 
@@ -178,7 +216,13 @@ export default function HorizontalLinearStepper({
         </Fade>
 
         <OutlinedCardMain data={mainData} setReload={setReload} />
-
+        {odohistory && statusodohisotries === "succeeded" && (
+          <OutlinedCardOdoHisotry
+            data={odohistory}
+            main={mainData}
+            setReload={setReload}
+          />
+        )}
         <OutlinedCardListTask data={mainData} setReload={setReload} />
 
         {receipt && statusreceipt === "succeeded" && (
@@ -190,12 +234,17 @@ export default function HorizontalLinearStepper({
         )}
       </Box>
 
-      {/* Dialogs */}
       <UseFormikCreateReceipt
         open={open}
         handleClose={handleClose}
         token={token}
         informationMaintenanceId={inforId}
+      />
+      <UseFormikCreateOdoHisotry
+        open={openAddOdo}
+        handleClose={handleClose}
+        token={token}
+        informationMaintenanceId={inforId} vehicleId={vehicle}
       />
       <AddMaintenanceSparePartInfoesDialog
         open={openAddMainSparePartInfor}

@@ -154,7 +154,7 @@ export const TableComponent = ({
     }
   };
 
-  useEffect(() => {}, [dispatch, setReload]);
+  useEffect(() => { }, [dispatch, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -605,7 +605,7 @@ export const MainComponent = ({ data, setReload }) => {
       console.error("Error updating status:", error);
     }
   };
-  useEffect(() => {}, [dispatch, setReload]);
+  useEffect(() => { }, [dispatch, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -744,7 +744,7 @@ export const CardMainServiceCostComponent = ({ data, cost }) => {
   );
 };
 export const OutlinedCardMain = ({ data, setReload }) => {
-  useEffect(() => {}, [setReload]);
+  useEffect(() => { }, [setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
@@ -798,7 +798,7 @@ export const OutlinedCardMain = ({ data, setReload }) => {
   );
 };
 export const OutlinedCardBooking = ({ data, setReload }) => {
-  useEffect(() => {}, [setReload]);
+  useEffect(() => { }, [setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
       <Grid container spacing={2}>
@@ -823,7 +823,7 @@ export const OutlinedCardBooking = ({ data, setReload }) => {
   );
 };
 export const TableClientComponent = ({ data, setReload }) => {
-  useEffect(() => {}, [setReload]);
+  useEffect(() => { }, [setReload]);
 
   return (
     <StyledCard>
@@ -901,7 +901,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
     }
   };
 
-  useEffect(() => {}, [dispatch, token, setReload]);
+  useEffect(() => { }, [dispatch, token, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -1121,7 +1121,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
     }
   };
 
-  useEffect(() => {}, [dispatch, setReload, data]);
+  useEffect(() => { }, [dispatch, setReload, data]);
   return (
     <StyledCard>
       <CardContent>
@@ -1129,31 +1129,31 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           <Image
             // src="https://firebasestorage.googleapis.com/v0/b/codeui-node.appspot.com/o/images%2Fimage.png?alt=media&token=2ade0f8b-d89b-436f-898c-23ebf51587af"
             src=""
-            alt={data.image}
+            alt={data?.image}
           />
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
-              {data.receiptName}
+              {data?.receiptName}
             </Typography>
-            <Typography variant="h6">#{data.receiptId}</Typography>
+            <Typography variant="h6">#{data?.receiptId}</Typography>
             <TableContainer>
               <Table size="small">
-                <TableBody key={data.receiptId}>
+                <TableBody key={data?.receiptId}>
                   <TableRow>
                     <TableCell>Ngày Tạo:</TableCell>
-                    <TableCell>{formatDate(data.createdDate)}</TableCell>
+                    <TableCell>{formatDate(data?.createdDate)}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Thông Tin Chi Tiết :</TableCell>
-                    <TableCell>{data.description}</TableCell>
+                    <TableCell>{data?.description}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>VAT :</TableCell>
-                    <TableCell>{data.vat}%</TableCell>
+                    <TableCell>{data?.vat}%</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Tiền Phụ :</TableCell>
-                    <TableCell>{data.subTotal} VND</TableCell>
+                    <TableCell>{data?.subTotal} VND</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Tổng Tiền :</TableCell>
@@ -1175,7 +1175,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           justifyContent: "center",
         }}
       >
-        {data.status === "YETPAID" && (
+        {data?.status === "YETPAID" && (
           <>
             <Button onClick={() => createPayment({ item: data })}>
               Tạo Thanh Toán
@@ -1188,20 +1188,20 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           </>
         )}
 
-        {data.status === "YETPAID" ? (
+        {data?.status === "YETPAID" ? (
           <Typography>
             <Select
-              value={data.status}
+              value={data?.status}
               onChange={(event) => {
                 const newStatus = event.target.value;
                 handleStatusChange({
-                  id: data.receiptId,
+                  id: data?.receiptId,
                   status: newStatus,
                 });
               }}
               className="status"
               style={{
-                ...makeStyle(data.status),
+                ...makeStyle(data?.status),
                 borderRadius: "10px",
                 width: "125px",
                 fontSize: "10px",
@@ -1215,7 +1215,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
               ))}
             </Select>
             <IconButton
-              onClick={() => handleClear({ item: data.receiptId })}
+              onClick={() => handleClear({ item: data?.receiptId })}
               size="small"
             >
               <ClearIcon />
@@ -1225,7 +1225,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
           <Typography
             className="status"
             style={{
-              ...makeStyle(data.status),
+              ...makeStyle(data?.status),
               borderRadius: "10px",
               fontSize: "20px",
             }}
@@ -1241,7 +1241,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
             fontWeight: "bold",
           }}
         >
-          {formatNumberWithDots(data.totalAmount)} VND
+          {formatNumberWithDots(data?.totalAmount)} VND
         </Typography>
       </div>
     </StyledCard>
@@ -1250,7 +1250,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
 export const ReceiptComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
 
-  useEffect(() => {}, [dispatch, setReload]);
+  useEffect(() => { }, [dispatch, setReload]);
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
@@ -1272,7 +1272,7 @@ export const OutlinedCardReceipt = ({ data, setReload, main }) => {
       <Card variant="outlined">
         <ReceiptComponent data={data} setReload={setReload}></ReceiptComponent>
       </Card>
-{/* 
+      {/* 
       {main.responseMaintenanceServiceInfos.map((item, index) => (
         <Card variant="outlined" key={index}>
           <TableMainServiceInforComponent
@@ -1475,7 +1475,7 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
     }
   };
 
-  useEffect(() => {}, [dispatch, token, setReload]);
+  useEffect(() => { }, [dispatch, token, setReload]);
   return (
     <StyledCard>
       <CardContent>
@@ -1563,6 +1563,92 @@ export const TableMainTaskServicesComponent = ({ data, setReload }) => {
           )}
         </Box>
       </CardContent>
+    </StyledCard>
+  );
+};
+
+
+export const OutlinedCardOdoHisotry = ({ data, setReload, main }) => {
+  useEffect(() => {
+    console.log("OutlinedCardOdoHisotry", data);
+  }, [data, setReload, main]);
+  return (
+    <Box sx={{ minWidth: 275 }}>
+      <Card variant="outlined">
+        <OdoHisotryComponent data={data} setReload={setReload}></OdoHisotryComponent>
+      </Card>
+    </Box>
+  );
+};
+export const OdoHisotryComponent = ({ data, setReload }) => {
+  useEffect(() => { }, [setReload]);
+  return (
+    <Box sx={{ minWidth: 275 }}>
+      <Card variant="outlined">
+        <TableOdoComponent
+          data={data}
+          setReload={setReload}
+        ></TableOdoComponent>
+      </Card>
+    </Box>
+  );
+};
+
+export const TableOdoComponent = ({ data, setReload }) => {
+
+  useEffect(() => { }, [setReload, data]);
+  return (
+    <StyledCard>
+      <CardContent>
+        <Box display="flex" alignItems="center">
+          <Image
+            // src="https://firebasestorage.googleapis.com/v0/b/codeui-node.appspot.com/o/images%2Fimage.png?alt=media&token=2ade0f8b-d89b-436f-898c-23ebf51587af"
+            src=""
+            alt={data?.image}
+          />
+          <ContentWrapper>
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              Lịch Sử Odo: {data?.odoHistoryName}
+            </Typography>
+            <Typography variant="h6">#{data?.odoHistoryId}</Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableBody key={data?.odoHistoryId}>
+                  <TableRow>
+                    <TableCell>Odo :</TableCell>
+                    <TableCell>{formatNumberWithDots(data?.odo)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Ngày tạo:</TableCell>
+                    <TableCell>{formatDate(data?.createdDate)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Thông tin mô tả :</TableCell>
+                    <TableCell>{data?.description}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ContentWrapper>
+        </Box>
+      </CardContent>
+      <Box style={{ paddingRight: "50px" }}>
+        <Typography>
+          <span
+            className="status"
+            style={{
+              ...makeStyle(data?.status),
+              // borderRadius: "10px",
+              // width: "125px",
+              // fontSize: "10px",
+              // height: "50px",
+            }}
+          >
+            {data?.status}
+          </span>
+        </Typography>
+      </Box>
+
     </StyledCard>
   );
 };
