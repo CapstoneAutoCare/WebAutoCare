@@ -124,9 +124,9 @@ export default function Technician() {
   }, [dispatch, centerId, token, reload]);
   return (
     <Box>
-      <h3>Danh Sách Trung Tâm</h3>
+      <h3>Danh Sách Nhân Viên</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
-        Tạo Trung Tâm
+        Tạo Nhân Viên
       </Button>
       <RegisterTechCare
         open={open}

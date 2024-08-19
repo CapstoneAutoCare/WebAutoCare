@@ -35,7 +35,7 @@ export const SidebarDataCenter = [
   },
   {
     icon: AssignmentIndOutlinedIcon,
-    heading: "Giao Việc ",
+    heading: "Giao Xe NVKT",
   },
   {
     icon: UilPackage,
@@ -77,7 +77,7 @@ export const SidebarDataCustomerCare = [
   },
   {
     icon: AssignmentIndOutlinedIcon,
-    heading: "Giao Việc ",
+    heading: "Giao Xe NVKT",
   },
   {
     icon: UilPackage,
