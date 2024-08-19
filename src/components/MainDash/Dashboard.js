@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material";
-import MonthlyBarChart from "./MonthlyBarChart";
 import LineChartComponent from "./LineChartComponent ";
 import PieChartComponent from "./PieChartComponent";
+import { MonthlyBarChart } from "./MonthlyBarChart";
 
 const Dashboard = () => {
     // Dữ liệu giả lập, bạn có thể thay thế bằng dữ liệu thực tế

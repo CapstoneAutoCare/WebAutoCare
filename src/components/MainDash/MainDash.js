@@ -11,13 +11,16 @@ import {
   CenterTotalGetListByStatusAndStatusCostSparePart,
   CenterTotalGetListByStatusPaidReceipt,
 } from "../../redux/centerSlice";
-import MonthlyBarChart from "./MonthlyBarChart";
-import axios from "axios";
 import BookingApi from "../Axios/BookingApi";
+import MaintenanceInformationsApi from "../Axios/MaintenanceInformationsApi";
+import { CombinedBarChart, CombinedChartv1, MonthlyBarChart, RevenueBarChart } from "./MonthlyBarChart";
+import PieChartComponent from "./PieChartComponent";
 
 export const MainDash = () => {
   const dispatch = useDispatch();
   const [previousYearMonths, setPreviousYearMonths] = useState([]);
+  const [revenueData, setRevenueData] = useState([]);
+
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const centerId = localStorage.getItem("CenterId");
 
@@ -28,8 +31,11 @@ export const MainDash = () => {
   const fetchMonthlyData = async ({ centerId, token, year }) => {
     try {
       const response = await BookingApi.getBookingsByMonthInYearByCenterId({ token, id: centerId, year })
+      const responsedata = await MaintenanceInformationsApi.getListGetMonthlyRevenueByCenterId({ token, centerId, year })
       console.log("Fetched Monthly Data:", response.data);
+      console.log("Fetched Revenue Data:", responsedata.data);
       setPreviousYearMonths(response.data || []);
+      setRevenueData(responsedata.data || []);
     } catch (error) {
       console.error('Error fetching monthly data:', error);
     }
@@ -109,18 +115,22 @@ export const MainDash = () => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-         
+
         }}
       >
-        <MonthlyBarChart
+        <CombinedBarChart
           monthlyData={previousYearMonths}
+          revenueData={revenueData}
           currentYear={selectedYear}
         />
-        <MonthlyBarChart
+        <CombinedBarChart
           monthlyData={previousYearMonths}
+          revenueData={revenueData}
           currentYear={selectedYear}
         />
       </Box>
+
+
     </Box >
   );
 };
