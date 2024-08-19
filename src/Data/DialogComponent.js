@@ -118,15 +118,15 @@ export const AddSparePartDialog = ({
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
   const filteredOptionsSparePart = selectedModel
     ? spareparts.filter(
-        (part) =>
-          part.reponseVehicleModel.vehicleModelId ===
-          selectedModel.vehicleModelId
-      )
+      (part) =>
+        part.reponseVehicleModel.vehicleModelId ===
+        selectedModel.vehicleModelId
+    )
     : [];
 
   const formik = useFormik({
@@ -383,19 +383,19 @@ export const AddMaintenanceServiceDialog = ({
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-        (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
-      )
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
     : [];
   const filteredOptionsSchedule = selectedModel
     ? schedules.filter(
-        (model) => model.vehicleModelId === selectedModel.vehicleModelId
-      )
+      (model) => model.vehicleModelId === selectedModel.vehicleModelId
+    )
     : [];
   const filteredOptionsService = schedulePackage
     ? services.filter(
-        (model) =>
-          model.maintananceScheduleId === schedulePackage.maintananceScheduleId
-      )
+      (model) =>
+        model.maintananceScheduleId === schedulePackage.maintananceScheduleId
+    )
     : [];
   const formik = useFormik({
     initialValues: {
@@ -1156,7 +1156,7 @@ export const ViewSparePartItemsCostDialog = ({
         GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
       );
       setReload(!reload);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     if (item) {
@@ -1468,7 +1468,7 @@ export const ViewMaintenanceServicesCostDialog = ({
       //   GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
       // );
       setReload(!reload);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     if (item) {
@@ -1723,11 +1723,11 @@ export const AddSparePartItemsCostDialog = ({
 };
 
 const validationSchemaTaskByCenter = Yup.object({
-  technicianId: Yup.string().required("technicianId is required"),
+  technicianId: Yup.string().required("Yêu cầu thêm nhân viên"),
   informationMaintenanceId: Yup.string().required(
-    "informationMaintenanceId is required"
+    "Yêu cầu thêm thông tin"
   ),
-  maintenanceTaskName: Yup.string().required("maintenanceTaskName is required"),
+  maintenanceTaskName: Yup.string().required("Yêu cầu thêm thông tin"),
 });
 export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   const dispatch = useDispatch();
@@ -1775,7 +1775,7 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   }, [dispatch, token, centerId, reloadAdd, open]);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Thêm Việc Cho Nhân Viên</DialogTitle>
+      <DialogTitle>Bàn giao xe cho nhân viên</DialogTitle>
       {statustech === "loading" && statusmi === "loading" && (
         <DialogContent dividers>
           <CircularProgress />
@@ -1944,7 +1944,11 @@ export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
 
 // const statusTask = ["ACTIVE", "DONE", "CANCELLED"];
 const statusTask = ["ACTIVE", "DONE"];
-
+const statusMapTotalTask = {
+  DONE: "Hoàn Thành",
+  ACCEPTED: "Tiếp Nhận",
+  CANCELLED: "Đã hủy"
+};
 export const ViewTaskDetailDialog = ({
   open,
   handleViewClose,
@@ -1970,7 +1974,7 @@ export const ViewTaskDetailDialog = ({
         })
       );
       setReload(!reload);
-    } catch (error) {}
+    } catch (error) { }
   };
   const handleStatusChangeMTSpI = async (
     maintenanceTaskSparePartInfoId,
@@ -1985,7 +1989,7 @@ export const ViewTaskDetailDialog = ({
         })
       );
       setReload(!reload);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     if (item) {
@@ -2025,6 +2029,7 @@ export const ViewTaskDetailDialog = ({
               <TaskDetailComponent data={task} setReload={setReload} />
             </Card>
           </DialogTitle>
+          <Grid>
           {task.responseMainTaskSpareParts.length > 0 && (
             <Grid>
               <TableContainer
@@ -2081,7 +2086,7 @@ export const ViewTaskDetailDialog = ({
                                   value={status}
                                   disabled={status === item.status}
                                 >
-                                  {status}
+                                  {statusMapTotalTask[item?.status]}
                                 </MenuItem>
                               ))}
                             </Select>
@@ -2096,7 +2101,7 @@ export const ViewTaskDetailDialog = ({
                                 // height: "50px",
                               }}
                             >
-                              {item.status}
+                              {statusMapTotalTask[item?.status]}
                             </span>
                           )}
                         </TableCell>
@@ -2163,7 +2168,7 @@ export const ViewTaskDetailDialog = ({
                                   value={status}
                                   disabled={status === item.status}
                                 >
-                                  {status}
+                                  {statusMapTotalTask[item?.status]}
                                 </MenuItem>
                               ))}
                             </Select>
@@ -2178,7 +2183,7 @@ export const ViewTaskDetailDialog = ({
                                 // height: "50px",
                               }}
                             >
-                              {item.status}
+                              {statusMapTotalTask[item?.status]}
                             </span>
                           )}
                         </TableCell>
@@ -2189,6 +2194,8 @@ export const ViewTaskDetailDialog = ({
               </TableContainer>
             </Grid>
           )}
+          </Grid>
+         
         </>
       )}
       <DialogActions>
@@ -2793,7 +2800,7 @@ export const ViewListTaskinInforDialog = ({ data, setReload }) => {
       //   GetByIdSparePartActiveCost({ token, id: item.sparePartsItemId })
       // );
       setReload((p) => !p);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     console.log("Hien trang nay roi");

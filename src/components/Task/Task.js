@@ -27,7 +27,11 @@ import {
 import { formatDate } from "../../Data/Pagination";
 
 const statusOptions = ["ACTIVE", "ACCEPTED", "CANCELLED"];
-
+const statusMap = {
+  DONE: "Hoàn Thành",
+  ACCEPTED: "Tiếp Nhận",
+  CANCELLED: "Đã hủy"
+};
 const Task = () => {
   const dispatch = useDispatch();
   const centerId = localStorage.getItem("CenterId");
@@ -90,9 +94,9 @@ const Task = () => {
 
   return (
     <Box>
-      <h3>Danh Sách Giao Việc Cho Nhân Viên Kĩ Thuật</h3>
+      <h3>Danh Sách Bàn Giao Xe Cho Nhân Viên Kĩ Thuật</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
-        Thêm Việc Cho Nhân Viên Kĩ Thuật
+        Bàn giao xe
       </Button>
       {statustasks === "loading" && (
         <DialogContent dividers>
@@ -148,12 +152,16 @@ const Task = () => {
                             }}
                             style={{
                               ...makeStyle(item.status),
+                              fontWeight: "bold",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
                               borderRadius: "10px",
-                              width: "125px",
-                              fontSize: "10px",
-                              height: "50px",
+                              width: "auto",
+                              minWidth: "auto",
+                              whiteSpace: "nowrap"
                             }}
-                            // disabled={item.status}
+                          // disabled={item.status}
                           >
                             {statusOptions.map((status) => (
                               <MenuItem
@@ -161,7 +169,7 @@ const Task = () => {
                                 value={status}
                                 disabled={status === item.status}
                               >
-                                {status}
+                                {statusMap[item?.status]}
                               </MenuItem>
                             ))}
                           </Select>
@@ -170,13 +178,17 @@ const Task = () => {
                             className="status"
                             style={{
                               ...makeStyle(item.status),
-                              // borderRadius: "10px",
-                              // width: "125px",
-                              // fontSize: "10px",
-                              // height: "50px",
+                              fontWeight: "bold",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              borderRadius: "10px",
+                              width: "auto",
+                              minWidth: "auto",
+                              whiteSpace: "nowrap"
                             }}
                           >
-                            {item.status}
+                            {statusMap[item?.status]}
                           </span>
                         )}
                       </TableCell>
@@ -187,10 +199,10 @@ const Task = () => {
                       </TableCell>
                       <TableCell>{item.responseTechnician.email}</TableCell>
                       <TableCell>
-                        {item.responseMainTaskSpareParts.length} items
+                        {item.responseMainTaskSpareParts.length}
                       </TableCell>
                       <TableCell>
-                        {item.responseMainTaskServices.length} items
+                        {item.responseMainTaskServices.length}
                       </TableCell>
 
                       <TableCell className="Details">
@@ -199,7 +211,7 @@ const Task = () => {
                           variant="contained"
                           color="success"
                         >
-                          SHOW
+                          Hiện
                         </Button>
                       </TableCell>
                     </TableRow>

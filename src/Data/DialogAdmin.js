@@ -1769,14 +1769,14 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
     email: "",
     password: "",
     confirmPassword: "",
-    gender: "",
+    gender: "null",
     phone: "",
     maintenanceCenterName: "",
     maintenanceCenterDescription: "",
     address: "",
     district: "",
     city: "",
-    country: "",
+    country: "Vn",
     logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
   };
 
@@ -1860,29 +1860,7 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
 
   const renderStep2Fields = (errors, touched) => (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
-          <InputLabel id="gender-label" shrink>
-            Gender
-          </InputLabel>
-          <Field
-            as={Select}
-            labelId="gender-label"
-            name="gender"
-            fullWidth
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>Chọn giới tính</em>
-            </MenuItem>
-            <MenuItem value="Nam">Nam</MenuItem>
-            <MenuItem value="Nữ">Nữ</MenuItem>
-          </Field>
-          {touched.gender && errors.gender && (
-            <span style={{ color: "red" }}>{errors.gender}</span>
-          )}
-        </FormControl>
-      </Grid>
+
       <Grid item xs={12} sm={6}>
         <Field
           as={TextField}
@@ -1893,7 +1871,7 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
           helperText={touched.phone && errors.phone}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={6}>
         <Field
           as={TextField}
           fullWidth
@@ -1919,6 +1897,8 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
             touched.maintenanceCenterDescription &&
             errors.maintenanceCenterDescription
           }
+          multiline
+          rows={4}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -1941,7 +1921,7 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
           helperText={touched.district && errors.district}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={12}>
         <Field
           as={TextField}
           fullWidth
@@ -1951,16 +1931,7 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
           helperText={touched.city && errors.city}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Country"
-          name="country"
-          error={touched.country && errors.country}
-          helperText={touched.country && errors.country}
-        />
-      </Grid>
+     
     </Grid>
   );
 

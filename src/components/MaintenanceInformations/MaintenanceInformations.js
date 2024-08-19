@@ -26,7 +26,6 @@ import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatDate } from "../../Data/Pagination";
 import { ClearPaymentData } from "../../redux/paymentSlice";
 import { formatNumberWithDots } from "./OutlinedCard";
-
 const statusOptions = [
   "CREATEDBYClIENT",
   "WAITINGBYCAR",
@@ -37,6 +36,17 @@ const statusOptions = [
   "PAID",
   "CANCELLED"
 ];
+
+const statusTranslations = {
+  "CREATEDBYClIENT": "Tạo bởi khách hàng",
+  "WAITINGBYCAR": "Chờ xe",
+  "CHECKIN": "Nhận xe",
+  "REPAIRING": "Đang sửa chữa",
+  "PAYMENT": "Thanh toán",
+  "YETPAID": "Chưa thanh toán",
+  "PAID": "Đã thanh toán",
+  "CANCELLED": "Đã hủy"
+};
 
 const MaintenanceInformations = () => {
   const dispatch = useDispatch();
@@ -117,7 +127,7 @@ const MaintenanceInformations = () => {
           </MenuItem>
           {statusOptions.map((status) => (
             <MenuItem key={status} value={status}>
-              {status}
+              {statusTranslations[status] || status}
             </MenuItem>
           ))}
         </Select>
@@ -155,7 +165,6 @@ const MaintenanceInformations = () => {
                     <TableCell>Xe </TableCell>
                     <TableCell>Biển Số Xe</TableCell>
                     <TableCell>Tên Thông Tin</TableCell>
-
                     <TableCell>Ngày tạo</TableCell>
                     <TableCell>Ngày Kết Thúc</TableCell>
                     <TableCell>Status</TableCell>
@@ -196,7 +205,7 @@ const MaintenanceInformations = () => {
                               className="status"
                               style={makeStyle(item.status)}
                             >
-                              {item.status}
+                              {statusTranslations[item.status] || item.status}
                             </span>
                           </TableCell>
                           <TableCell

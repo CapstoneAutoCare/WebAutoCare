@@ -53,6 +53,11 @@ const token = localStorage.getItem("localtoken");
 export const formatNumberWithDots = (num) => {
   return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
+const statusMapTotalTask = {
+  DONE: "Hoàn Thành",
+  ACCEPTED: "Tiếp Nhận",
+  CANCELLED: "Đã hủy"
+};
 const bull = (
   <Box
     component="span"
@@ -119,10 +124,19 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),
 }));
 const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
-const statusOptionMi = ["WAITINGBYCAR", "CHECKIN"];
+const statusOptionMi = ["WAITINGBYCAR", "CHECKIN","CANCELLED"];
 const statusTask = ["ACCEPTED", "DONE"];
 const statusPayment = ["YETPAID", "PAID"];
 const statusBooking = ["WAITING", "ACCEPTED", "CANCELLED"];
+const statusMappingItems = {
+  "ACTIVE": "Đang Hoạt Động",
+  "INACTIVE": "Ngừng Hoạt Động",
+};
+const statusMappingBooking = {
+  "WAITING": "Đang Chờ",
+  "ACCEPTED": "Chấp Nhận",
+  "CANCELLED": "Đã Hủy"
+};
 const statusInforItem = ["ACTIVE", "INACTIVE"];
 export const TableComponent = ({
   id,
@@ -270,9 +284,11 @@ export const TableMainSparePartInforComponent = ({
   informationMaintenanceId,
 }) => {
   const dispatch = useDispatch();
+  const token = localStorage.getItem("localtoken");
   const { main, statusmi } = useSelector(
     (state) => state.maintenanceInformation
   );
+
   const handleStatusChange = async (id, newStatus) => {
     try {
       await dispatch(
@@ -293,11 +309,12 @@ export const TableMainSparePartInforComponent = ({
       MaintenanceInformationById({ miId: informationMaintenanceId, token })
     );
   }, [dispatch, setReload]);
+
   return (
     <StyledCard>
       <CardContent>
         <Box display="flex" alignItems="center">
-          <Image src={image} alt={name} />
+          <Image src={image} alt={name} width={100} height={100} /> {/* Cập nhật kích thước nếu cần */}
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
               {name}
@@ -307,31 +324,31 @@ export const TableMainSparePartInforComponent = ({
               <Table size="small">
                 <TableBody>
                   <TableRow>
-                    <TableCell> CostId:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Mã Chi Phí:</TableCell>
                     <TableCell>{costId}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>ItemId:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Mã Hàng:</TableCell>
                     <TableCell>{itemId}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Date:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ngày:</TableCell>
                     <TableCell>{date}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Note:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ghi Chú:</TableCell>
                     <TableCell>{note}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Quantity:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Số Lượng:</TableCell>
                     <TableCell>{quantity}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Discount:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Giảm Giá:</TableCell>
                     <TableCell>{discount}%</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Actual Cost:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Chi Phí Thực Tế:</TableCell>
                     <TableCell>
                       {formatNumberWithDots(actualCost)} VND
                     </TableCell>
@@ -347,22 +364,6 @@ export const TableMainSparePartInforComponent = ({
           <>
             {main.status === "CHECKIN" ? (
               <>
-                {/* <Button
-                  style={{
-                    fontWeight: "bold",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "10px",
-                    width: "125px",
-                    fontSize: "10px",
-                    backgroundColor: "green",
-                    color: "white",
-                  }}
-                  // onClick={() => handleclick(id)}
-                >
-                  Chỉnh Sửa
-                </Button> */}
                 <Select
                   value={status}
                   onChange={(event) => {
@@ -383,7 +384,7 @@ export const TableMainSparePartInforComponent = ({
                 >
                   {statusInforItem.map((status) => (
                     <MenuItem key={status} value={status}>
-                      {status}
+                      {statusMappingItems[status]}
                     </MenuItem>
                   ))}
                 </Select>
@@ -394,13 +395,10 @@ export const TableMainSparePartInforComponent = ({
                   className="status"
                   style={{
                     ...makeStyle(status),
-                    // borderRadius: "10px",
-                    // width: "125px",
-                    // fontSize: "10px",
-                    // height: "50px",
+                    fontSize: "20px",
                   }}
                 >
-                  {status}
+                  {statusMappingItems[status]}
                 </span>
               </Typography>
             )}
@@ -438,9 +436,11 @@ export const TableMainServiceInforComponent = ({
   informationMaintenanceId,
 }) => {
   const dispatch = useDispatch();
+  const token = localStorage.getItem("localtoken");
   const { main, statusmi } = useSelector(
     (state) => state.maintenanceInformation
   );
+
   const handleStatusChange = async (id, newStatus) => {
     try {
       await dispatch(
@@ -461,11 +461,12 @@ export const TableMainServiceInforComponent = ({
       MaintenanceInformationById({ miId: informationMaintenanceId, token })
     );
   }, [dispatch, setReload]);
+
   return (
     <StyledCard>
       <CardContent>
         <Box display="flex" alignItems="center">
-          <Image src={image} alt={name} />
+          <Image src={image} alt={name} width={100} height={100} />
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
               {name}
@@ -475,31 +476,31 @@ export const TableMainServiceInforComponent = ({
               <Table size="small">
                 <TableBody>
                   <TableRow>
-                    <TableCell> CostId:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Mã Chi Phí:</TableCell>
                     <TableCell>{costId}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>ItemId:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Mã Hàng:</TableCell>
                     <TableCell>{itemId}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Date:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ngày:</TableCell>
                     <TableCell>{date}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Note:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ghi Chú:</TableCell>
                     <TableCell>{note}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Quantity:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Số Lượng:</TableCell>
                     <TableCell>{quantity}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Discount:</TableCell>
-                    <TableCell>{discount}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Giảm Giá:</TableCell>
+                    <TableCell>{discount}%</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Actual Cost:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Chi Phí Thực Tế:</TableCell>
                     <TableCell>
                       {formatNumberWithDots(actualCost)} VND
                     </TableCell>
@@ -515,22 +516,6 @@ export const TableMainServiceInforComponent = ({
           <>
             {main.status === "CHECKIN" ? (
               <>
-                {/* <Button
-                  style={{
-                    fontWeight: "bold",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "10px",
-                    width: "125px",
-                    fontSize: "10px",
-                    backgroundColor: "green",
-                    color: "white",
-                  }}
-                  // onClick={() => handleclick(id)}
-                >
-                  Chỉnh Sửa
-                </Button> */}
                 <Select
                   value={status}
                   onChange={(event) => {
@@ -551,7 +536,7 @@ export const TableMainServiceInforComponent = ({
                 >
                   {statusInforItem.map((status) => (
                     <MenuItem key={status} value={status}>
-                      {status}
+                      {statusMappingItems[status]}
                     </MenuItem>
                   ))}
                 </Select>
@@ -562,13 +547,10 @@ export const TableMainServiceInforComponent = ({
                   className="status"
                   style={{
                     ...makeStyle(status),
-                    // borderRadius: "10px",
-                    // width: "125px",
-                    // fontSize: "10px",
-                    // height: "50px",
+                    fontSize: "20px",
                   }}
                 >
-                  {status}
+                  {statusMappingItems[status]}
                 </span>
               </Typography>
             )}
@@ -665,7 +647,7 @@ export const MainComponent = ({ data, setReload }) => {
               fontSize: "20px",
             }}
           >
-            {data.status}
+            {statusTranslations[data.status]}
           </span>
         )}
 
@@ -742,6 +724,16 @@ export const CardMainServiceCostComponent = ({ data, cost }) => {
       </StyledCard>
     )
   );
+};
+const statusTranslations = {
+  "CREATEDBYClIENT": "Tạo bởi khách hàng",
+  "WAITINGBYCAR": "Chờ xe",
+  "CHECKIN": "Nhận xe",
+  "REPAIRING": "Đang sửa chữa",
+  "PAYMENT": "Thanh toán",
+  "YETPAID": "Chưa thanh toán",
+  "PAID": "Đã thanh toán",
+  "CANCELLED": "Đã hủy"
 };
 export const OutlinedCardMain = ({ data, setReload }) => {
   useEffect(() => { }, [setReload]);
@@ -835,7 +827,7 @@ export const TableClientComponent = ({ data, setReload }) => {
           />
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
-              Infor Client
+              Thông Tin Khách Hàng
             </Typography>
             <Typography variant="h8">
               #{data.responseClient.clientId}
@@ -845,7 +837,7 @@ export const TableClientComponent = ({ data, setReload }) => {
                 <TableBody>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Client Name:
+                      Tên Khách Hàng:
                     </TableCell>
                     <TableCell>
                       {data.responseClient.firstName}{" "}
@@ -858,17 +850,17 @@ export const TableClientComponent = ({ data, setReload }) => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Gender:
+                      Giới Tính:
                     </TableCell>
                     <TableCell>{data.responseClient.gender}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ fontWeight: "bold" }}>Phone:</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Số Điện Thoại:</TableCell>
                     <TableCell>{data.responseClient.phone}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
-                      Address:
+                      Địa Chỉ:
                     </TableCell>
                     <TableCell>{data.responseClient.address}</TableCell>
                   </TableRow>
@@ -894,22 +886,21 @@ export const TableBookingComponent = ({ data, setReload }) => {
           token,
         })
       );
-      // dispatch(BookingByCenter({ token: token }));
       setReload((p) => !p);
     } catch (error) {
-      // console.error("Error updating status:", errors);
+      console.error("Error updating status:", error);
     }
   };
 
-  useEffect(() => { }, [dispatch, token, setReload]);
+  useEffect(() => { }, [dispatch, setReload]);
+
   return (
     <StyledCard>
       <CardContent>
         <Box display="flex" alignItems="center">
-          {/* <Image src={data.image} alt={data.image} /> */}
           <ContentWrapper>
             <Typography variant="h5" style={{ fontWeight: "bold" }}>
-              Infor Booking
+              Đặt Lịch
             </Typography>
             <Typography variant="h8">#{data.bookingId}</Typography>
             <TableContainer>
@@ -928,7 +919,6 @@ export const TableBookingComponent = ({ data, setReload }) => {
                     </TableCell>
                     <TableCell>{data.bookingDate}</TableCell>
                   </TableRow>
-
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold" }}>
                       Biển Số Xe:
@@ -966,7 +956,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
             >
               {statusBooking.map((status) => (
                 <MenuItem key={status} value={status}>
-                  {status}
+                  {statusMappingBooking[status]}
                 </MenuItem>
               ))}
             </Select>
@@ -984,7 +974,7 @@ export const TableBookingComponent = ({ data, setReload }) => {
                 alignItems: "center",
               }}
             >
-              {data.status}
+              {statusMappingBooking[data.status]}
             </Typography>
           )}
         </Box>
@@ -992,7 +982,6 @@ export const TableBookingComponent = ({ data, setReload }) => {
     </StyledCard>
   );
 };
-
 export const TaskDetailComponent = ({ data, setReload }) => {
   const dispatch = useDispatch();
 
@@ -1074,7 +1063,7 @@ export const TaskDetailComponent = ({ data, setReload }) => {
               alignItems: "center",
             }}
           >
-            {data.status}
+            {statusMapTotalTask[data?.status]}
           </Typography>
           {/* )} */}
         </Box>
@@ -1644,7 +1633,7 @@ export const TableOdoComponent = ({ data, setReload }) => {
               // height: "50px",
             }}
           >
-            {data?.status}
+            {statusMappingItems[data?.status]}
           </span>
         </Typography>
       </Box>

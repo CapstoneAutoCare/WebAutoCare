@@ -13,14 +13,14 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    gender: "",
+    gender: "null",
     phone: "",
     maintenanceCenterName: "",
     maintenanceCenterDescription: "",
     address: "",
     district: "",
     city: "",
-    country: "",
+    country: "VN",
     logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
   });
   const [errors, setErrors] = useState({});
@@ -28,7 +28,7 @@ export default function Register() {
   const validateStep1 = () => {
     const newErrors = {};
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!emailPattern.test(formData.email)) {
@@ -38,7 +38,7 @@ export default function Register() {
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-      
+
     return newErrors;
   };
 
@@ -78,7 +78,7 @@ export default function Register() {
       if (Object.keys(validationErrors).length === 0) {
         dispatch(PostCenter(formData)).then((result) => {
           if (PostCenter.fulfilled.match(result)) {
-            navigate("/"); 
+            navigate("/");
           } else {
             const errorMessages = result.payload || {};
             setErrors({
@@ -215,15 +215,15 @@ export default function Register() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Gender"
+                  label="Maintenance Center Name"
                   variant="outlined"
-                  name="gender"
-                  value={formData.gender}
+                  name="maintenanceCenterName"
+                  value={formData.maintenanceCenterName}
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
-                  error={!!errors.gender}
-                  helperText={errors.gender}
+                  error={!!errors.maintenanceCenterName}
+                  helperText={errors.maintenanceCenterName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -242,20 +242,7 @@ export default function Register() {
             </Grid>
 
             <Grid container spacing={2} mt={4}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Maintenance Center Name"
-                  variant="outlined"
-                  name="maintenanceCenterName"
-                  value={formData.maintenanceCenterName}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  error={!!errors.maintenanceCenterName}
-                  helperText={errors.maintenanceCenterName}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   label="Maintenance Center Description"
                   variant="outlined"
@@ -266,6 +253,8 @@ export default function Register() {
                   margin="normal"
                   error={!!errors.maintenanceCenterDescription}
                   helperText={errors.maintenanceCenterDescription}
+                  multiline
+                  rows={4}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -294,7 +283,7 @@ export default function Register() {
                   helperText={errors.district}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   label="City"
                   variant="outlined"
@@ -305,19 +294,6 @@ export default function Register() {
                   margin="normal"
                   error={!!errors.city}
                   helperText={errors.city}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Country"
-                  variant="outlined"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  error={!!errors.country}
-                  helperText={errors.country}
                 />
               </Grid>
             </Grid>

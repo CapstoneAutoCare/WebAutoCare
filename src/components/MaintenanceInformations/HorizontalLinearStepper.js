@@ -20,8 +20,18 @@ import {
   AddMaintenanceSparePartInfoesDialog,
   UseFormikCreateReceipt,
 } from "../../Data/DialogComponent";
-import { OdoHistoriesById, OdoHistoriesByInforId } from "../../redux/odohistory";
+import { OdoHistoriesByInforId } from "../../redux/odohistory";
 import { UseFormikCreateOdoHisotry } from "../../Data/DialogAdmin";
+
+const statusTranslations = {
+  "CREATEDBYClIENT": "Tạo bởi khách hàng",
+  "WAITINGBYCAR": "Chờ xe",
+  "CHECKIN": "Nhận xe",
+  "REPAIRING": "Đang sửa chữa",
+  "PAYMENT": "Thanh toán",
+  "YETPAID": "Chưa thanh toán",
+  "PAID": "Đã thanh toán",
+};
 
 export default function HorizontalLinearStepper({
   mainData,
@@ -52,13 +62,11 @@ export default function HorizontalLinearStepper({
     "PAID",
   ];
 
-
   const HandleAddOdoHisotry = ({ informationMaintenanceId, vehicleId }) => {
     setInforId(informationMaintenanceId);
     setVehicle(vehicleId);
     setOpenAddOdo(true);
   };
-
 
   const HandleAddReceipt = ({ informationMaintenanceId }) => {
     setInforId(informationMaintenanceId);
@@ -98,7 +106,7 @@ export default function HorizontalLinearStepper({
       ReceiptByInforId({ token, id: mainData.informationMaintenanceId })
     );
     dispatch(OdoHistoriesByInforId({ token, id: mainData.informationMaintenanceId }))
-  }, []);
+  }, [dispatch, token,]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -111,7 +119,9 @@ export default function HorizontalLinearStepper({
                 mainData.status === status ? "primary.main" : "text.secondary",
               fontWeight: mainData.status === status ? "bold" : "normal",
             }}
-          ></Typography>
+          >
+            {/* {statusTranslations[status]} */}
+          </Typography>
         ))}
       </Box>
 
@@ -124,7 +134,7 @@ export default function HorizontalLinearStepper({
             key={label}
             completed={index <= statusOptions.indexOf(mainData.status)}
           >
-            <StepLabel>{label}</StepLabel>
+            <StepLabel>{statusTranslations[label]}</StepLabel>
           </Step>
         ))}
       </Stepper>
@@ -154,7 +164,6 @@ export default function HorizontalLinearStepper({
                     HandleAddMainServiceInfor({
                       informationMaintenanceId:
                         mainData.informationMaintenanceId,
-
                     })
                   }
                   sx={{ width: "100%" }}
@@ -174,7 +183,6 @@ export default function HorizontalLinearStepper({
                     HandleAddOdoHisotry({
                       informationMaintenanceId: mainData.informationMaintenanceId,
                       vehicleId: mainData.responseVehicles.vehiclesId
-
                     })
                   }
                   sx={{ width: "100%" }}
@@ -244,7 +252,8 @@ export default function HorizontalLinearStepper({
         open={openAddOdo}
         handleClose={handleClose}
         token={token}
-        informationMaintenanceId={inforId} vehicleId={vehicle}
+        informationMaintenanceId={inforId}
+        vehicleId={vehicle}
       />
       <AddMaintenanceSparePartInfoesDialog
         open={openAddMainSparePartInfor}
