@@ -109,6 +109,19 @@ export const truncateNote = (note) => {
 };
 const statusOptions = ["WAITING", "ACCEPTED", "CANCELLED"];
 
+const translateStatus = (status) => {
+  switch (status) {
+    case "WAITING":
+      return "ĐANG CHỜ";
+    case "ACCEPTED":
+      return "CHẤP NHẬN";
+    case "CANCELLED":
+      return "ĐÃ HỦY";
+    default:
+      return status;
+  }
+};
+
 const Booking = () => {
   const dispatch = useDispatch();
   const { bookings, statusbooking, error } = useSelector(
@@ -175,7 +188,7 @@ const Booking = () => {
           </MenuItem>
           {statusOptions.map((status) => (
             <MenuItem key={status} value={status}>
-              {status}
+              {translateStatus(status)}
             </MenuItem>
           ))}
         </Select>
@@ -306,7 +319,7 @@ const Booking = () => {
                             >
                               {statusOptions.map((status) => (
                                 <MenuItem key={status} value={status}>
-                                  {status}
+                                  {translateStatus(status)}
                                 </MenuItem>
                               ))}
                             </Select>
@@ -315,7 +328,7 @@ const Booking = () => {
                               className="status"
                               style={{ ...makeStyle(item.status) }}
                             >
-                              {item.status}
+                              {translateStatus(item.status)}
                             </span>
                           )}
                         </TableCell>

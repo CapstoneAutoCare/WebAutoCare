@@ -1931,7 +1931,7 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
           helperText={touched.city && errors.city}
         />
       </Grid>
-     
+
     </Grid>
   );
 
@@ -2120,7 +2120,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="Password"
+          label="Mật Khẩu"
           name="password"
           type="password"
           error={touched.password && errors.password}
@@ -2147,7 +2147,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="firstName"
+          label="Họ"
           name="firstName"
           error={touched.firstName && errors.firstName}
           helperText={touched.firstName && errors.firstName}
@@ -2157,7 +2157,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="lastName"
+          label="Tên"
           name="lastName"
           error={touched.lastName && errors.lastName}
           helperText={touched.lastName && errors.lastName}
@@ -2167,7 +2167,7 @@ export const RegisterCustomerCare = ({
       <Grid item xs={12} sm={4}>
         <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
           <InputLabel id="gender-label" shrink>
-            Gender
+            Giới Tính
           </InputLabel>
           <Field
             as={Select}
@@ -2191,7 +2191,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="Phone"
+          label="Số Điện"
           name="phone"
           error={touched.phone && errors.phone}
           helperText={touched.phone && errors.phone}
@@ -2201,7 +2201,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="Birthday"
+          label="Ngày Sinh"
           name="birthday"
           type="date"
           InputLabelProps={{
@@ -2215,7 +2215,7 @@ export const RegisterCustomerCare = ({
         <Field
           as={TextField}
           fullWidth
-          label="Address"
+          label="Địa Chỉ"
           name="address"
           error={touched.address && errors.address}
           helperText={touched.address && errors.address}
@@ -2272,7 +2272,7 @@ export const RegisterCustomerCare = ({
                     mb: 4,
                   }}
                 >
-                  Tạo Trung Tâm
+                  TẠO NHÂN VIÊN
                 </Typography>
                 {step === 1
                   ? renderStep1Fields(errors, touched)
@@ -2286,7 +2286,7 @@ export const RegisterCustomerCare = ({
                     onClick={() => setStep(1)}
                     disabled={isSubmitting}
                   >
-                    Back
+                    TRẢ VỀ
                   </Button>
                 )}
                 {step === 1 && (
@@ -2305,7 +2305,7 @@ export const RegisterCustomerCare = ({
                       });
                     }}
                   >
-                    Next
+                    TIẾP TỤC
                   </Button>
                 )}
                 {step === 2 && (
@@ -2316,7 +2316,7 @@ export const RegisterCustomerCare = ({
                     disabled={isSubmitting}
                     onClick={submitForm}
                   >
-                    Submit
+                    TẠO
                   </Button>
                 )}
               </DialogActions>
@@ -2404,7 +2404,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="Password"
+          label="Mật Khẩu"
           name="password"
           type="password"
           error={touched.password && errors.password}
@@ -2415,7 +2415,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="Confirm Password"
+          label="Xác Nhận Lại Mật Khẩu"
           name="confirmPassword"
           type="password"
           error={touched.confirmPassword && errors.confirmPassword}
@@ -2431,7 +2431,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="firstName"
+          label="Họ"
           name="firstName"
           error={touched.firstName && errors.firstName}
           helperText={touched.firstName && errors.firstName}
@@ -2441,7 +2441,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="lastName"
+          label="Tên"
           name="lastName"
           error={touched.lastName && errors.lastName}
           helperText={touched.lastName && errors.lastName}
@@ -2451,7 +2451,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
       <Grid item xs={12} sm={4}>
         <FormControl fullWidth error={touched.gender && Boolean(errors.gender)}>
           <InputLabel id="gender-label" shrink>
-            Gender
+            Giới Tính
           </InputLabel>
           <Field
             as={Select}
@@ -2475,7 +2475,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="Phone"
+          label="Số Điện Thoại"
           name="phone"
           error={touched.phone && errors.phone}
           helperText={touched.phone && errors.phone}
@@ -2485,7 +2485,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
         <Field
           as={TextField}
           fullWidth
-          label="Birthday"
+          label="Ngày Sinh"
           name="birthday"
           type="date"
           InputLabelProps={{
@@ -2556,7 +2556,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
                     mb: 4,
                   }}
                 >
-                  Tạo Trung Tâm
+                  Tạo Nhân Viên
                 </Typography>
                 {step === 1
                   ? renderStep1Fields(errors, touched)
@@ -2570,7 +2570,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
                     onClick={() => setStep(1)}
                     disabled={isSubmitting}
                   >
-                    Back
+                    TRẢ VỀ
                   </Button>
                 )}
                 {step === 1 && (
@@ -2589,8 +2589,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
                       });
                     }}
                   >
-                    Next
-                  </Button>
+                    TIẾP TỤC                  </Button>
                 )}
                 {step === 2 && (
                   <Button
@@ -2600,7 +2599,7 @@ export const RegisterTechCare = ({ open, handleClose, token, setReload }) => {
                     disabled={isSubmitting}
                     onClick={submitForm}
                   >
-                    Submit
+                    TẠO
                   </Button>
                 )}
               </DialogActions>

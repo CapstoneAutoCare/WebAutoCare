@@ -211,7 +211,7 @@ export const AddSparePartDialog = ({
                 padding: "0 8px",
               }}
             >
-              Select Brand
+              Chọn Hãng
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
@@ -878,7 +878,7 @@ export const UpdateSparePartItemDialog = ({
               </FormControl>
 
               <TextField
-                label="Spare Part Item Name"
+                label="Tên Phụ Tùng"
                 name="sparePartsItemName"
                 value={formik.values.sparePartsItemName}
                 onChange={formik.handleChange}
@@ -894,7 +894,7 @@ export const UpdateSparePartItemDialog = ({
                 margin="normal"
               />
               <TextField
-                label="sparePartsItemType"
+                label="Loại"
                 name="sparePartsItemType"
                 value={formik.values.sparePartsItemType}
                 onChange={formik.handleChange}
@@ -910,7 +910,7 @@ export const UpdateSparePartItemDialog = ({
                 margin="normal"
               />
               <TextField
-                label="Image"
+                label="Hình Ảnh"
                 name="image"
                 type="file"
                 onChange={handleFileChange}
@@ -919,8 +919,8 @@ export const UpdateSparePartItemDialog = ({
                 fullWidth
                 margin="normal"
               />
-              <TextField
-                label="Capacity"
+              {/* <TextField
+                label="Chứa"
                 name="capacity"
                 type="number"
                 value={formik.values.capacity}
@@ -931,7 +931,7 @@ export const UpdateSparePartItemDialog = ({
                 helperText={formik.touched.capacity && formik.errors.capacity}
                 fullWidth
                 margin="normal"
-              />
+              /> */}
               <DialogActions>
                 <Button type="submit" color="primary">
                   Cập Nhật
@@ -1064,9 +1064,9 @@ export const UpdateMaintenanceServiceDialog = ({
                 </Select>
               </FormControl>
               <FormControl fullWidth margin="normal">
-                <InputLabel>Package</InputLabel>
+                <InputLabel>Chọn Gói</InputLabel>
                 <Select
-                  label="Package"
+                  label="Chọn Gói"
                   name="boolean"
                   value={formik.values.boolean}
                   onChange={formik.handleChange}
@@ -1083,7 +1083,7 @@ export const UpdateMaintenanceServiceDialog = ({
               </FormControl>
 
               <TextField
-                label="Maintenance Service Name"
+                label="Tên Dịch Vụ"
                 name="maintenanceServiceName"
                 value={formik.values.maintenanceServiceName}
                 onChange={formik.handleChange}
@@ -1099,7 +1099,7 @@ export const UpdateMaintenanceServiceDialog = ({
                 margin="normal"
               />
               <TextField
-                label="Image"
+                label="Hình Ảnh"
                 name="image"
                 type="file"
                 onChange={handleFileChange}
