@@ -9,6 +9,7 @@
     "@microsoft/signalr": "^8.0.7",
     "@mui/icons-material": "^5.16.4",
     "@mui/material": "^5.16.4",
+    "@nivo/bar": "^0.87.0",
     "@paypal/react-paypal-js": "^8.5.0",
     "@react-google-maps/api": "^2.19.3",
     "@reduxjs/toolkit": "^1.9.5",

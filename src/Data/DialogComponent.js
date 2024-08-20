@@ -934,7 +934,7 @@ export const UpdateSparePartItemDialog = ({
               />
               <DialogActions>
                 <Button type="submit" color="primary">
-                  Update
+                  Cập Nhật
                 </Button>
                 <Button
                   onClick={() => {
@@ -942,7 +942,7 @@ export const UpdateSparePartItemDialog = ({
                     formik.resetForm();
                   }}
                 >
-                  Close
+                  Đóng
                 </Button>
               </DialogActions>
             </form>
@@ -1111,7 +1111,7 @@ export const UpdateMaintenanceServiceDialog = ({
               />
               <DialogActions>
                 <Button type="submit" color="primary">
-                  Update
+                  Cập Nhật
                 </Button>
                 <Button
                   onClick={() => {
@@ -1119,7 +1119,7 @@ export const UpdateMaintenanceServiceDialog = ({
                     formik.resetForm();
                   }}
                 >
-                  Close
+                  Đóng
                 </Button>
               </DialogActions>
             </form>
