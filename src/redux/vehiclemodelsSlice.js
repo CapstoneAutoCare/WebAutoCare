@@ -79,6 +79,7 @@ const brandSlice = createSlice({
       .addCase(CreateVehiclesModelPost.rejected, (state, action) => {
         state.statusvehiclemodels = "failed";
         state.errorvehiclemodels = action.payload;
+        alert(action.payload);
       });
   },
 });

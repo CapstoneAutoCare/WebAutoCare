@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosApi = axios.create({
-  baseURL: "http://solv2.runasp.net/api",
+  baseURL: "https://capstoneautocareapi20240816003911.azurewebsites.net/api",
   headers: {
     "Content-Type": "application/json",
   },

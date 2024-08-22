@@ -1018,7 +1018,7 @@ export const TaskDetailComponent = ({ data, setReload }) => {
             <ImageBooking src={data.image} alt={data.image} />
             <ContentWrapper style={{ alignItems: "flex-start" }}>
               <Typography variant="h5" style={{ fontWeight: "bold" }}>
-                Tên Giao Việc: {data.maintenanceTaskName}
+                Bàn Giao Xe: {data.maintenanceTaskName}
               </Typography>
               <Typography variant="h6">#{data.maintenanceTaskId}</Typography>
               <Typography variant="h6" style={{ fontWeight: "bold" }}>
@@ -1141,11 +1141,11 @@ export const TableReceiptComponent = ({ data, setReload }) => {
                     <TableCell>{data?.vat}%</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Tiền Phụ :</TableCell>
-                    <TableCell>{data?.subTotal} VND</TableCell>
+                    <TableCell>Tổng Tiền :</TableCell>
+                    <TableCell>{formatNumberWithDots(data?.subTotal)} VND</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Tổng Tiền :</TableCell>
+                    <TableCell>Thành Tiền :</TableCell>
                     <TableCell>
                       {formatNumberWithDots(data?.totalAmount)} VND
                     </TableCell>

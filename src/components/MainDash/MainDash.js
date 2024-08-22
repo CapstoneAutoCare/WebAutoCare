@@ -115,16 +115,17 @@ export const MainDash = () => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-
+          alignItems: 'center',
+         
         }}
       >
-        <CombinedBarChart
+        <MonthlyBarChart
           monthlyData={previousYearMonths}
-          revenueData={revenueData}
+          // revenueData={revenueData}
           currentYear={selectedYear}
         />
-        <CombinedBarChart
-          monthlyData={previousYearMonths}
+        <RevenueBarChart
+          // monthlyData={previousYearMonths}
           revenueData={revenueData}
           currentYear={selectedYear}
         />

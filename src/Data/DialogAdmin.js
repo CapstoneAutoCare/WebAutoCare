@@ -424,7 +424,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
     validationSchema: Yup.object({
       maintananceScheduleName: Yup.number().required(
         "maintananceScheduleName is required"
-      ),
+      ).min(1000,"Ít nhất là 1000"),
       description: Yup.string().required("description is required"),
     }),
 

@@ -79,6 +79,7 @@ const brandSlice = createSlice({
       .addCase(CreateBrandVehicles.rejected, (state, action) => {
         state.statusbrands = "failed";
         state.errorbrands = action.payload;
+        alert(action.payload);
       });
   },
 });
