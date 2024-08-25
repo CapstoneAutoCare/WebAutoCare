@@ -34,6 +34,7 @@ import * as Yup from "yup";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
 import { GetSpartPartNotSparePartItemId } from "../../redux/sparepartsSlice";
+import { VehiclesMaintenancesByCenter } from "../../redux/vehiclemainSlice";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -137,6 +138,7 @@ const SparePartItems = () => {
 
   useEffect(() => {
     dispatch(SparePartItemsByCenterId({ centerId, token }));
+    dispatch(VehiclesMaintenancesByCenter(centerId));
   }, [dispatch, centerId, token, reload]);
   return (
     <Box>

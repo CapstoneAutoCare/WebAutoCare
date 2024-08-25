@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AuthenApi from "../components/Axios/AuthenApi";
 import AccountApi from "../components/Axios/AccountApi";
 import { useNavigate } from "react-router-dom";
+import { VehiclesMaintenancesByCenter } from "./vehiclemainSlice";
+import { useDispatch } from "react-redux";
 
 export const loginAsync = createAsyncThunk(
   "auth/login",
@@ -51,6 +53,8 @@ export default authSlice.reducer;
 
 export const CheckRole = async (token, role) => {
   // console.log("Checking role", token, role);
+
+
   var account = await AccountApi.getProfile(token);
   console.log(account.data);
   if (role === "CENTER") {

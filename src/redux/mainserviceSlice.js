@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import MaintenanceServicesApi from "../components/Axios/MaintenanceServicesApi";
 import CostItemApi from "../components/Axios/CostItemApi";
-
 const initialState = {
   maintenanceservices: [],
   statusmaintenanceservices: "idle",
@@ -140,6 +139,7 @@ export const GetByIdMaintenanceServiceActiveCost = createAsyncThunk(
 export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
   "maintenanceservice/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse",
   async ({ token, centerId, inforId }, { rejectWithValue }) => {
+
     try {
       console.log("centerId", centerId);
       console.log("inforId", inforId);
@@ -156,6 +156,7 @@ export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
         "maintenanceservice/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse",
         list.data
       );
+
       return list.data;
     } catch (error) {
       return rejectWithValue(error.response.data.Exception);
@@ -165,6 +166,7 @@ export const GetListByDifMaintenanceServiceAndInforId = createAsyncThunk(
 export const AddMaintenanceServicListPost = createAsyncThunk(
   "maintenanceservice/AddMaintenanceServicListPost",
   async ({ token, data }, { rejectWithValue }) => {
+
     try {
       const list = await MaintenanceServicesApi.addMaintenanceServicesItemList({
         token,
@@ -177,6 +179,7 @@ export const AddMaintenanceServicListPost = createAsyncThunk(
     }
   }
 );
+
 const mainserviceSlice = createSlice({
   name: "maintenanceservice",
   initialState,
@@ -190,6 +193,7 @@ const mainserviceSlice = createSlice({
     //   state.error = null;
     // },
   },
+  
   extraReducers: (builder) => {
     builder
       .addCase(MaintenanceServicesAll.pending, (state) => {

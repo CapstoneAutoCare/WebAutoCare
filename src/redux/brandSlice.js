@@ -33,6 +33,18 @@ export const BrandGetAllList = createAsyncThunk(
     }
   }
 );
+export const BrandVehiclesMaintenancesDifByCenter = createAsyncThunk(
+  "brands/vehiclesMaintenancesDifByCenter",
+  async (id, { rejectWithValue }) => {
+    try {
+      const list = await BrandVehiclesApi.vehiclesMaintenancesDifByCenter(id);
+      console.log("brands/vehiclesMaintenancesDifByCenter", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 export const CreateBrandVehicles = createAsyncThunk(
   "brands/CreateBrandVehicles",
   async ({ token, data }, { rejectWithValue }) => {
@@ -80,7 +92,23 @@ const brandSlice = createSlice({
         state.statusbrands = "failed";
         state.errorbrands = action.payload;
         alert(action.payload);
-      });
+      })
+      .addCase(BrandVehiclesMaintenancesDifByCenter.pending, (state) => {
+        state.statusbrands = "loading";
+        state.brand = null;
+        state.errorbrands = null;
+        state.brands = [];
+      })
+      .addCase(BrandVehiclesMaintenancesDifByCenter.fulfilled, (state, action) => {
+        state.statusbrands = "succeeded";
+        state.brands = action.payload;
+      })
+      .addCase(BrandVehiclesMaintenancesDifByCenter.rejected, (state, action) => {
+        state.statusbrands = "failed";
+        state.errorbrands = action.payload;
+        alert(action.payload);
+      })
+      ;
   },
 });
 export const {} = brandSlice.actions;

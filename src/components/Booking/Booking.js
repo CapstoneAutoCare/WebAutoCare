@@ -24,6 +24,7 @@ import {
   BookingByCenter,
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
+import * as signalR from "@microsoft/signalr";
 
 export const makeStyle = (status) => {
   if (status === "INACTIVE") {
@@ -127,6 +128,8 @@ const Booking = () => {
   const { bookings, statusbooking, error } = useSelector(
     (state) => state.booking
   );
+  const [connection, setConnection] = useState(null);
+
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
 
@@ -157,7 +160,45 @@ const Booking = () => {
   useEffect(() => {
     dispatch(BookingByCenter({ token: token, id: centerId }));
   }, [dispatch, token, reload]);
+  useEffect(() => {
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl("http://localhost:5299/notificationHub")
+      .withAutomaticReconnect()
+      .build();
 
+    setConnection(newConnection);
+
+    return () => {
+      if (connection) {
+        connection.stop();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (connection) {
+      connection
+        .start()
+        .then(() => {
+          console.log("Connected to SignalR Hub!");
+
+          connection.invoke("SendNotificationToGroupV1", centerId)
+            .then(() => console.log(`Subscribed to notifications for center ID: ${centerId}`))
+            .catch(err => console.error("Subscription failed: ", err));
+
+          connection.on("ReceiveBookingUpdate", (bookingData) => {
+            console.log("Received booking update:", bookingData);
+            dispatch(BookingByCenter({ token: token, id: centerId })); // Fetch updated data
+          });
+        })
+        .catch((err) => console.error("SignalR Connection Error: ", err));
+
+      connection.onclose((error) => {
+        console.error("Connection closed due to error. Reconnecting...", error);
+        setTimeout(() => connection.start().catch(err => console.log('Reconnection failed: ', err)), 5000);
+      });
+    }
+  }, [connection, dispatch, token, centerId]);
   const filteredBookings = bookings.filter((booking) => {
     return (
       (filterStatus ? booking.status === filterStatus : true) &&

@@ -29,6 +29,8 @@ import {
 } from "../../Data/DialogComponent";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { AddMaintenanceServiceDialogOutSide } from "../../Data/DialogAdmin";
+import { VehiclesMaintenancesByCenter } from "../../redux/vehiclemainSlice";
+import { useSnackbar } from "../../Data/SnackbarProvider";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -42,6 +44,7 @@ const makeStyle = (status) => {
       return { background: "#59bfff", color: "white" };
   }
 };
+
 const statusOptions = ["ACTIVE", "INACTIVE"];
 const totalpackage = ["Có Gói", "Không Có Gói"];
 const MaintenanceServices = () => {
@@ -51,6 +54,7 @@ const MaintenanceServices = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openView, setOpenView] = useState(false);
+  const { showSnackbar } = useSnackbar(); 
 
   const {
     maintenanceservices = [],
@@ -116,6 +120,7 @@ const MaintenanceServices = () => {
     setSelectedItem(item);
     setOpenView(true);
   };
+
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
@@ -161,6 +166,8 @@ const MaintenanceServices = () => {
   const role = localStorage.getItem("ROLE");
   useEffect(() => {
     dispatch(MaintenanceServicesByCenterId({ centerId, token }));
+    dispatch(VehiclesMaintenancesByCenter(centerId));
+
   }, [dispatch, centerId, token, reload]);
   return (
     <div>
@@ -188,6 +195,7 @@ const MaintenanceServices = () => {
             </>
           )}
         </div>
+
         <AddMaintenanceServiceDialog
           open={open}
           handleClose={handleClose}
@@ -195,7 +203,6 @@ const MaintenanceServices = () => {
           token={token}
           setReload={setReload}
         />
-
         {statusmaintenanceservices === "loading" && (
           <DialogContent dividers>
             <CircularProgress />
@@ -204,6 +211,7 @@ const MaintenanceServices = () => {
         {statusmaintenanceservices === "succeeded" &&
           maintenanceservices &&
           maintenanceservices.length > 0 && (
+
             <DialogContent dividers>
               <Box
                 display="flex"
@@ -362,8 +370,8 @@ const MaintenanceServices = () => {
                               {item?.maintananceScheduleName === "0"
                                 ? ""
                                 : formatNumberWithDots(
-                                    item?.maintananceScheduleName
-                                  )}
+                                  item?.maintananceScheduleName
+                                )}
                             </TableCell>
                             <TableCell>
                               {formatDate(item.createdDate)}

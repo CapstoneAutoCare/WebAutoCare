@@ -2619,22 +2619,23 @@ export const AddMaintenanceServiceDialogOutSide = ({
   setReload,
 }) => {
   const dispatch = useDispatch();
-  const { brands, statusbrands, errorbrands } = useSelector(
-    (state) => state.brands
-  );
+
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
+    const { vehiclemains, statusvehiclemains, errorvehiclemains } = useSelector(
+      (state) => state.vehiclemains
+    );
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [brandSearchTerm, setBrandSearchTerm] = useState("");
   const [modelSearchTerm, setModelSearchTerm] = useState("");
-  const filteredOptionsBrand = brands.filter((option) =>
-    option.vehiclesBrandId.toLowerCase().includes(brandSearchTerm.toLowerCase())
+  const filteredOptionsBrand = vehiclemains.filter((option) =>
+    option?.responseBrand?.vehiclesBrandName.toLowerCase().includes(brandSearchTerm.toLowerCase())
   );
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      (model) => model.vehiclesBrandId === selectedBrand?.responseBrand?.vehiclesBrandId
     )
     : [];
   const formik = useFormik({
@@ -2701,11 +2702,11 @@ export const AddMaintenanceServiceDialogOutSide = ({
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
-              key={filteredOptionsBrand.vehiclesBrandId}
+              key={filteredOptionsBrand?.responseBrand?.vehiclesBrandId}
               fullWidth
               options={filteredOptionsBrand}
               getOptionLabel={(option) =>
-                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+                `Hãng xe: ${option?.responseBrand?.vehiclesBrandName} (Mã: ${option?.responseBrand?.vehiclesBrandId})`
               }
               onChange={(event, newValue) => {
                 setSelectedBrand(newValue);
@@ -2714,10 +2715,10 @@ export const AddMaintenanceServiceDialogOutSide = ({
                 console.log("Hãng xe: ", newValue);
               }}
               renderOption={(props, option) => (
-                <li {...props} key={option.vehiclesBrandId}>
+                <li {...props} key={option?.responseBrand?.vehiclesBrandId}>
                   <img
-                    src={option?.logo}
-                    alt={option.vehiclesBrandName}
+                    src={option?.responseBrand?.logo}
+                    alt={option?.responseBrand?.vehiclesBrandName}
                     style={{
                       width: 40,
                       height: 40,
@@ -2726,9 +2727,9 @@ export const AddMaintenanceServiceDialogOutSide = ({
                     }}
                   />
                   <div>
-                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div>Hãng xe: {option?.responseBrand?.vehiclesBrandName}</div>
                     <div style={{ fontSize: "0.8em", color: "gray" }}>
-                      Mã: {option.vehiclesBrandId}
+                      Mã: {option?.responseBrand?.vehiclesBrandId}
                     </div>
                   </div>
                 </li>

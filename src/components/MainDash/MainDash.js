@@ -73,7 +73,7 @@ export const MainDash = () => {
           ))}
         </Select>
       </FormControl>
-      <Grid container spacing={2} justifyContent="center">
+      {/* <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
             title="Total Price Spare Parts"
@@ -110,7 +110,7 @@ export const MainDash = () => {
             extra="$20,395"
           />
         </Grid>
-      </Grid>
+      </Grid> */}
       <Box
         sx={{
           display: 'flex',

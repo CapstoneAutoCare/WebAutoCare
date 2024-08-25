@@ -90,6 +90,7 @@ import { MaintenanceSparePartInfoesPost } from "../redux/maintenanceSparePartInf
 import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesSlice";
 import { CreateBrandVehicles } from "../redux/brandSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
 
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
@@ -104,21 +105,23 @@ export const AddSparePartDialog = ({
   const { spareparts } = useSelector((state) => state.spareparts);
   const { brands } = useSelector((state) => state.brands);
   const { vehiclemodels } = useSelector((state) => state.vehiclemodels);
-
+  const { vehiclemains, statusvehiclemains, errorvehiclemains } = useSelector(
+    (state) => state.vehiclemains
+  );
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedSpareParts, setSelectedSpareParts] = useState([]);
   const [brandSearchTerm, setBrandSearchTerm] = useState("");
   const [modelSearchTerm, setModelSearchTerm] = useState("");
-  const filteredOptionsBrand = brands.filter((option) =>
-    option.vehiclesBrandName
+  const filteredOptionsBrand = vehiclemains.filter((option) =>
+    option?.responseBrand?.vehiclesBrandName
       .toLowerCase()
       .includes(brandSearchTerm.toLowerCase())
   );
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      (model) => model.vehiclesBrandId === selectedBrand?.responseBrand?.vehiclesBrandId
     )
     : [];
   const filteredOptionsSparePart = selectedModel
@@ -167,6 +170,7 @@ export const AddSparePartDialog = ({
       setBrandSearchTerm("");
       setModelSearchTerm("");
       dispatch(GetSpartPartNotSparePartItemId({ token, id: centerId }));
+      dispatch(VehiclesMaintenancesByCenter(centerId));
     }
   }, [dispatch, token, centerId, open, setReload]);
 
@@ -218,17 +222,17 @@ export const AddSparePartDialog = ({
               fullWidth
               options={filteredOptionsBrand}
               getOptionLabel={(option) =>
-                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+                `Hãng xe: ${option?.responseBrand?.vehiclesBrandName} (Mã: ${option?.responseBrand?.vehiclesBrandId})`
               }
               onChange={(event, newValue) => {
                 setSelectedBrand(newValue);
                 setSelectedModel(null);
               }}
               renderOption={(props, option) => (
-                <li {...props} key={option.vehiclesBrandId}>
+                <li {...props} key={option?.responseBrand?.vehiclesBrandId}>
                   <img
-                    src={option?.logo}
-                    alt={option.vehiclesBrandName}
+                    src={option?.responseBrand?.logo}
+                    alt={option?.responseBrand?.vehiclesBrandName}
                     style={{
                       width: 40,
                       height: 40,
@@ -237,9 +241,9 @@ export const AddSparePartDialog = ({
                     }}
                   />
                   <div>
-                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div>Hãng xe: {option?.responseBrand?.vehiclesBrandName}</div>
                     <div style={{ fontSize: "0.8em", color: "gray" }}>
-                      Mã: {option.vehiclesBrandId}
+                      Mã: {option?.responseBrand?.vehiclesBrandId}
                     </div>
                   </div>
                 </li>
@@ -359,8 +363,9 @@ export const AddMaintenanceServiceDialog = ({
   setReload,
 }) => {
   const dispatch = useDispatch();
-  const { brands, statusbrands, errorbrands } = useSelector(
-    (state) => state.brands
+
+  const { vehiclemains, statusvehiclemains, errorvehiclemains } = useSelector(
+    (state) => state.vehiclemains
   );
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
@@ -375,15 +380,15 @@ export const AddMaintenanceServiceDialog = ({
   const [brandSearchTerm, setBrandSearchTerm] = useState("");
   const [modelSearchTerm, setModelSearchTerm] = useState("");
   const [scheduleSearchTerm, setScheduleSearchTerm] = useState("");
-  const filteredOptionsBrand = brands.filter((option) =>
-    option.vehiclesBrandName
+  const filteredOptionsBrand = vehiclemains.filter((option) =>
+    option?.responseBrand?.vehiclesBrandName
       .toLowerCase()
       .includes(brandSearchTerm.toLowerCase())
   );
 
   const filteredOptionsModel = selectedBrand
     ? vehiclemodels.filter(
-      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+      (model) => model.vehiclesBrandId === selectedBrand.responseBrand.vehiclesBrandId
     )
     : [];
   const filteredOptionsSchedule = selectedModel
@@ -458,6 +463,8 @@ export const AddMaintenanceServiceDialog = ({
       setBrandSearchTerm("");
       setModelSearchTerm("");
       dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
+      dispatch(VehiclesMaintenancesByCenter(centerId));
+
     }
   }, [dispatch, token, centerId, open, setReload]);
   return (
@@ -478,11 +485,11 @@ export const AddMaintenanceServiceDialog = ({
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
-              key={filteredOptionsBrand.vehiclesBrandId}
+              key={filteredOptionsBrand?.responseBrand?.vehiclesBrandId}
               fullWidth
               options={filteredOptionsBrand}
               getOptionLabel={(option) =>
-                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+                `Hãng xe: ${option?.responseBrand?.vehiclesBrandName} (Mã: ${option?.responseBrand?.vehiclesBrandId})`
               }
               onChange={(event, newValue) => {
                 setSelectedBrand(newValue);
@@ -494,10 +501,10 @@ export const AddMaintenanceServiceDialog = ({
                 console.log("Hãng xe: ", newValue);
               }}
               renderOption={(props, option) => (
-                <li {...props} key={option.vehiclesBrandId}>
+                <li {...props} key={option.responseBrand?.vehiclesBrandId}>
                   <img
-                    src={option?.logo}
-                    alt={option.vehiclesBrandName}
+                    src={option?.responseBrand?.logo}
+                    alt={option?.responseBrand?.vehiclesBrandName}
                     style={{
                       width: 40,
                       height: 40,
@@ -506,9 +513,9 @@ export const AddMaintenanceServiceDialog = ({
                     }}
                   />
                   <div>
-                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div>Hãng xe: {option?.responseBrand?.vehiclesBrandName}</div>
                     <div style={{ fontSize: "0.8em", color: "gray" }}>
-                      Mã: {option.vehiclesBrandId}
+                      Mã: {option?.responseBrand?.vehiclesBrandId}
                     </div>
                   </div>
                 </li>

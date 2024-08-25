@@ -37,6 +37,7 @@ import { Profile } from "../redux/accountSlice";
 import ProfilePageV1 from "./Authen/Profile";
 import { ServicesListGetAll } from "../redux/servicesSlice";
 import Dashboard from "./MainDash/Dashboard";
+import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
@@ -116,11 +117,16 @@ const Sidebar = () => {
     dispatch(SparePartsAll(tokenlocal));
     dispatch(Profile(tokenlocal));
     dispatch(ServicesListGetAll(tokenlocal));
+
     localStorage.setItem("AccountId", code.sub);
     localStorage.setItem("ROLE", role);
     CheckRole(tokenlocal, role);
     setUserRole(role);
+    if (role === "CENTER" || role === "CUSTOMERCARE") {
+      const centerId = localStorage.getItem("CenterId");
+      dispatch(VehiclesMaintenancesByCenter(centerId));
 
+    }
     if (role === "CUSTOMER" || role === "TECHNICIAN") {
       navigate("/");
     }

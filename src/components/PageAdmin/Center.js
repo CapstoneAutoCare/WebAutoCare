@@ -24,6 +24,7 @@ import { makeStyle, truncateNote } from "../Booking/Booking";
 import { CenterGetAll, ChangeStatusPut } from "../../redux/centerSlice";
 import { formatDate } from "../../Data/Pagination";
 import { RegisterDialog } from "../../Data/DialogAdmin";
+import { DetailCenter } from "./DetailCenter";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const Center = () => {
@@ -36,11 +37,25 @@ const Center = () => {
   const itemsPerPage = 7;
   const pageCount = Math.ceil(centerlists.length / itemsPerPage);
   const [open, setOpen] = useState(false);
+  const [openDetail, setDetailOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const [filterStatus, setFilterStatus] = useState("");
   const [filterDistrict, setFilterDistrict] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterPhone, setFilterPhone] = useState("");
+
+  const handleClickDetailOpen = (item) => {
+    console.log(item);
+    setDetailOpen(true);
+    setSelectedItem(item)
+  };
+
+  const handleDetailClose = () => {
+    setDetailOpen(false);
+    setReload(!reload);
+  };
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -160,7 +175,7 @@ const Center = () => {
                     {/* <TableCell>Giới Tính</TableCell> */}
                     <TableCell>Đánh Giá</TableCell>
                     <TableCell>Status</TableCell>
-                    {/* <TableCell>Chi Tiết</TableCell> */}
+                    <TableCell>Chi Tiết</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -269,15 +284,15 @@ const Center = () => {
                             ))}
                           </Select>
                         </TableCell>
-                        {/* <TableCell className="Details">
+                        <TableCell className="Details">
                           <Button
-                            // onClick={() => handleClickOpen(item)}
+                            onClick={() => handleClickDetailOpen(item)}
                             variant="contained"
                             color="success"
                           >
                             Chi Tiết
                           </Button>
-                        </TableCell> */}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -293,6 +308,15 @@ const Center = () => {
             />
           </Grid>
         )}
+      {selectedItem && (
+        <DetailCenter
+          open={openDetail}
+          handleClose={handleDetailClose}
+          token={token}
+          item={selectedItem}
+          setReload={setReload}
+        />
+      )}
     </Box>
   );
 };

@@ -19,6 +19,10 @@ import schedulesReducer from "./scheduleSlice";
 import brandReducer from "./brandSlice";
 import vehiclemodelsReducer from "./vehiclemodelsSlice";
 import odohistoryReducer from "./odohistory";
+import vehiclemainsReducer from "./vehiclemainSlice";
+
+
+
 
 const store = configureStore({
   reducer: {
@@ -41,8 +45,10 @@ const store = configureStore({
     schedules: schedulesReducer,
     brands: brandReducer,
     vehiclemodels: vehiclemodelsReducer,
-    odohistories:odohistoryReducer
+    odohistories: odohistoryReducer,
+    vehiclemains: vehiclemainsReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export default store;

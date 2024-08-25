@@ -15,6 +15,25 @@ const BrandVehiclesApi = {
     const url = "/VehicleBrand/GetById?id=" + id;
     return await axiosApi.get(url);
   },
+  async vehiclesMaintenancesByCenter(id) {
+    const url = "/VehiclesMaintenances/GetListByCenter?id=" + id;
+    return await axiosApi.get(url);
+  },
+  async vehiclesMaintenancesDifByCenter(id) {
+    const url = "/VehicleBrand/GetNotInCenter?id=" + id;
+    return await axiosApi.get(url);
+  },
+  async vehiclesMaintenancesPost({token,data}) {
+    token = token || "";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/VehiclesMaintenances/Post";
+    return await axiosApi.post(url, data, config);
+  },
   //   getListByCenter({ token, centerId }) {
   //     const config = {
   //       headers: {
