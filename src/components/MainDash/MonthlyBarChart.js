@@ -47,7 +47,7 @@ export const RevenueBarChart =
 
     return (
       <div style={{ width: '100%', maxWidth: '100%', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '1.2rem', textAlign: 'center' }}>Đặt Lịch Theo Tháng</h2>
+        <h2 style={{ fontSize: '1.2rem', textAlign: 'center' }}>Doanh thu Theo Tháng</h2>
         <ResponsiveContainer width="100%" height={500}>
           <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />

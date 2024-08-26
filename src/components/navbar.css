@@ -4,8 +4,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #4a47a3; /* Background color for the navbar */
-  color: #ffffff; /* Text color for the links */
+  background-color: #000000;
+  color: #ffffff;
 }
 
 .navbar-links {
@@ -14,7 +14,7 @@
 }
 
 .navbar-links a {
-  color: #ffffff; /* Text color of the links */
+  color: #ffffff; 
   text-decoration: none;
   font-size: 1rem;
 }

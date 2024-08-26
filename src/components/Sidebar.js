@@ -130,7 +130,7 @@ const Sidebar = () => {
       navigate("/");
       toast.info("Redirecting to home page.");
     }
-  }, [selected, tokenlocal, navigate, dispatch]);
+  }, [selected, tokenlocal, navigate, dispatch,]);
 
   const handleSidebarItemClick = (index) => {
     setSelected(index);
@@ -159,7 +159,7 @@ const Sidebar = () => {
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
-{/* 
+        {/* 
         {userRole === "CENTER" && (
           <div className="logo">
             <img
