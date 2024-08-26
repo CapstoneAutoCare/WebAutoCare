@@ -69,7 +69,7 @@ export const DetailCenter = ({
                         color="success"
                         onClick={handleAddClickOpen}
                     >
-                        Thêm Hãng
+                        Đăng Kí Hãng Xe
                     </Button>
                     <AddVehicleMaintenanceDialog
                         open={openAdd}
@@ -217,7 +217,8 @@ export const AddVehicleMaintenanceDialog = ({
     }, [dispatch, token, centerId, open, setReload, reloading]);
     return (
         <Dialog open={open} onClose={handleAddClose} maxWidth="md" fullWidth>
-            <DialogTitle>Thêm Dịch Vụ Trong Gói </DialogTitle>
+            <DialogTitle>                        Đăng Kí Hãng Xe
+            </DialogTitle>
             <DialogContent>
                 <form onSubmit={formik.handleSubmit}>
 

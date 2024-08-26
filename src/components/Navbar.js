@@ -73,7 +73,7 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchNotifications();
-  }, [reload]);
+  }, [reload, unreadCount, notifications]);
 
   return (
     <div className="navbar">
@@ -103,9 +103,12 @@ const Navbar = () => {
                       key={notification?.notificationId}
                       sx={{
                         borderBottom: '1px solid #ddd',
-                        backgroundColor: !notification?.isRead ? '#f5f5f5' : 'white',
+                        backgroundColor: !notification?.isRead ? '#e3f2fd' : 'white', 
                         '&:last-child': {
                           borderBottom: 'none',
+                        },
+                        '&:hover': {
+                          backgroundColor: '#bbdefb', 
                         },
                       }}
                       onClick={() => handleNotificationClick(notification)}

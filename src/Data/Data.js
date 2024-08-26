@@ -63,7 +63,7 @@ export const SidebarDataCenter = [
   // },
   {
     icon: UilUser,
-    heading: "Profile",
+    heading: "Thông Tin Cá Nhân",
   },
 ];
 export const SidebarDataCustomerCare = [
@@ -89,7 +89,7 @@ export const SidebarDataCustomerCare = [
   },
   {
     icon: UilUser,
-    heading: "Profile",
+    heading: "Thông Tin Cá Nhân",
   },
 ];
 export const SidebarDataAdmin = [
