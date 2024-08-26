@@ -22,6 +22,16 @@ const AccountApi = {
     const url = `/Accounts/GetAccountsById?id=${id}`;
     return await axiosApi.get(url, config);
   },
+  getNotificationByAccountId: async ({ token, id }) => {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/Notifications/GetListByAccount?id=${id}`;
+    return await axiosApi.get(url, config);
+  },
   updateStatusAccount: async (form, token) => {
     const config = {
       headers: {

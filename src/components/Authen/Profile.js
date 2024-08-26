@@ -12,25 +12,16 @@ import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
 const defaultLocation = {
   lat: 10.7769,
   lng: 106.6951,
 };
-const API_KEY = "AIzaSyBuMOV4Kn0ZBwJwO5MYTR4k7G9tcixD33s";
+const API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"; // Update with your actual API key
 const address = "43E, đường 6, khu phố 3 , Tằng Nhơn Phú B, Tp Th";
 
 const ProfilePageV1 = () => {
-  const { profile } = useSelector((t) => t.account);
-  const user = {
-    name: "Nguyễn Văn A",
-    email: "nguyenvana@example.com",
-    phone: "0123 456 789",
-    gender: "Nam",
-    address: address,
-    avatar:
-      "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
-  };
-
+  const { profile } = useSelector((state) => state.account);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,8 +32,10 @@ const ProfilePageV1 = () => {
       alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
     } else {
       console.log("Thay đổi mật khẩu thành công!");
+      // Implement password change logic here
     }
   };
+
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
@@ -61,13 +54,13 @@ const ProfilePageV1 = () => {
         } else {
           console.error("Không tìm thấy địa chỉ.");
         }
-        console.log("googlemap ", response);
       } catch (error) {
         console.error("Lỗi khi lấy tọa độ:", error);
       }
     };
     fetchCoordinates();
   }, []);
+
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -78,23 +71,17 @@ const ProfilePageV1 = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <Avatar
-                alt={profile?.Logo}
-                src={profile?.Logo}
+                alt={profile?.Logo || "Avatar"}
+                src={profile?.Logo || "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"}
                 sx={{ width: 120, height: 120, margin: "0 auto" }}
               />
             </Grid>
             <Grid item xs={12} sm={8}>
-              <Typography variant="h5">{profile?.Role}</Typography>
-              <Typography variant="body1">Email: {profile?.Email}</Typography>
-              <Typography variant="body1">
-                Điện thoại: {profile?.Phone}
-              </Typography>
-              <Typography variant="body1">
-                Giới tính: {profile?.Gender}
-              </Typography>
-              <Typography variant="body1">
-                Địa chỉ: {profile?.Address}
-              </Typography>
+              <Typography variant="h5">{profile?.Role || "Chưa có thông tin"}</Typography>
+              <Typography variant="body1">Email: {profile?.Email || "Chưa có thông tin"}</Typography>
+              <Typography variant="body1">Điện thoại: {profile?.Phone || "Chưa có thông tin"}</Typography>
+              <Typography variant="body1">Giới tính: {profile?.Gender || "Chưa có thông tin"}</Typography>
+              <Typography variant="body1">Địa chỉ: {profile?.Address || address}</Typography>
               <Button variant="contained" color="primary" sx={{ mt: 2 }}>
                 Chỉnh Sửa
               </Button>
@@ -153,18 +140,17 @@ const ProfilePageV1 = () => {
         </Card>
       </Box>
 
-      {/* Thêm Google Map */}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>
           Địa điểm của bạn
         </Typography>
-        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+        <LoadScript googleMapsApiKey={API_KEY}>
           <GoogleMap
             mapContainerStyle={{ height: "400px", width: "100%" }}
-            center={defaultLocation}
+            center={location}
             zoom={12}
           >
-            <Marker position={defaultLocation} />
+            <Marker position={location} />
           </GoogleMap>
         </LoadScript>
       </Box>

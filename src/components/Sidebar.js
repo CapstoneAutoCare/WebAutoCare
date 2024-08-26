@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
-import { UilSignOutAlt } from "@iconscout/react-unicons";
-import { UilBars } from "@iconscout/react-unicons";
+import { UilSignOutAlt, UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-import ProfilePage from "./Updates/ProfilePage";
+import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+import ProfilePage from "./Updates/ProfilePage";
 import Booking from "./Booking/Booking";
 import CustomerCare from "./CustomerCare/CustomerCare";
 import SparePartItems from "./SparePart/SparePartItems";
 import MaintenanceServices from "./Service/MaintenanceServices";
-import ProfileCardWidget from "./Updates/ProfileCardWidget";
-import {
-  SidebarDataAdmin,
-  SidebarDataCenter,
-  SidebarDataCustomerCare,
-} from "../Data/Data";
 import Technician from "./Technician/Technician";
 import MaintenanceInformations from "./MaintenanceInformations/MaintenanceInformations";
 import Task from "./Task/Task";
@@ -28,7 +24,6 @@ import BrandVehicle from "./PageAdmin/BrandVehicle";
 import VehicleModel from "./PageAdmin/VehicleModel";
 import SparePart from "./PageAdmin/SparePart";
 import ServiceCare from "./PageAdmin/ServiceCare";
-import { useDispatch, useSelector } from "react-redux";
 import { BrandGetAllList } from "../redux/brandSlice";
 import { VehicleModelsGetAllList } from "../redux/vehiclemodelsSlice";
 import { ScheduleListGetall } from "../redux/scheduleSlice";
@@ -38,11 +33,15 @@ import ProfilePageV1 from "./Authen/Profile";
 import { ServicesListGetAll } from "../redux/servicesSlice";
 import Dashboard from "./MainDash/Dashboard";
 import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
+import { SidebarDataAdmin, SidebarDataCenter, SidebarDataCustomerCare } from "../Data/Data";
+import Navbar from "./Navbar";
+
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
   const [userRole, setUserRole] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const sidebarVariants = {
     true: { left: "0" },
@@ -56,6 +55,8 @@ const Sidebar = () => {
       return jwt_decode(token);
     } catch (error) {
       console.error("Error decoding token:", error);
+      toast.error("Failed to decode token. Please log in again.");
+      navigate("/");
       return null;
     }
   };
@@ -92,8 +93,6 @@ const Sidebar = () => {
       <ProfilePageV1 />,
     ],
     ADMIN: [
-      // <MainDash />,
-      // <></>,
       <Center />,
       <ScheduleList />,
       <BrandVehicle />,
@@ -103,14 +102,13 @@ const Sidebar = () => {
       <ProfilePageV1 />,
     ],
   };
-  const dispatch = useDispatch();
-  // const { profile } = useSelector((t) => t.account);
 
   useEffect(() => {
     const code = decodeToken(tokenlocal);
+    if (!code) return;
+
     const role =
       code["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    // if (role === "ADMIN") {
     dispatch(BrandGetAllList(tokenlocal));
     dispatch(VehicleModelsGetAllList(tokenlocal));
     dispatch(ScheduleListGetall(tokenlocal));
@@ -122,24 +120,28 @@ const Sidebar = () => {
     localStorage.setItem("ROLE", role);
     CheckRole(tokenlocal, role);
     setUserRole(role);
+
     if (role === "CENTER" || role === "CUSTOMERCARE") {
       const centerId = localStorage.getItem("CenterId");
       dispatch(VehiclesMaintenancesByCenter(centerId));
-
+      toast.success(`Welcome, ${role}!`);
     }
     if (role === "CUSTOMER" || role === "TECHNICIAN") {
       navigate("/");
+      toast.info("Redirecting to home page.");
     }
-  }, [selected, tokenlocal, navigate]);
+  }, [selected, tokenlocal, navigate, dispatch]);
 
   const handleSidebarItemClick = (index) => {
     setSelected(index);
+    toast.info(`You selected ${getSidebarData()[index].heading}`);
   };
 
   const handleSubmitLogOut = (e) => {
     e.preventDefault();
     localStorage.clear();
     sessionStorage.clear();
+    toast.success("Logged out successfully.");
     navigate("/");
   };
 
@@ -157,6 +159,7 @@ const Sidebar = () => {
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
+{/* 
         {userRole === "CENTER" && (
           <div className="logo">
             <img
@@ -198,7 +201,7 @@ const Sidebar = () => {
               }}
             />
           </div>
-        )}
+        )} */}
         <div className="menu">
           {getSidebarData().map((item, index) => (
             <div
