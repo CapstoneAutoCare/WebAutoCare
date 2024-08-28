@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import axios from "axios";
+import axios from "axios"; // Already imported
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -26,13 +26,41 @@ const ProfilePageV1 = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [location, setLocation] = useState(defaultLocation);
+  const tokenlocal = localStorage.getItem("localtoken");
+  const role = localStorage.getItem("ROLE");
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
-    } else {
-      console.log("Thay đổi mật khẩu thành công!");
-      // Implement password change logic here
+      return;
+    }
+
+    try {
+      const response = await axios.patch(
+        'http://solv2.runasp.net/api/Accounts/ChangePassword',
+        {
+          oldPassword: currentPassword,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenlocal}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Thay đổi mật khẩu thành công!");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+
+    } catch (error) {
+      console.error("Lỗi khi thay đổi mật khẩu:", error);
+      alert(error.response.data.Exception);
     }
   };
 
@@ -76,7 +104,7 @@ const ProfilePageV1 = () => {
                 sx={{ width: 120, height: 120, margin: "0 auto" }}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={8}>
               <Typography variant="h5">{profile?.Role || "Chưa có thông tin"}</Typography>
               <Typography variant="body1">Email: {profile?.Email || "Chưa có thông tin"}</Typography>
@@ -92,55 +120,59 @@ const ProfilePageV1 = () => {
         </CardContent>
       </Card>
 
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Thay Đổi Mật Khẩu
-        </Typography>
-        <Card>
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Mật khẩu hiện tại"
-                  type="password"
-                  fullWidth
-                  variant="outlined"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                />
+
+      {role !== "ADMIN" && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h5" component="h2" gutterBottom>
+            Thay Đổi Mật Khẩu
+          </Typography>
+          <Card>
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Mật khẩu hiện tại"
+                    type="password"
+                    fullWidth
+                    variant="outlined"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Mật khẩu mới"
+                    type="password"
+                    fullWidth
+                    variant="outlined"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Xác nhận mật khẩu mới"
+                    type="password"
+                    fullWidth
+                    variant="outlined"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Mật khẩu mới"
-                  type="password"
-                  fullWidth
-                  variant="outlined"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Xác nhận mật khẩu mới"
-                  type="password"
-                  fullWidth
-                  variant="outlined"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ mt: 2 }}
-              onClick={handleChangePassword}
-            >
-              Thay Đổi Mật Khẩu
-            </Button>
-          </CardContent>
-        </Card>
-      </Box>
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 2 }}
+                onClick={handleChangePassword}
+              >
+                Thay Đổi Mật Khẩu
+              </Button>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
+
 
       {/* <Box sx={{ mt: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>

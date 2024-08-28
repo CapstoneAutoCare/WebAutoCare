@@ -135,6 +135,7 @@ export default function HorizontalLinearStepper({
             completed={index <= statusOptions.indexOf(mainData.status)}
           >
             <StepLabel>{statusTranslations[label]}</StepLabel>
+            
           </Step>
         ))}
       </Stepper>
