@@ -191,7 +191,7 @@ export default function Technician() {
                   <TableCell>Giới Tính</TableCell>
                   <TableCell>Mô Tả</TableCell>
                   <TableCell>Trạng Thái</TableCell>
-                  <TableCell>Chi Tiết</TableCell>
+                  {/* <TableCell>Chi Tiết</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -261,7 +261,7 @@ export default function Technician() {
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          <Select
+                          {/* <Select
                             value={item.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
@@ -283,9 +283,15 @@ export default function Technician() {
                                 {status}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </Select> */}
+                          <span
+                                className="status"
+                                style={makeStyle(item.status)}
+                              >
+                                {item.status}
+                              </span>
                         </TableCell>
-                        <TableCell className="Details">
+                        {/* <TableCell className="Details">
                           <Button
                             // onClick={() => handleClickOpen(item)}
                             variant="contained"
@@ -293,7 +299,7 @@ export default function Technician() {
                           >
                             Chi Tiết
                           </Button>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
               </TableBody>

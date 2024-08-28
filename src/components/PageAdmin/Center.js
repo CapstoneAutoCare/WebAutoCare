@@ -254,30 +254,30 @@ const Center = () => {
                         <TableCell>
                           <Rating
                             name="size-medium"
-                            value={item.rating}
+                            value={item?.rating}
                             precision={0.1}
-                            readOnly={item.rating}
+                            readOnly={item?.rating}
                           />
                         </TableCell>
                         <TableCell>
                           <Select
-                            value={item.status}
+                            value={item?.status}
                             onChange={(event) => {
                               const newStatus = event.target.value;
                               handleStatusChange(
-                                item.maintenanceCenterId,
+                                item?.maintenanceCenterId,
                                 newStatus
                               );
                             }}
                             style={{
-                              ...makeStyle(item.status),
+                              ...makeStyle(item?.status),
                               borderRadius: "10px",
                               width: "125px",
                               fontSize: "10px",
                               height: "50px",
                             }}
                           >
-                            {statusOptions.map((status) => (
+                            {statusOptions?.map((status) => (
                               <MenuItem key={status} value={status}>
                                 {status}
                               </MenuItem>

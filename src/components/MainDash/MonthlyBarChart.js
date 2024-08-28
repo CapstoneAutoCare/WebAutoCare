@@ -85,29 +85,29 @@ export const CombinedBarChart = ({ monthlyData = [], revenueData = [], currentYe
     const revenueDataItem = revenueData.find(data => parseInt(data.month, 10) === monthNumber) || {};
     return {
       month,
-      [`Đặt lịch ${currentYear}`]: bookingData.bookingCount || 0,
+      [`Số lượng đặt lịch ${currentYear}`]: bookingData.bookingCount || 0,
       [`Doanh thu ${currentYear}`]: revenueDataItem.revenue || 0
     };
   });
 
   return (
     <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '1.2rem', textAlign: 'center' }}>Đặt lịch và doanh thu theo tháng</h2>
+      <h2 style={{ fontSize: '1.2rem', textAlign: 'center' }}>Số Lượng Đặt Lịch Và Doanh Thu Theo Tháng</h2>
       <ResponsiveContainer width="100%" height={500}>
         <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
-          <YAxis />
+          <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+          <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
           <Tooltip />
           <Legend />
-          <Bar dataKey={`Đặt lịch ${currentYear}`} fill="#8884d8" />
-          <Bar dataKey={`Doanh thu ${currentYear}`} fill="#82ca9d" />
+          <Bar yAxisId="left" dataKey={`Số lượng đặt lịch ${currentYear}`} fill="#8884d8" />
+          <Bar yAxisId="right" dataKey={`Doanh thu ${currentYear}`} fill="#82ca9d" />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 };
-
 export const CombinedChartv1 = ({ monthlyData = [], revenueData = [], currentYear }) => {
   const labels = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'short' }));
 

@@ -54,7 +54,7 @@ const MaintenanceServices = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openView, setOpenView] = useState(false);
-  const { showSnackbar } = useSnackbar(); 
+  const { showSnackbar } = useSnackbar();
 
   const {
     maintenanceservices = [],
@@ -332,7 +332,9 @@ const MaintenanceServices = () => {
                         <TableCell>Ngày Tạo</TableCell>
                         <TableCell>Gói</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Chỉnh Sửa</TableCell>
+                        {role === "CENTER" && (
+                          <TableCell>Chỉnh Sửa</TableCell>
+                        )}
                         <TableCell>Chi Tiết</TableCell>
                       </TableRow>
                     </TableHead>
@@ -391,15 +393,18 @@ const MaintenanceServices = () => {
                                 {item.status}
                               </span>
                             </TableCell>
-                            <TableCell className="Details">
-                              <Button
-                                onClick={() => handleEdit(item)}
-                                variant="contained"
-                                color="success"
-                              >
-                                Chỉnh Sửa
-                              </Button>
-                            </TableCell>
+                            {role === "CENTER" && (
+                              <TableCell className="Details">
+                                <Button
+                                  onClick={() => handleEdit(item)}
+                                  variant="contained"
+                                  color="success"
+                                >
+                                  Chỉnh Sửa
+                                </Button>
+                              </TableCell>
+                            )}
+
                             <TableCell className="Details">
                               <Button
                                 onClick={() => handleClickShow(item)}

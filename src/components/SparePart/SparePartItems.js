@@ -129,8 +129,8 @@ const SparePartItems = () => {
       : true;
     const searchName = filterName
       ? service?.sparePartsItemName
-          .toLowerCase()
-          .includes(filterName.toLowerCase())
+        .toLowerCase()
+        .includes(filterName.toLowerCase())
       : true;
     return statusMatch && fitBrand && fitVehicleModels && searchName;
   });
@@ -241,7 +241,9 @@ const SparePartItems = () => {
                       <TableCell>Loại Xe</TableCell>
                       <TableCell>Ngày Tạo</TableCell>
                       <TableCell>Status</TableCell>
-                      <TableCell>Chỉnh Sửa</TableCell>
+                      {role === "CENTER" && (
+                        <TableCell>Chỉnh Sửa</TableCell>
+                      )}
                       <TableCell>Chi Tiết</TableCell>
                     </TableRow>
                   </TableHead>
@@ -283,15 +285,21 @@ const SparePartItems = () => {
                                 {item.status}
                               </span>
                             </TableCell>
-                            <TableCell className="Details">
-                              <Button
-                                onClick={() => handleEdit(item)}
-                                variant="contained"
-                                color="success"
-                              >
-                                Chỉnh Sửa
-                              </Button>
-                            </TableCell>
+                            {role === "CENTER" && (
+                              <TableCell className="Details">
+                                <Button
+                                  onClick={() => handleEdit(item)}
+                                  variant="contained"
+                                  color="success"
+                                >
+                                  Chỉnh Sửa
+                                </Button>
+                              </TableCell>
+                            )}
+
+
+
+
                             <TableCell className="Details">
                               <Button
                                 onClick={() => handleClickShow(item)}

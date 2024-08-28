@@ -76,15 +76,17 @@ const ProfilePageV1 = () => {
                 sx={{ width: 120, height: 120, margin: "0 auto" }}
               />
             </Grid>
+            
             <Grid item xs={12} sm={8}>
               <Typography variant="h5">{profile?.Role || "Chưa có thông tin"}</Typography>
               <Typography variant="body1">Email: {profile?.Email || "Chưa có thông tin"}</Typography>
               <Typography variant="body1">Điện thoại: {profile?.Phone || "Chưa có thông tin"}</Typography>
-              <Typography variant="body1">Giới tính: {profile?.Gender || "Chưa có thông tin"}</Typography>
+              {profile?.Role === "CUSTOMERCARE" && <Typography variant="body1">Giới tính: {profile?.Gender || "Chưa có thông tin"}</Typography>}
+
               <Typography variant="body1">Địa chỉ: {profile?.Address || address}</Typography>
-              <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+              {/* <Button variant="contained" color="primary" sx={{ mt: 2 }}>
                 Chỉnh Sửa
-              </Button>
+              </Button> */}
             </Grid>
           </Grid>
         </CardContent>
@@ -140,7 +142,7 @@ const ProfilePageV1 = () => {
         </Card>
       </Box>
 
-      <Box sx={{ mt: 4 }}>
+      {/* <Box sx={{ mt: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>
           Địa điểm của bạn
         </Typography>
@@ -153,7 +155,7 @@ const ProfilePageV1 = () => {
             <Marker position={location} />
           </GoogleMap>
         </LoadScript>
-      </Box>
+      </Box> */}
     </Box>
   );
 };

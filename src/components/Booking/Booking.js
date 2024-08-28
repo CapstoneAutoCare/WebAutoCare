@@ -160,57 +160,27 @@ const Booking = () => {
   useEffect(() => {
     dispatch(BookingByCenter({ token: token, id: centerId }));
   }, [dispatch, token, reload]);
-  useEffect(() => {
-    const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5299/notificationHub")
-      .withAutomaticReconnect()
-      .build();
 
-    setConnection(newConnection);
-
-    return () => {
-      if (connection) {
-        connection.stop();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          console.log("Connected to SignalR Hub!");
-
-          connection.invoke("SendNotificationToGroupV1", centerId)
-            .then(() => console.log(`Subscribed to notifications for center ID: ${centerId}`))
-            .catch(err => console.error("Subscription failed: ", err));
-
-          connection.on("ReceiveBookingUpdate", (bookingData) => {
-            console.log("Received booking update:", bookingData);
-            dispatch(BookingByCenter({ token: token, id: centerId })); // Fetch updated data
-          });
-        })
-        .catch((err) => console.error("SignalR Connection Error: ", err));
-
-      connection.onclose((error) => {
-        console.error("Connection closed due to error. Reconnecting...", error);
-        setTimeout(() => connection.start().catch(err => console.log('Reconnection failed: ', err)), 5000);
-      });
-    }
-  }, [connection, dispatch, token, centerId]);
+  const isRowHighlighted = (status, dateBooking) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const bookingDate = new Date(dateBooking).setHours(0, 0, 0, 0);
+    return (
+      (status === "WAITING") &&
+      bookingDate <= today
+    );
+  };
   const filteredBookings = bookings.filter((booking) => {
     return (
       (filterStatus ? booking.status === filterStatus : true) &&
       (filterVehicle
         ? booking.responseVehicles.vehicleModelName
-            .toLowerCase()
-            .includes(filterVehicle.toLowerCase())
+          .toLowerCase()
+          .includes(filterVehicle.toLowerCase())
         : true) &&
       (filterLicensePlate
         ? booking.responseVehicles.licensePlate
-            .toLowerCase()
-            .includes(filterLicensePlate.toLowerCase())
+          .toLowerCase()
+          .includes(filterLicensePlate.toLowerCase())
         : true)
     );
   });
@@ -282,6 +252,11 @@ const Booking = () => {
                         key={item.bookingId}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                        style={{
+                          backgroundColor: isRowHighlighted(item.status, item.bookingDate)
+                            ? "rgba(255, 255, 0, 0.3)"
+                            : "transparent",
                         }}
                       >
                         {/* <TableCell>{item.bookingId}</TableCell> */}

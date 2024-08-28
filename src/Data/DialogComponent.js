@@ -1143,6 +1143,7 @@ export const ViewSparePartItemsCostDialog = ({
   token,
   item,
 }) => {
+  const role = localStorage.getItem("ROLE");
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
   const { sparepartitemscost, sparepartitem, statussparepartitem } =
@@ -1208,16 +1209,20 @@ export const ViewSparePartItemsCostDialog = ({
       {sparepartitem && statussparepartitem === "succeeded" && (
         <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              Danh Sách Các Lịch Sử Giá
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleAddClickOpen}
-              >
-                Thêm Giá Mới
-              </Button>
-            </div>
+
+            {role === "CENTER" && (
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                Danh Sách Các Lịch Sử Giá
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleAddClickOpen}
+                >
+                  Thêm Giá Mới
+                </Button>
+              </div>
+            )}
+
             <AddSparePartItemsCostDialog
               open={openAdd}
               handleAddClose={handleAddClose}
@@ -1452,6 +1457,8 @@ export const ViewMaintenanceServicesCostDialog = ({
   token,
   item,
 }) => {
+  const role = localStorage.getItem("ROLE");
+
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
   const {
@@ -1525,16 +1532,18 @@ export const ViewMaintenanceServicesCostDialog = ({
       {maintenanceservice && statusmaintenanceservices === "succeeded" && (
         <DialogContent dividers>
           <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              Xem Danh Sách Giá
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleAddClickOpen}
-              >
-                Thêm Giá Mới
-              </Button>
-            </div>
+            {role === "CENTER" && (
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                Xem Danh Sách Giá
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleAddClickOpen}
+                >
+                  Thêm Giá Mới
+                </Button>
+              </div>)}
+
             <AddMaintenanceServicesCostDialog
               open={openAdd}
               handleAddClose={handleAddClose}

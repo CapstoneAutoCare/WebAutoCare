@@ -3,6 +3,8 @@ import { IconButton, Badge, Modal, Box, Typography, Avatar, Button, List, ListIt
 import { FaBell, FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import AccountApi from "./Axios/AccountApi";
+import axios from "axios";
+import axiosApi from "./Axios/AxiosApi";
 
 const Navbar = () => {
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
@@ -13,15 +15,13 @@ const Navbar = () => {
   const tokenlocal = localStorage.getItem("localtoken");
   const [reload, setReload] = useState(false);
 
-  useEffect(() => {
-    if (profile) {
-      setEditableProfile({ ...profile });
-    }
-  }, [profile]);
-
   const fetchNotifications = async () => {
     try {
-      const response = await AccountApi.getNotificationByAccountId({ token: tokenlocal, id: profile.AccountId });
+      const response = await axiosApi.get(`/Notifications/GetListByAccount?id=${profile?.AccountId}`, {
+        headers: {
+          'Authorization': `Bearer ${tokenlocal}`
+        }
+      });
       const notifications = Array.isArray(response.data) ? response.data : [];
       setNotifications(notifications);
     } catch (error) {
@@ -35,6 +35,18 @@ const Navbar = () => {
   };
 
   const handleProfileClick = () => {
+    setEditableProfile({
+      ...profile,
+      firstName: profile?.FirstName || "",
+      lastName: profile?.LastName || "",
+      birthday: profile.Birthday ? new Date(profile?.Birthday).toISOString().split('T')[0] : "",
+      gender: profile?.Gender || "",
+      phone: profile?.Phone || "",
+      logo: profile?.Logo || "",
+      address: profile?.Address || "",
+      email: profile.Email || "",
+      role: profile.Role || "",
+    });
     setProfileModalOpen(true);
   };
 
@@ -51,35 +63,75 @@ const Navbar = () => {
 
   const handleSaveProfile = async () => {
     try {
-      // Add your API call to save the profile changes here
-      console.log('Saving profile:', editableProfile);
+      const adjustedBirthday = editableProfile?.birthday
+        ? new Date(new Date(editableProfile?.birthday).getTime() + 7 * 60 * 60 * 1000).toISOString()
+        : null;
+      const response = await axiosApi.put(
+        `/CustomerCares/Update?customercareId=${profile.CustomerCareId}`,
+        {
+          gender: editableProfile?.gender,
+          phone: editableProfile?.phone,
+          logo: editableProfile?.logo,
+          firstName: editableProfile?.firstName,
+          lastName: editableProfile?.lastName,
+          address: editableProfile?.address,
+          birthday: adjustedBirthday,
+        },
+        {
+          headers: {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenlocal}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log('Profile updated successfully');
+
+      } else {
+        console.error('Failed to update profile');
+      }
+
       closeProfileModal();
+      setReload(!reload);
+
     } catch (error) {
       console.error("Error saving profile", error);
+      alert(error.response.data.Exception);
     }
   };
 
   const handleNotificationClick = async (notification) => {
     try {
-      const response = await AccountApi.updateNotificationById({ token: tokenlocal, id: notification.notificationId });
-      setNotifications(response.data);
-      setReload(!reload);
+      const response = await axiosApi.patch(
+        `/Notifications/UpdateRead?id=${notification.notificationId}`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${tokenlocal}`,
+            'accept': 'text/plain'
+          }
+        }
+      );
+      if (response.status === 200) {
+        setReload(!reload);
+      }
     } catch (error) {
       console.error("Error updating notification", error);
     }
   };
 
-  const unreadCount = Array.isArray(notifications) ? notifications.filter(notification => !notification?.isRead)?.length : 0;
+  const unreadCount = notifications?.filter(notification => !notification?.isRead).length;
 
   useEffect(() => {
     fetchNotifications();
-  }, [reload, unreadCount, notifications]);
+  }, [reload, notifications, unreadCount]);
 
   return (
     <div className="navbar">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, backgroundColor: '#000000', color: '#ffffff' }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          {/* Add additional links or items here */}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton color="inherit" onClick={handleBellClick}>
@@ -97,18 +149,18 @@ const Navbar = () => {
               }}
             >
               <List>
-                {showNotifications && notifications.length ? (
+                {notifications.length > 0 ? (
                   notifications.map((notification) => (
                     <ListItem
                       key={notification?.notificationId}
                       sx={{
                         borderBottom: '1px solid #ddd',
-                        backgroundColor: !notification?.isRead ? '#e3f2fd' : 'white', 
+                        backgroundColor: !notification?.isRead ? '#e3f2fd' : 'white',
                         '&:last-child': {
                           borderBottom: 'none',
                         },
                         '&:hover': {
-                          backgroundColor: '#bbdefb', 
+                          backgroundColor: '#bbdefb',
                         },
                       }}
                       onClick={() => handleNotificationClick(notification)}
@@ -143,9 +195,12 @@ const Navbar = () => {
               </List>
             </Box>
           )}
-          <IconButton color="inherit" onClick={handleProfileClick}>
-            <FaUser size={24} />
-          </IconButton>
+          {profile?.Role === "CUSTOMERCARE" && (
+            <IconButton color="inherit" onClick={handleProfileClick}>
+              <FaUser size={24} />
+            </IconButton>
+          )}
+
         </Box>
       </Box>
 
@@ -172,82 +227,77 @@ const Navbar = () => {
               borderRadius: 1,
               boxShadow: 24,
               position: 'relative',
+              overflowY: 'auto',
+              maxHeight: '90vh',
             }}
           >
             <Typography id="profile-modal-title" variant="h6" component="h2">
               Hồ Sơ Người Dùng
             </Typography>
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Avatar
-                src={editableProfile.Logo || "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"}
-                alt={editableProfile.Name || "Avatar"}
-                sx={{ width: 120, height: 120, mr: 2 }}
+                src={editableProfile?.logo || "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"}
+                alt={editableProfile?.firstName || "Avatar"}
+                sx={{ width: 120, height: 120, alignSelf: 'center' }}
               />
-              <Box>
-                <Typography variant="h6">Role: {editableProfile.Role || "Role"}</Typography>
-                <TextField
-                  label="Email"
-                  value={editableProfile.Email || ""}
-                  onChange={(e) => handleProfileChange('Email', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <TextField
-                  label="Phone"
-                  value={editableProfile.Phone || ""}
-                  onChange={(e) => handleProfileChange('Phone', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <Select
-                  value={editableProfile.Gender || ""}
-                  onChange={(e) => handleProfileChange('Gender', e.target.value)}
-                  fullWidth
-                  displayEmpty
-                  margin="dense"
-                >
-                  <MenuItem value="">Gender</MenuItem>
-                  <MenuItem value="Male">Male</MenuItem>
-                  <MenuItem value="Female">Female</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
-                </Select>
-                <TextField
-                  label="Address"
-                  value={editableProfile.Address || ""}
-                  onChange={(e) => handleProfileChange('Address', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <TextField
-                  label="City"
-                  value={editableProfile.City || ""}
-                  onChange={(e) => handleProfileChange('City', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <TextField
-                  label="District"
-                  value={editableProfile.District || ""}
-                  onChange={(e) => handleProfileChange('District', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <TextField
-                  label="Country"
-                  value={editableProfile.Country || ""}
-                  onChange={(e) => handleProfileChange('Country', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-                <TextField
-                  label="Rating"
-                  type="number"
-                  value={editableProfile.Rating || 0}
-                  onChange={(e) => handleProfileChange('Rating', e.target.value)}
-                  fullWidth
-                  margin="dense"
-                />
-              </Box>
+              <Typography variant="h6" align="center">Role: {editableProfile?.role || "Role"}</Typography>
+              <TextField
+                label="Email"
+                value={editableProfile?.email || ""}
+                fullWidth
+                margin="dense"
+                disabled
+              />
+              <TextField
+                label="Phone"
+                value={editableProfile?.phone || ""}
+                onChange={(e) => handleProfileChange('phone', e.target.value)}
+                fullWidth
+                margin="dense"
+              />
+              <Select
+                value={editableProfile?.gender || ""}
+                onChange={(e) => handleProfileChange('gender', e.target.value)}
+                fullWidth
+                displayEmpty
+                margin="dense"
+              >
+                <MenuItem value="">Giới Tính</MenuItem>
+                <MenuItem value="Nam">Nam</MenuItem>
+                <MenuItem value="Nữ">Nữ</MenuItem>
+              </Select>
+              <TextField
+                label="First Name"
+                value={editableProfile?.firstName || ""}
+                onChange={(e) => handleProfileChange('firstName', e.target.value)}
+                fullWidth
+                margin="dense"
+              />
+              <TextField
+                label="Last Name"
+                value={editableProfile?.lastName || ""}
+                onChange={(e) => handleProfileChange('lastName', e.target.value)}
+                fullWidth
+                margin="dense"
+              />
+              <TextField
+                label="Birthday"
+                type="date"
+                value={editableProfile?.birthday || ""}
+                onChange={(e) => handleProfileChange('birthday', e.target.value)}
+                fullWidth
+                margin="dense"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <TextField
+                label="Address"
+                value={editableProfile?.address || ""}
+                onChange={(e) => handleProfileChange('address', e.target.value)}
+                fullWidth
+                margin="dense"
+              />
             </Box>
             <Box
               sx={{

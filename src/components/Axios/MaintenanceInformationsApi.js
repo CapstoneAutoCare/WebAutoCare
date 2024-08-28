@@ -36,6 +36,18 @@ const MaintenanceInformationsApi = {
     const url = `/MaintenanceInformations/GetListGetMonthlyRevenueByCenterId?id=${centerId}&year=${year}`;
 
     return await axiosApi.get(url, config);
+  }, 
+  async getInformationsByMonthInYearByCenterId({ token, id ,year}) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id, year },
+    };
+    const url = "/MaintenanceInformations/GetListGetMonthlyBookingSummaryPAIDByCenterId";
+
+    return axiosApi.get(url, config);
   },  
   async getListByCenterAndStatus({ token, status }) {
     const config = {

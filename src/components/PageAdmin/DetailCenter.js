@@ -58,7 +58,7 @@ export const DetailCenter = ({
                     <CircularProgress />
                 </DialogContent>
             )}
-            {statusvehiclemains === "succeeded" && (<Box>
+            {statusvehiclemains === "succeeded" && vehiclemains?.length > 0 && (<Box>
 
                 <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
                     Thông Tin Trung Tâm
@@ -164,12 +164,7 @@ export const AddVehicleMaintenanceDialog = ({
     const [vehiclesBrandIds, setServiceselects] = useState([]);
     const [reloading, setreloading] = useState(false)
 
-    // const filteredOptionsService = brands
-    //     ? brands.filter(
-    //         (model) =>
-    //             model.maintananceScheduleId === schedulePackage.maintananceScheduleId
-    //     )
-    //     : [];
+
     const formik = useFormik({
         initialValues: {
             vehiclesBrandIds: [],

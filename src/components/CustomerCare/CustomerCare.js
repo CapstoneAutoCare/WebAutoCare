@@ -251,7 +251,7 @@ export default function CustomerCare() {
                         </Tooltip>
                       </TableCell>
                       <TableCell>
-                        <Select
+                        {/* <Select
                           value={item.status}
                           onChange={(event) => {
                             const newStatus = event.target.value;
@@ -273,9 +273,15 @@ export default function CustomerCare() {
                               {status}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </Select> */}
+                        <span
+                                className="status"
+                                style={makeStyle(item.status)}
+                              >
+                                {item.status}
+                              </span>
                       </TableCell>
-                      <TableCell className="Details">
+                      {/* <TableCell className="Details">
                         <Button
                           // onClick={() => handleClickOpen(item)}
                           variant="contained"
@@ -283,7 +289,7 @@ export default function CustomerCare() {
                         >
                           Chi Tiết
                         </Button>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
               </TableBody>

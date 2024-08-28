@@ -19,6 +19,8 @@ import PieChartComponent from "./PieChartComponent";
 export const MainDash = () => {
   const dispatch = useDispatch();
   const [previousYearMonths, setPreviousYearMonths] = useState([]);
+  const [previousYearMonthsPaid, setPreviousYearPaidMonths] = useState([]);
+
   const [revenueData, setRevenueData] = useState([]);
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -32,15 +34,19 @@ export const MainDash = () => {
     try {
       const response = await BookingApi.getBookingsByMonthInYearByCenterId({ token, id: centerId, year })
       const responsedata = await MaintenanceInformationsApi.getListGetMonthlyRevenueByCenterId({ token, centerId, year })
+      const responsePaid = await MaintenanceInformationsApi.getInformationsByMonthInYearByCenterId({ token, id: centerId, year })
+
+
       console.log("Fetched Monthly Data:", response.data);
       console.log("Fetched Revenue Data:", responsedata.data);
       setPreviousYearMonths(response.data || []);
       setRevenueData(responsedata.data || []);
+      setPreviousYearPaidMonths(responsePaid.data || []);
     } catch (error) {
       console.error('Error fetching monthly data:', error);
     }
   };
-
+ 
   useEffect(() => {
     const token = localStorage.getItem("localtoken");
     fetchMonthlyData({ centerId, token, year: selectedYear });
@@ -73,10 +79,10 @@ export const MainDash = () => {
           ))}
         </Select>
       </FormControl>
-      {/* <Grid container spacing={2} justifyContent="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Total Price Spare Parts"
+            title="Tổng Phụ Tùng"
             price={sparepartItems.price}
             count={sparepartItems.count}
             extra="35,000"
@@ -84,7 +90,7 @@ export const MainDash = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Total Price Services"
+            title="Tổng Dịch Vụ"
             price={serviceItems.price}
             count={serviceItems.count}
             extra="8,900"
@@ -92,7 +98,7 @@ export const MainDash = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Total Price Bookings"
+            title="Tổng Đơn Đặt Lịch"
             price={maininforss.price}
             count={maininforss.count}
             isLoss
@@ -102,7 +108,7 @@ export const MainDash = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Total Price Payments"
+            title="Tổng Doanh Thu"
             price={payments.price}
             count={payments.count}
             isLoss
@@ -110,7 +116,7 @@ export const MainDash = () => {
             extra="$20,395"
           />
         </Grid>
-      </Grid> */}
+      </Grid>
       <Box
         sx={{
           display: 'flex',
@@ -124,8 +130,8 @@ export const MainDash = () => {
           // revenueData={revenueData}
           currentYear={selectedYear}
         />
-        <RevenueBarChart
-          // monthlyData={previousYearMonths}
+        <CombinedBarChart
+          monthlyData={previousYearMonthsPaid}
           revenueData={revenueData}
           currentYear={selectedYear}
         />

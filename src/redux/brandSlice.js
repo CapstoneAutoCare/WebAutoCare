@@ -7,6 +7,10 @@ const initialState = {
   statusbrands: "idle",
   errorbrands: null,
   brand: null,
+  package: null,
+  packages: [],
+  statuspackages: "idle",
+  errorpackages: null,
 };
 
 // export const ServicesAll = createAsyncThunk(
@@ -21,6 +25,32 @@ const initialState = {
 //     }
 //   }
 // );
+export const PackageGetAllList = createAsyncThunk(
+  "brands/PackageGetAllList",
+  async (token, { rejectWithValue }) => {
+    try {
+      const list = await BrandVehiclesApi.packagegetAll(token);
+      console.log("brands/PackageGetAllList", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const CreatePackage = createAsyncThunk(
+  "brands/CreatePackage",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await BrandVehiclesApi.packagePost({ token, data });
+      console.log("brands/CreatePackage", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+
+
 export const BrandGetAllList = createAsyncThunk(
   "brands/BrandGetAllList",
   async (token, { rejectWithValue }) => {
@@ -108,6 +138,46 @@ const brandSlice = createSlice({
         state.errorbrands = action.payload;
         alert(action.payload);
       })
+
+
+
+      .addCase(PackageGetAllList.pending, (state) => {
+        state.statuspackages = "loading";
+        state.package = null;
+        state.errorpackages = null;
+        state.packages = [];
+      })
+      .addCase(PackageGetAllList.fulfilled, (state, action) => {
+        state.statuspackages = "succeeded";
+        state.packages = action.payload;
+      })
+      .addCase(PackageGetAllList.rejected, (state, action) => {
+        state.statuspackages = "failed";
+        state.errorpackages = action.payload;
+        alert(action.payload);
+      })
+
+
+
+      .addCase(CreatePackage.pending, (state) => {
+        state.statuspackages = "loading";
+        state.package = null;
+        state.errorpackages = null;
+        state.packages = [];
+      })
+      .addCase(CreatePackage.fulfilled, (state, action) => {
+        state.statuspackages = "succeeded";
+        state.package = action.payload;
+      })
+      .addCase(CreatePackage.rejected, (state, action) => {
+        state.statuspackages = "failed";
+        state.errorpackages = action.payload;
+        alert(action.payload);
+      })
+
+
+
+
       ;
   },
 });

@@ -11,6 +11,31 @@ const BrandVehiclesApi = {
     const url = "/VehicleBrand/GetAll";
     return await axiosApi.get(url, config);
   },
+
+  async packagegetAll(token) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/Packages/GetPackages";
+    return await axiosApi.get(url, config);
+  },
+
+
+  async packagePost({token,data}) {
+    token = token || "";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/Packages/PostPackage";
+    return await axiosApi.post(url, data, config);
+  },
+
   async getById(id) {
     const url = "/VehicleBrand/GetById?id=" + id;
     return await axiosApi.get(url);

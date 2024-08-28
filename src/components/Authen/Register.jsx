@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Link, Grid } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Link, Grid, FormControl, InputLabel, MenuItem, FormHelperText, Select } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { PostCenter } from "../../redux/centerSlice";
 import { useNavigate } from "react-router-dom";
+import axiosApi from "../Axios/AxiosApi";
+import axios from "axios";
 
 export default function Register() {
   const [step, setStep] = useState(1);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [provinces, setProvinces] = useState([]);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -45,7 +48,11 @@ export default function Register() {
   const validateStep2 = () => {
     const newErrors = {};
     if (!formData.gender) newErrors.gender = "Gender is required";
-    if (!formData.phone) newErrors.phone = "Phone is required";
+    if (!formData.phone) {
+      newErrors.phone = "Phone is required";
+    } else if (!/^\d{0,10}$/.test(formData.phone)) {
+      newErrors.phone = "Phone number must be up to 10 digits";
+    }
     if (!formData.maintenanceCenterName)
       newErrors.maintenanceCenterName = "Maintenance Center Name is required";
     if (!formData.maintenanceCenterDescription)
@@ -58,11 +65,39 @@ export default function Register() {
     return newErrors;
   };
 
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
-  };
 
+    if (name === "city") {
+      const selectedProvince = provinces.find(
+        (province) => province?.ProvinceName === value
+      );
+      if (selectedProvince) {
+        console.log(`Selected Province ID: ${selectedProvince?.ProvinceID}`);
+        fetchDistricts(selectedProvince?.ProvinceID);
+      }
+    }
+  };
+  const fetchDistricts = async (provinceId) => {
+    try {
+      console.log("Fetching districts for province ID:", provinceId);
+      const response = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Token": "eb08b899-649c-11ef-ab1c-267b3de2ff84"
+          }
+        }
+      );
+      const districtsData = response.data.data;
+      setDistricts(districtsData);
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     if (step === 1) {
@@ -76,6 +111,7 @@ export default function Register() {
     } else if (step === 2) {
       const validationErrors = validateStep2();
       if (Object.keys(validationErrors).length === 0) {
+        console.log(formData);
         dispatch(PostCenter(formData)).then((result) => {
           if (PostCenter.fulfilled.match(result)) {
             navigate("/");
@@ -93,11 +129,34 @@ export default function Register() {
       }
     }
   };
+  const [districts, setDistricts] = useState([]);
 
   const handleBack = () => {
     setStep(1);
   };
 
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get(
+          'https://online-gateway.ghn.vn/shiip/public-api/master-data/province',
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': 'eb08b899-649c-11ef-ab1c-267b3de2ff84',
+            },
+          }
+        );
+        setProvinces(response?.data?.data);
+        console.log('Fetched provinces:', response?.data?.data);
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    };
+
+    fetchProvinces();
+    fetchDistricts();
+  }, []);
   return (
     <Box
       display="flex"
@@ -172,7 +231,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Password"
+                  label="Mật Khẩu"
                   variant="outlined"
                   type="password"
                   name="password"
@@ -186,7 +245,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Confirm Password"
+                  label="Xác Nhận Mật Khẩu"
                   variant="outlined"
                   type="password"
                   name="confirmPassword"
@@ -215,7 +274,7 @@ export default function Register() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Maintenance Center Name"
+                  label="Tên Trung Tâm"
                   variant="outlined"
                   name="maintenanceCenterName"
                   value={formData.maintenanceCenterName}
@@ -228,7 +287,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Phone"
+                  label="Số Điện Thoại"
                   variant="outlined"
                   name="phone"
                   value={formData.phone}
@@ -244,7 +303,7 @@ export default function Register() {
             <Grid container spacing={2} mt={4}>
               <Grid item xs={12} sm={12}>
                 <TextField
-                  label="Maintenance Center Description"
+                  label="Mô Tả Trung Tâm"
                   variant="outlined"
                   name="maintenanceCenterDescription"
                   value={formData.maintenanceCenterDescription}
@@ -257,9 +316,46 @@ export default function Register() {
                   rows={4}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
+                <FormControl fullWidth variant="outlined" margin="normal" error={!!errors.city}>
+                  <InputLabel>Thành Phố</InputLabel>
+                  <Select
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    label="Thành Phố"
+                  >
+                    {provinces.map((province) => (
+                      <MenuItem key={province.ProvinceID} value={province.ProvinceName}>
+                        {province.ProvinceName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.city && <FormHelperText>{errors.city}</FormHelperText>}
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <FormControl fullWidth variant="outlined" margin="normal" error={!!errors.district}>
+                  <InputLabel>Quận/Huyện</InputLabel>
+                  <Select
+                    name="district"
+                    value={formData.district}
+                    onChange={handleChange}
+                    label="Quận/Huyện"
+                    disabled={!formData.city}
+                  >
+                    {districts.map((district) => (
+                      <MenuItem key={district.DistrictID} value={district.DistrictName}>
+                        {district.DistrictName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.district && <FormHelperText>{errors.district}</FormHelperText>}
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12}>
                 <TextField
-                  label="Address"
+                  label="Địa Chỉ"
                   variant="outlined"
                   name="address"
                   value={formData.address}
@@ -268,32 +364,6 @@ export default function Register() {
                   margin="normal"
                   error={!!errors.address}
                   helperText={errors.address}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="District"
-                  variant="outlined"
-                  name="district"
-                  value={formData.district}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  error={!!errors.district}
-                  helperText={errors.district}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  label="City"
-                  variant="outlined"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  error={!!errors.city}
-                  helperText={errors.city}
                 />
               </Grid>
             </Grid>
@@ -322,6 +392,6 @@ export default function Register() {
           </Link>
         </Box>
       </Box>
-    </Box>
+    </Box >
   );
 }

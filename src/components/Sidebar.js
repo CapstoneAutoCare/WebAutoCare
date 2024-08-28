@@ -35,6 +35,7 @@ import Dashboard from "./MainDash/Dashboard";
 import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
 import { SidebarDataAdmin, SidebarDataCenter, SidebarDataCustomerCare } from "../Data/Data";
 import Navbar from "./Navbar";
+import Package from "./PageAdmin/Package";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -94,6 +95,7 @@ const Sidebar = () => {
     ],
     ADMIN: [
       <Center />,
+      <Package />,
       <ScheduleList />,
       <BrandVehicle />,
       <VehicleModel />,
@@ -130,7 +132,7 @@ const Sidebar = () => {
       navigate("/");
       toast.info("Redirecting to home page.");
     }
-  }, [selected, tokenlocal, navigate, dispatch,]);
+  }, [selected, tokenlocal, navigate, dispatch, <Navbar />]);
 
   const handleSidebarItemClick = (index) => {
     setSelected(index);

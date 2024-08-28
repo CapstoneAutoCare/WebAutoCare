@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -14,7 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { BrandGetAllList, CreateBrandVehicles } from "../redux/brandSlice";
+import { BrandGetAllList, CreateBrandVehicles, CreatePackage } from "../redux/brandSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,6 +43,7 @@ import {
   MaintenanceServicesByCenterId,
 } from "../redux/mainserviceSlice";
 import { CreateOdoHisotryPost } from "../redux/odohistory";
+import axios from "axios";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
@@ -61,10 +63,10 @@ export const AddBrandVehicleDialog = ({
     },
     validationSchema: Yup.object({
       vehiclesBrandName: Yup.string().required(
-        "Vehicle brand name is required"
+        "Yêu cầu tên hãng xe"
       ),
       vehiclesBrandDescription: Yup.string().required(
-        "Vehicle brand description is required"
+        "Yêu cầu mô tả"
       ),
     }),
     onSubmit: async (values) => {
@@ -133,7 +135,7 @@ export const AddBrandVehicleDialog = ({
             autoFocus
             margin="dense"
             name="vehiclesBrandName"
-            label="Vehicle Brand Name"
+            label="Tên Hãng Xe"
             type="text"
             fullWidth
             variant="standard"
@@ -156,7 +158,7 @@ export const AddBrandVehicleDialog = ({
           <TextField
             margin="dense"
             name="vehiclesBrandDescription"
-            label="Vehicle Brand Description"
+            label="Mô Tả Hãng Xe"
             type="text"
             fullWidth
             variant="standard"
@@ -174,14 +176,231 @@ export const AddBrandVehicleDialog = ({
           />
 
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
+            <Button onClick={handleClose}>Hủy</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
     </Dialog>
   );
 };
+
+export const AddPackageDialog = ({
+  open,
+  handleClose,
+  token,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      quantitySparepartAllowUsed: 30,
+      quantityMaintenanceServiceAllowUsed: 30,
+      description: "",
+      monthlyPrice: 1,
+      durationMonths: 1,
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required(
+        "Yêu cầu tên gói"
+      ),
+      quantitySparepartAllowUsed: Yup.number().required(
+        "Yêu cầu số lượng phụ tùng"
+      ).min(30, "Thấp nhất là 30"),
+      quantityMaintenanceServiceAllowUsed: Yup.number().required(
+        "Yêu cầu số lượng dịch vụ"
+      ).min(30, "Thấp nhất là 30"),
+      description: Yup.string().required(
+        "Yêu cầu mô tả"
+      ),
+      monthlyPrice: Yup.number().required(
+        "Yêu cầu giá hàng tháng"
+      ).min(100000, "Thấp nhất là 100.000 VND"),
+      durationMonths: Yup.number().required(
+        "Yêu cầu thời gian"
+      ).min(1, "Thấp nhất là 1"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        await dispatch(
+          CreatePackage({
+            token: token,
+            data: { ...values },
+          })
+        );
+        setReload((p) => !p);
+        handleClose();
+      } catch (error) {
+        console.error("Failed to package", error);
+      }
+    },
+  });
+  console.log("Formik errors: ", formik.errors);
+
+
+  useEffect(() => {
+    if (!open) {
+      formik.resetForm();
+    }
+  }, [open, setReload]);
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
+      <DialogTitle>Thêm Gói Đăng Kí</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="name"
+            label="Tên Gói"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.name &&
+              Boolean(formik.errors.name)
+            }
+            helperText={
+              formik.touched.name &&
+              formik.errors.name
+            }
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+
+          <TextField
+            margin="dense"
+            name="quantitySparepartAllowUsed"
+            label="Số Lượng Phụ Tùng"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.quantitySparepartAllowUsed}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.quantitySparepartAllowUsed &&
+              Boolean(formik.errors.quantitySparepartAllowUsed)
+            }
+            helperText={
+              formik.touched.quantitySparepartAllowUsed &&
+              formik.errors.quantitySparepartAllowUsed
+            }
+          />
+
+          <TextField
+            margin="dense"
+            name="quantityMaintenanceServiceAllowUsed"
+            label="Số Lượng Dịch Vụ"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.quantityMaintenanceServiceAllowUsed}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.quantityMaintenanceServiceAllowUsed &&
+              Boolean(formik.errors.quantityMaintenanceServiceAllowUsed)
+            }
+            helperText={
+              formik.touched.quantityMaintenanceServiceAllowUsed &&
+              formik.errors.quantityMaintenanceServiceAllowUsed
+            }
+          />
+
+
+          <TextField
+            margin="dense"
+            name="description"
+            label="Mô Tả"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.description &&
+              Boolean(formik.errors.description)
+            }
+            helperText={
+              formik.touched.description &&
+              formik.errors.description
+            }
+            multiline
+            rows={4}
+          />
+
+
+
+          <TextField
+            margin="dense"
+            name="monthlyPrice"
+            label="Giá Hàng Tháng"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.monthlyPrice}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.monthlyPrice &&
+              Boolean(formik.errors.monthlyPrice)
+            }
+            helperText={
+              formik.touched.monthlyPrice &&
+              formik.errors.monthlyPrice
+            }
+          />
+          <TextField
+            margin="dense"
+            name="durationMonths"
+            label="Thời Gian Tháng"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={formik.values.durationMonths}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.durationMonths &&
+              Boolean(formik.errors.durationMonths)
+            }
+            helperText={
+              formik.touched.durationMonths &&
+              formik.errors.durationMonths
+            }
+          />
+
+          <DialogActions>
+            <Button onClick={handleClose}>Hủy</Button>
+            <Button type="submit">Thêm</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export const AddVehicleModelDialog = ({
   open,
   handleClose,
@@ -206,10 +425,10 @@ export const AddVehicleModelDialog = ({
       vehicleModelDecription: "",
     },
     validationSchema: Yup.object({
-      vehiclesBrandId: Yup.string().required("vehiclesBrandId is required"),
-      vehicleModelName: Yup.string().required("vehicleModelName is required"),
+      vehiclesBrandId: Yup.string().required("Yêu cầu tên hãng xe"),
+      vehicleModelName: Yup.string().required("Yêu cầu loại xe"),
       vehicleModelDecription: Yup.string().required(
-        "vehicleModelDecription is required"
+        "Yêu cầu mô tả"
       ),
     }),
     onSubmit: async (values) => {
@@ -261,11 +480,21 @@ export const AddVehicleModelDialog = ({
         },
       }}
     >
-      <DialogTitle>Add Vehicle Model</DialogTitle>
+      <DialogTitle>Thêm Loại Xe</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
+          <InputLabel
+            shrink
+            htmlFor="vehiclesBrandId"
+            style={{
+              backgroundColor: "white",
+              padding: "0 8px",
+            }}
+          >
+            Chọn Hãng Xe
+          </InputLabel>
           <Autocomplete
-            label="vehiclesBrandId"
+            // label="Chọn Hãng Xe"
             fullWidth
             margin="normal"
             disablePortal
@@ -304,7 +533,7 @@ export const AddVehicleModelDialog = ({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Name"
+                // label="Chọn Hãng Xe"
                 name="vehiclesBrandId"
                 value={searchTerm}
                 variant="outlined"
@@ -333,7 +562,7 @@ export const AddVehicleModelDialog = ({
             autoFocus
             margin="dense"
             name="vehicleModelName"
-            label="vehicleModelName"
+            label="Tên Loại Xe"
             type="text"
             fullWidth
             variant="standard"
@@ -355,7 +584,7 @@ export const AddVehicleModelDialog = ({
           <TextField
             margin="dense"
             name="vehicleModelDecription"
-            label="vehicleModelDecription"
+            label="Mô Tả Loại Xe"
             type="text"
             fullWidth
             variant="standard"
@@ -379,9 +608,9 @@ export const AddVehicleModelDialog = ({
                 handleClose();
               }}
             >
-              Cancel
+              Huy
             </Button>
-            <Button type="submit">Add</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -423,9 +652,9 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
     },
     validationSchema: Yup.object({
       maintananceScheduleName: Yup.number().required(
-        "maintananceScheduleName is required"
-      ).min(1000,"Ít nhất là 1000"),
-      description: Yup.string().required("description is required"),
+        "Yêu cầu nhập số Odo"
+      ).min(1000, "Ít nhất là 1000"),
+      description: Yup.string().required("Yêu cầu mô tả"),
     }),
 
     onSubmit: async (values) => {
@@ -479,7 +708,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
                 padding: "0 8px",
               }}
             >
-              Select Brand
+              Chọn Hãng Xe
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
@@ -590,7 +819,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
             autoFocus
             margin="dense"
             name="maintananceScheduleName"
-            label="Maintanance Schedule Name"
+            label="Số Gói Odo"
             type="number"
             fullWidth
             variant="standard"
@@ -613,7 +842,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="description"
-            label="description"
+            label="Mô Tả"
             type="text"
             fullWidth
             variant="standard"
@@ -633,9 +862,9 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
                 handleClose();
               }}
             >
-              Cancel
+              Hủy
             </Button>
-            <Button type="submit">Add</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -678,14 +907,14 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
       originalPrice: 0,
     },
     validationSchema: Yup.object({
-      sparePartName: Yup.string().required("sparePartName is required"),
+      sparePartName: Yup.string().required("Yêu cầu tên phụ tùng"),
       sparePartDescription: Yup.string().required(
-        "sparePartDescription is required"
+        "Yêu câu mô tả"
       ),
       originalPrice: Yup.number()
-        .required("originalPrice is required")
-        .min(10000, "originalPrice must be at least 10,000 VND"),
-      sparePartType: Yup.string().required("sparePartType is required"),
+        .required("Yêu cầu giá tiền")
+        .min(10000, "Ít Nhất 10.000VND"),
+      sparePartType: Yup.string().required("Yêu cầu loại"),
     }),
 
     onSubmit: async (values) => {
@@ -740,7 +969,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
                 padding: "0 8px",
               }}
             >
-              Select Brand
+              Chọn Hãng Xe
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
@@ -851,7 +1080,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
             autoFocus
             margin="dense"
             name="sparePartName"
-            label="sparePartName"
+            label="Tên Phụ Tùng"
             type="text"
             fullWidth
             variant="standard"
@@ -873,7 +1102,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="sparePartType"
-            label="sparePartType"
+            label="Loại Phụ Tùng"
             type="text"
             fullWidth
             variant="standard"
@@ -894,7 +1123,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="sparePartDescription"
-            label="sparePartDescription"
+            label="Mô Tả Phụ Tùng"
             type="text"
             fullWidth
             variant="standard"
@@ -917,7 +1146,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="originalPrice"
-            label="originalPrice"
+            label="Giá"
             type="number"
             fullWidth
             variant="standard"
@@ -994,14 +1223,14 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
       originalPrice: 0,
     },
     validationSchema: Yup.object({
-      serviceCareName: Yup.string().required("serviceCareName is required"),
+      serviceCareName: Yup.string().required("Yêu cầu dịch vụ"),
       serviceCareDescription: Yup.string().required(
-        "serviceCareDescription is required"
+        "Yêu cầu mô tả dịch vụ"
       ),
-      serviceCareType: Yup.string().required("serviceCareType is required"),
+      serviceCareType: Yup.string().required("Yêu cầu loại dịch vụ"),
       originalPrice: Yup.number()
-        .required("originalPrice is required")
-        .min(10000, "originalPrice must be at least 10,000 VND"),
+        .required("Yêu cầu giá")
+        .min(10000, "Thấp nhất là 10.000VND"),
       schedulePackage: Yup.object(),
       selectedModel: Yup.object(),
     }),
@@ -1063,7 +1292,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
                 padding: "0 8px",
               }}
             >
-              Select Brand
+              Chọn Hãng Xe
             </InputLabel>
             <Autocomplete
               id="vehiclesBrandId"
@@ -1240,7 +1469,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
             autoFocus
             margin="dense"
             name="serviceCareName"
-            label="serviceCareName"
+            label="Tên Dịch Vụ"
             type="text"
             fullWidth
             variant="standard"
@@ -1262,7 +1491,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="serviceCareType"
-            label="serviceCareType"
+            label="Loại Dịch Vụ"
             type="text"
             fullWidth
             variant="standard"
@@ -1283,7 +1512,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="serviceCareDescription"
-            label="serviceCareDescription"
+            label="Mô Tả Dịch Vụ"
             type="text"
             fullWidth
             variant="standard"
@@ -1306,7 +1535,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
           <TextField
             margin="dense"
             name="originalPrice"
-            label="originalPrice"
+            label="Giá"
             type="number"
             fullWidth
             variant="standard"
@@ -1331,9 +1560,9 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
                 handleClose();
               }}
             >
-              Cancel
+              Hủy
             </Button>
-            <Button type="submit">Add</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>
@@ -1361,14 +1590,14 @@ export const UpdateSparePartDialog = ({
     },
     validationSchema: Yup.object({
       status: Yup.string().required("Status is required"),
-      sparePartName: Yup.string().required("SparePartName is required"),
-      sparePartType: Yup.string().required("sparePartType is required"),
+      sparePartName: Yup.string().required("Yêu cầu tên phụ tùng"),
+      sparePartType: Yup.string().required("Yêu cầu loại dịch vụ"),
       sparePartDescription: Yup.string().required(
-        "sparePartDescription is required"
+        "Yêu cầu mô tả"
       ),
       originalPrice: Yup.number()
-        .required("originalPrice is required")
-        .min(10000, "Min 10000"),
+        .required("Yêu cầu giá tiền")
+        .min(10000, "Thấp nhất là 10.000VND"),
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
@@ -1455,7 +1684,7 @@ export const UpdateSparePartDialog = ({
             </FormControl>
 
             <TextField
-              label="Spare Part Name"
+              label="Tên Phụ Tùng"
               name="sparePartName"
               value={formik.values.sparePartName}
               onChange={formik.handleChange}
@@ -1471,7 +1700,7 @@ export const UpdateSparePartDialog = ({
             />
 
             <TextField
-              label="sparePartType"
+              label="Loại Phụ Tùng"
               name="sparePartType"
               value={formik.values.sparePartType}
               onChange={formik.handleChange}
@@ -1487,7 +1716,7 @@ export const UpdateSparePartDialog = ({
             />
 
             <TextField
-              label="sparePartDescription"
+              label="Mô Tả Phụ Tùng"
               name="sparePartDescription"
               value={formik.values.sparePartDescription}
               onChange={formik.handleChange}
@@ -1504,7 +1733,7 @@ export const UpdateSparePartDialog = ({
             />
 
             <TextField
-              label="Price"
+              label="Giá Tiền"
               name="originalPrice"
               type="number"
               value={formik.values.originalPrice}
@@ -1522,7 +1751,7 @@ export const UpdateSparePartDialog = ({
             />
 
             <TextField
-              label="Image"
+              label="Hình Ảnh"
               name="image"
               type="file"
               onChange={handleFileChange}
@@ -1534,7 +1763,7 @@ export const UpdateSparePartDialog = ({
 
             <DialogActions>
               <Button type="submit" color="primary">
-                Update
+                Cập Nhật
               </Button>
               <Button
                 onClick={() => {
@@ -1542,7 +1771,7 @@ export const UpdateSparePartDialog = ({
                   formik.resetForm();
                 }}
               >
-                Close
+                Hủy
               </Button>
             </DialogActions>
           </form>
@@ -1568,17 +1797,19 @@ export const UpdateServiceDialog = ({
       serviceCareType: item?.serviceCareType || "",
       serviceCareDescription: item?.serviceCareDescription || "",
       originalPrice: item?.originalPrice,
+      image: item?.image || "",
+
     },
     validationSchema: Yup.object({
       status: Yup.string().required("Status is required"),
-      serviceCareName: Yup.string().required("serviceCareName is required"),
-      serviceCareType: Yup.string().required("serviceCareType is required"),
+      serviceCareName: Yup.string().required("Yêu cầu tên dịch vụ"),
+      serviceCareType: Yup.string().required("Yêu cầu loại dịch vụ"),
       serviceCareDescription: Yup.string().required(
-        "serviceCareDescription is required"
+        "Yêu cầu mô tả dịch vụ"
       ),
       originalPrice: Yup.number()
-        .required("originalPrice is required")
-        .min(10000, "Min 10000"),
+        .required("Yêu cầu giá dịch vụ")
+        .min(10000, "Thấp nhất là 10000"),
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
@@ -1620,6 +1851,8 @@ export const UpdateServiceDialog = ({
         serviceCareType: item?.serviceCareType,
         serviceCareDescription: item?.serviceCareDescription,
         originalPrice: item?.originalPrice,
+        image: item?.image || "",
+
       });
     }
   }, [dispatch, item, token]);
@@ -1664,7 +1897,7 @@ export const UpdateServiceDialog = ({
               </FormControl>
 
               <TextField
-                label="serviceCareName"
+                label="Tên Dịch Vụ"
                 name="serviceCareName"
                 value={formik.values.serviceCareName}
                 onChange={formik.handleChange}
@@ -1681,7 +1914,7 @@ export const UpdateServiceDialog = ({
               />
 
               <TextField
-                label="serviceCareType"
+                label="Loại Dịch Vụ"
                 name="serviceCareType"
                 value={formik.values.serviceCareType}
                 onChange={formik.handleChange}
@@ -1698,7 +1931,7 @@ export const UpdateServiceDialog = ({
               />
 
               <TextField
-                label="serviceCareDescription"
+                label="Mô Tả Dịch Vụ"
                 name="serviceCareDescription"
                 value={formik.values.serviceCareDescription}
                 onChange={formik.handleChange}
@@ -1715,7 +1948,7 @@ export const UpdateServiceDialog = ({
               />
 
               <TextField
-                label="Price"
+                label="Giá"
                 name="originalPrice"
                 type="number"
                 value={formik.values.originalPrice}
@@ -1732,7 +1965,7 @@ export const UpdateServiceDialog = ({
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
-                label="Image"
+                label="Hình Ảnh"
                 name="image"
                 type="file"
                 onChange={handleFileChange}
@@ -1743,7 +1976,7 @@ export const UpdateServiceDialog = ({
               />
               <DialogActions>
                 <Button type="submit" color="primary">
-                  Update
+                  Cập Nhật
                 </Button>
                 <Button
                   onClick={() => {
@@ -1751,7 +1984,7 @@ export const UpdateServiceDialog = ({
                     formik.resetForm();
                   }}
                 >
-                  Close
+                  Hủy
                 </Button>
               </DialogActions>
             </form>
@@ -1763,7 +1996,10 @@ export const UpdateServiceDialog = ({
 };
 export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
   const [step, setStep] = useState(1);
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const initialValues = {
     email: "",
@@ -1790,7 +2026,9 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
 
   const validationSchemaStep2 = Yup.object().shape({
     gender: Yup.string().required("Required"),
-    phone: Yup.string().required("Required"),
+    phone: Yup.string()
+      .required("Phone is required")
+      .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     maintenanceCenterName: Yup.string().required("Required"),
     maintenanceCenterDescription: Yup.string().required("Required"),
     address: Yup.string().required("Required"),
@@ -1804,6 +2042,9 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
       setStep(2);
       setSubmitting(false);
     } else {
+      console.log("value: ", values);
+      setLoading(true);
+
       dispatch(PostCenter(values))
         .then((result) => {
           if (PostCenter.fulfilled.match(result)) {
@@ -1816,125 +2057,51 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
           console.error("Error submitting form:", error);
         })
         .finally(() => {
+          setLoading(false);
           setSubmitting(false);
+          setReload(p => !p)
         });
     }
   };
 
-  const renderStep1Fields = (errors, touched) => (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Email"
-          name="email"
-          error={touched.email && errors.email}
-          helperText={touched.email && errors.email}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          error={touched.password && errors.password}
-          helperText={touched.password && errors.password}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          error={touched.confirmPassword && errors.confirmPassword}
-          helperText={touched.confirmPassword && errors.confirmPassword}
-        />
-      </Grid>
-    </Grid>
-  );
+  const fetchProvinces = async () => {
+    try {
+      const response = await axios.get(
+        'https://online-gateway.ghn.vn/shiip/public-api/master-data/province',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Token': "eb08b899-649c-11ef-ab1c-267b3de2ff84",
+          },
+        }
+      );
+      setProvinces(response.data.data);
+    } catch (error) {
+      console.error('Error fetching provinces:', error);
+    }
+  };
 
-  const renderStep2Fields = (errors, touched) => (
-    <Grid container spacing={2}>
+  const fetchDistricts = async (provinceId) => {
+    try {
+      const response = await axios.get(
+        'https://online-gateway.ghn.vn/shiip/public-api/master-data/district',
+        {
+          params: { province_id: provinceId },
+          headers: {
+            'Content-Type': 'application/json',
+            'Token': "eb08b899-649c-11ef-ab1c-267b3de2ff84",
+          },
+        }
+      );
+      setDistricts(response.data.data);
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+    }
+  };
 
-      <Grid item xs={12} sm={6}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Phone"
-          name="phone"
-          error={touched.phone && errors.phone}
-          helperText={touched.phone && errors.phone}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Maintenance Center Name"
-          name="maintenanceCenterName"
-          error={touched.maintenanceCenterName && errors.maintenanceCenterName}
-          helperText={
-            touched.maintenanceCenterName && errors.maintenanceCenterName
-          }
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Maintenance Center Description"
-          name="maintenanceCenterDescription"
-          error={
-            touched.maintenanceCenterDescription &&
-            errors.maintenanceCenterDescription
-          }
-          helperText={
-            touched.maintenanceCenterDescription &&
-            errors.maintenanceCenterDescription
-          }
-          multiline
-          rows={4}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="Address"
-          name="address"
-          error={touched.address && errors.address}
-          helperText={touched.address && errors.address}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="District"
-          name="district"
-          error={touched.district && errors.district}
-          helperText={touched.district && errors.district}
-        />
-      </Grid>
-      <Grid item xs={12} sm={12}>
-        <Field
-          as={TextField}
-          fullWidth
-          label="City"
-          name="city"
-          error={touched.city && errors.city}
-          helperText={touched.city && errors.city}
-        />
-      </Grid>
-
-    </Grid>
-  );
-
+  useEffect(() => {
+    fetchProvinces();
+  }, [setReload, token]);
   return (
     <Dialog
       open={open}
@@ -1969,6 +2136,9 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
             validateForm,
             setTouched,
             submitForm,
+            setFieldValue,
+            values,
+
           }) => (
             <Form>
               <Box sx={{ mb: 4 }}>
@@ -1985,9 +2155,142 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
                 >
                   Tạo Trung Tâm
                 </Typography>
-                {step === 1
-                  ? renderStep1Fields(errors, touched)
-                  : renderStep2Fields(errors, touched)}
+                {step === 1 ? (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Email"
+                        name="email"
+                        error={touched.email && errors.email}
+                        helperText={touched.email && errors.email}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Mật Khẩu"
+                        name="password"
+                        type="password"
+                        error={touched.password && errors.password}
+                        helperText={touched.password && errors.password}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Xác Nhận Mật Khẩu"
+                        name="confirmPassword"
+                        type="password"
+                        error={touched.confirmPassword && errors.confirmPassword}
+                        helperText={touched.confirmPassword && errors.confirmPassword}
+                      />
+                    </Grid>
+                  </Grid>
+                ) : (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Số Điện Thoại"
+                        name="phone"
+                        error={touched.phone && errors.phone}
+                        helperText={touched.phone && errors.phone}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Tên Trung Tâm"
+                        name="maintenanceCenterName"
+                        error={touched.maintenanceCenterName && errors.maintenanceCenterName}
+                        helperText={
+                          touched.maintenanceCenterName && errors.maintenanceCenterName
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Mô Tả Trung Tâm"
+                        name="maintenanceCenterDescription"
+                        error={
+                          touched.maintenanceCenterDescription &&
+                          errors.maintenanceCenterDescription
+                        }
+                        helperText={
+                          touched.maintenanceCenterDescription &&
+                          errors.maintenanceCenterDescription
+                        }
+                        multiline
+                        rows={4}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={12}>
+                      <FormControl fullWidth variant="outlined" margin="normal" error={touched.city && errors.city}>
+                        <InputLabel>Thành Phố</InputLabel>
+                        <Select
+                          name="city"
+                          value={values.city}
+                          onChange={(e) => {
+                            setFieldValue("city", e.target.value);
+                            const selectedProvince = provinces.find(
+                              (province) => province.ProvinceName === e.target.value
+                            );
+                            if (selectedProvince) {
+                              fetchDistricts(selectedProvince.ProvinceID);
+                            }
+                          }}
+                          label="City"
+                          disabled={!provinces.length}
+                        >
+                          {provinces.map((province) => (
+                            <MenuItem key={province.ProvinceID} value={province.ProvinceName}>
+                              {province.ProvinceName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.city && <FormHelperText>{errors.city}</FormHelperText>}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <FormControl fullWidth variant="outlined" margin="normal" error={touched.district && errors.district}>
+                        <InputLabel>Quận / Huyện</InputLabel>
+                        <Select
+                          name="Quận / Huyện"
+                          value={values.district}
+                          onChange={(e) => setFieldValue("district", e.target.value)}
+                          label="District"
+                          disabled={!values.city}
+                        >
+                          {districts.map((district) => (
+                            <MenuItem key={district.DistrictID} value={district.DistrictName}>
+                              {district.DistrictName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.district && <FormHelperText>{errors.district}</FormHelperText>}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <Field
+                        as={TextField}
+                        fullWidth
+                        label="Địa Chỉ"
+                        name="address"
+                        error={touched.address && errors.address}
+                        helperText={touched.address && errors.address}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
               </Box>
               <DialogActions>
                 {step === 2 && (
@@ -2024,10 +2327,10 @@ export const RegisterDialog = ({ open, handleClose, token, setReload }) => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loading}
                     onClick={submitForm}
                   >
-                    Submit
+                    {loading ? 'Đang đăng ký...' : 'Đăng Ký'}
                   </Button>
                 )}
               </DialogActions>
@@ -2622,9 +2925,9 @@ export const AddMaintenanceServiceDialogOutSide = ({
 
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
-    const { vehiclemains, statusvehiclemains, errorvehiclemains } = useSelector(
-      (state) => state.vehiclemains
-    );
+  const { vehiclemains, statusvehiclemains, errorvehiclemains } = useSelector(
+    (state) => state.vehiclemains
+  );
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [brandSearchTerm, setBrandSearchTerm] = useState("");
@@ -2891,7 +3194,7 @@ export const UseFormikCreateOdoHisotry = ({
               autoFocus
               margin="dense"
               name="informationMaintenanceId"
-              label="InformationMaintenance Id"
+              label="Mã Thông Tin Bảo Trì"
               type="text"
               fullWidth
               variant="standard"
@@ -2913,7 +3216,7 @@ export const UseFormikCreateOdoHisotry = ({
             autoFocus
             margin="dense"
             name="vehiclesId"
-            label="vehiclesId Id"
+            label="Mã Xe"
             type="text"
             fullWidth
             variant="standard"
@@ -2933,7 +3236,7 @@ export const UseFormikCreateOdoHisotry = ({
           <TextField
             margin="dense"
             name="odo"
-            label="odo"
+            label="Odo"
             type="text"
             fullWidth
             variant="standard"
@@ -2949,7 +3252,7 @@ export const UseFormikCreateOdoHisotry = ({
           <TextField
             margin="dense"
             name="description"
-            label="Description"
+            label="Mô Tả"
             type="text"
             fullWidth
             variant="standard"

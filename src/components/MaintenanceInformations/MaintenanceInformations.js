@@ -89,17 +89,24 @@ const MaintenanceInformations = () => {
       (filterStatus ? booking.status === filterStatus : true) &&
       (filterVehicle
         ? booking.responseVehicles.vehicleModelName
-            .toLowerCase()
-            .includes(filterVehicle.toLowerCase())
+          .toLowerCase()
+          .includes(filterVehicle.toLowerCase())
         : true) &&
       (filterLicensePlate
         ? booking.responseVehicles.licensePlate
-            .toLowerCase()
-            .includes(filterLicensePlate.toLowerCase())
+          .toLowerCase()
+          .includes(filterLicensePlate.toLowerCase())
         : true)
     );
   });
-
+  const isRowHighlighted = (status, dateBooking) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const bookingDate = new Date(dateBooking).setHours(0, 0, 0, 0);
+    return (
+      (status === "CREATEDBYClIENT" || status === "WAITINGBYCAR") &&
+      bookingDate <= today
+    );
+  };
   useEffect(() => {
     dispatch(MaintenanceInformationsByCenterId({ centerId, token }));
   }, [dispatch, centerId, token, reload]);
@@ -165,6 +172,7 @@ const MaintenanceInformations = () => {
                     <TableCell>Biển Số Xe</TableCell>
                     <TableCell>Tên Thông Tin</TableCell>
                     <TableCell>Ngày tạo</TableCell>
+                    <TableCell>Ngày Đặt</TableCell>
                     <TableCell>Ngày Kết Thúc</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Số Lượng </TableCell>
@@ -180,8 +188,14 @@ const MaintenanceInformations = () => {
                     filteredInformations
                       .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                       .map((item) => (
-                        <TableRow key={item.informationMaintenanceId}>
-                          {/* <TableCell>{item.informationMaintenanceId}</TableCell> */}
+                        <TableRow
+                          key={item.informationMaintenanceId}
+                          style={{
+                            backgroundColor: isRowHighlighted(item.status, item.dateBooking)
+                              ? "rgba(255, 255, 0, 0.3)" // Light yellow with lower opacity
+                              : "transparent", // Highlight row if conditions are met
+                          }}
+                        >                          {/* <TableCell>{item.informationMaintenanceId}</TableCell> */}
 
                           <TableCell>
                             {item?.responseVehicles?.vehiclesBrandName}{" "}
@@ -194,6 +208,7 @@ const MaintenanceInformations = () => {
                             {item.informationMaintenanceName}
                           </TableCell>
                           <TableCell>{formatDate(item.createdDate)}</TableCell>
+                          <TableCell>{formatDate(item.dateBooking)}</TableCell>
                           <TableCell>
                             {item.finishedDate === "0001-01-01T00:00:00"
                               ? ""
@@ -208,9 +223,6 @@ const MaintenanceInformations = () => {
                             </span>
                           </TableCell>
                           <TableCell
-                            style={{
-                              borderRadius: "10px",
-                            }}
                           >
                             {item.responseMaintenanceServiceInfos.length +
                               item.responseMaintenanceSparePartInfos
