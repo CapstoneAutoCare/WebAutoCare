@@ -8,18 +8,6 @@ const initialState = {
   schedule: null,
 };
 
-// export const ServicesAll = createAsyncThunk(
-//   "services/GetAll",
-//   async ({ token }, { rejectWithValue }) => {
-//     try {
-//       const list = await ServicesApi.getAll({ token });
-//       console.log("services/GetAll", list.data);
-//       return list.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response.data.Exception);
-//     }
-//   }
-// );
 export const ScheduleListGetall = createAsyncThunk(
   "schedules/ScheduleListGetall",
   async (token, { rejectWithValue }) => {

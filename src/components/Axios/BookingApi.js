@@ -39,13 +39,13 @@ const BookingApi = {
 
     return await axiosApi.get(url, config);
   },
-  async patchStatus({ bookingId, status, token }) {
+  async patchStatus({ customercareId, bookingId, status, token }) {
     const config = {
       headers: {
         accept: "text/plain",
         Authorization: `Bearer ${token}`,
       },
-      params: { bookingId, status },
+      params: { customercareId, bookingId, status },
     };
     const url = "/Bookings/UpdateStatus";
 

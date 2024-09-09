@@ -124,10 +124,13 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),
 }));
 const statusOptions = ["ACTIVE", "INACTIVE", "DONE"];
-const statusOptionMi = ["WAITINGBYCAR", "CHECKIN","CANCELLED"];
+const statusOptionMi = ["WAITINGBYCAR", "CHECKIN", "CANCELLED"];
 const statusTask = ["ACCEPTED", "DONE"];
 const statusPayment = ["YETPAID", "PAID"];
 const statusBooking = ["WAITING", "ACCEPTED", "CANCELLED"];
+
+const statusOptionMiA = ["CHECKIN", "CHANGEPACKAGE"];
+
 const statusMappingItems = {
   "ACTIVE": "Đang Hoạt Động",
   "INACTIVE": "Ngừng Hoạt Động",
@@ -638,6 +641,33 @@ export const MainComponent = ({ data, setReload }) => {
               ))}
             </Select>
           </Typography>
+        ) : data.status === "CHECKIN" ? (
+          <Typography>
+            <Select
+              value={data.status}
+              onChange={(event) => {
+                const newStatus = event.target.value;
+                handleStatusChange({
+                  id: data.informationMaintenanceId,
+                  status: newStatus,
+                });
+              }}
+              className="status"
+              style={{
+                ...makeStyle(data.status),
+                borderRadius: "10px",
+                width: "125px",
+                fontSize: "10px",
+                height: "50px",
+              }}
+            >
+              {statusOptionMiA.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
+          </Typography>
         ) : (
           <span
             className="status"
@@ -879,12 +909,10 @@ export const TableBookingComponent = ({ data, setReload }) => {
   const handleStatusChange = async (bookingId, newStatus) => {
     const token = localStorage.getItem("localtoken");
     try {
+      var customercareId = localStorage.getItem("CUSTOMERCAREID");
+
       await dispatch(
-        PatchStatusBookingByCenter({
-          bookingId,
-          status: newStatus,
-          token,
-        })
+        PatchStatusBookingByCenter({ customercareId, bookingId, status: newStatus, token })
       );
       setReload((p) => !p);
     } catch (error) {
@@ -1170,7 +1198,7 @@ export const TableReceiptComponent = ({ data, setReload }) => {
               Tạo Thanh Toán
             </Button>
             {payment && statuspayments === "succeeded" && (
-              <a href={payment} target="_blank" rel="noopener noreferrer">
+              <a href={payment} >
                 Chuyển Đến VNPay
               </a>
             )}

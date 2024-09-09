@@ -43,9 +43,10 @@ export const BookingByCenter = createAsyncThunk(
 );
 export const PatchStatusBookingByCenter = createAsyncThunk(
   "booking/PatchStatusBookingCenter",
-  async ({ bookingId, status, token }, { rejectWithValue }) => {
+  async ({customercareId, bookingId, status, token }, { rejectWithValue }) => {
     try {
       const response = await BookingApi.patchStatus({
+        customercareId:customercareId,
         bookingId: bookingId,
         status: status,
         token: token,

@@ -129,9 +129,12 @@ const Booking = () => {
     (state) => state.booking
   );
   const [connection, setConnection] = useState(null);
-
+  const { customercares, status } = useSelector(
+    (state) => state.customercare
+  );
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
+  const role = localStorage.getItem("ROLE");
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 7;
@@ -147,8 +150,10 @@ const Booking = () => {
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
+      var customercareId = localStorage.getItem("CUSTOMERCAREID");
+
       await dispatch(
-        PatchStatusBookingByCenter({ bookingId, status: newStatus, token })
+        PatchStatusBookingByCenter({ customercareId, bookingId, status: newStatus, token })
       );
       dispatch(BookingByCenter({ token: token, id: centerId }));
       setReload(true);
@@ -159,7 +164,7 @@ const Booking = () => {
 
   useEffect(() => {
     dispatch(BookingByCenter({ token: token, id: centerId }));
-  }, [dispatch, token, reload]);
+  }, [dispatch, token, reload, role]);
 
   const isRowHighlighted = (status, dateBooking) => {
     const today = new Date().setHours(0, 0, 0, 0);
@@ -317,37 +322,92 @@ const Booking = () => {
                             </div>
                           )}
                         </TableCell>
-                        <TableCell>
-                          {item.status === "WAITING" ? (
-                            <Select
-                              value={item.status}
-                              onChange={(event) => {
-                                const newStatus = event.target.value;
-                                handleStatusChange(item.bookingId, newStatus);
-                              }}
-                              style={{
-                                ...makeStyle(item.status),
-                                borderRadius: "10px",
-                                width: "125px",
-                                fontSize: "10px",
-                                height: "50px",
-                              }}
-                            >
-                              {statusOptions.map((status) => (
-                                <MenuItem key={status} value={status}>
-                                  {translateStatus(status)}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          ) : (
-                            <span
-                              className="status"
-                              style={{ ...makeStyle(item.status) }}
-                            >
-                              {translateStatus(item.status)}
-                            </span>
-                          )}
-                        </TableCell>
+                        {role === "CUSTOMERCARE" && (
+                          <TableCell>
+                            {item.status === "WAITING" ? (
+                              <Select
+                                value={item.status}
+                                onChange={(event) => {
+                                  const newStatus = event.target.value;
+                                  handleStatusChange(item.bookingId, newStatus);
+                                }}
+                                style={{
+                                  ...makeStyle(item.status),
+                                  borderRadius: "10px",
+                                  width: "125px",
+                                  fontSize: "10px",
+                                  height: "50px",
+                                }}
+                              >
+                                {statusOptions.map((status) => (
+                                  <MenuItem key={status} value={status}>
+                                    {translateStatus(status)}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            ) : (
+                              <span
+                                className="status"
+                                style={{ ...makeStyle(item.status) }}
+                              >
+                                {translateStatus(item.status)}
+                              </span>
+                            )}
+                          </TableCell>
+                        )}
+
+                        {role === "CENTER" && (
+                          <TableCell>
+                            {item.status === "WAITING" ? (
+                              <Select
+                                value={item.status}
+                                onChange={(event) => {
+                                  const newStatus = event.target.value;
+                                  // Handle status change here
+                                }}
+                                style={{
+                                  ...makeStyle(item.status),
+                                  borderRadius: "10px",
+                                  width: "125px",
+                                  fontSize: "10px",
+                                  height: "50px",
+                                }}
+                              >
+                                {statusOptions.map((status) => (
+                                  <MenuItem key={status} value={status}>
+                                    {translateStatus(status)}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            ) : item.status === "ACCEPTED" ? (
+                              <Select
+                                value={item.status}
+                                onChange={(event) => {
+                                  const newStatus = event.target.value;
+                                }}
+                                style={{
+                                  ...makeStyle(item.status),
+                                  borderRadius: "10px",
+                                  width: "125px",
+                                  fontSize: "10px",
+                                  height: "50px",
+                                }}
+                              >
+                                {customercares.map((customerCare) => (
+                                  <MenuItem key={customerCare.customerCareId} value={customerCare.customerCareId}>
+                                   {customerCare.customerCareId}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            ) : (
+                              <span className="status" style={{ ...makeStyle(item.status) }}>
+                                {translateStatus(item.status)}
+                              </span>
+                            )}
+                          </TableCell>
+                        )}
+
+
                         {/* <TableCell className="Details">
                           <ButtonBase>SHOW</ButtonBase>
                         </TableCell> */}

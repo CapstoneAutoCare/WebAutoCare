@@ -12,12 +12,13 @@ import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios"; // Already imported
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import axiosApi from "../Axios/AxiosApi";
 
 const defaultLocation = {
   lat: 10.7769,
   lng: 106.6951,
 };
-const API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"; // Update with your actual API key
+const API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"; 
 const address = "43E, đường 6, khu phố 3 , Tằng Nhơn Phú B, Tp Th";
 
 const ProfilePageV1 = () => {
@@ -36,8 +37,8 @@ const ProfilePageV1 = () => {
     }
 
     try {
-      const response = await axios.patch(
-        'http://solv2.runasp.net/api/Accounts/ChangePassword',
+      const response = await axiosApi.patch(
+        '/Accounts/ChangePassword',
         {
           oldPassword: currentPassword,
           newPassword: newPassword,

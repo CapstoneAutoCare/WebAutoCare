@@ -58,7 +58,7 @@ export const DetailCenter = ({
                     <CircularProgress />
                 </DialogContent>
             )}
-            {statusvehiclemains === "succeeded" && vehiclemains?.length > 0 && (<Box>
+            {statusvehiclemains === "succeeded" && (<Box>
 
                 <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
                     Thông Tin Trung Tâm

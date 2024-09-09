@@ -55,7 +55,7 @@ import {
   MaintenanceServicesById,
   UpdateMaintenanceServiceByCenter,
 } from "../redux/mainserviceSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   GetListByCenterAndStatusCheckinAndTaskInactive,
   MaintenanceInformationById,
@@ -2383,6 +2383,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       // const totaldiscount =
       //   calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
       setTotalPrice(calculatedTotalPrice);
+      
     }
   }, [
     dispatch,
@@ -2403,7 +2404,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             id="sparePartsItemCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `
+              `Tên: ${option.sparePartsItemName} - Giá: ${option.acturalCost} - Xe: ${option.vehiclesBrandName} ${option.vehicleModelName} `
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2423,7 +2424,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Name"
+                label="Tên"
                 name="sparePartsItemCostId"
                 value={searchTerm}
                 variant="outlined"
@@ -2432,7 +2433,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.sparePartsItemCostId}>
-                {`Name: ${option.sparePartsItemName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
+                {`Tên: ${option.sparePartsItemName} - Giá: ${option.acturalCost} - Xe: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
               </li>
             )}
           />
@@ -2440,7 +2441,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
             autoFocus
             margin="dense"
             name="maintenanceInformationId"
-            label="InformationMaintenance Id"
+            label="Mã Thông Tin"
             type="text"
             fullWidth
             variant="standard"
@@ -2461,7 +2462,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
           <TextField
             margin="dense"
             name="maintenanceSparePartInfoName"
-            label="MaintenanceSparePartInfoName"
+            label="Tên"
             type="text"
             fullWidth
             variant="standard"
@@ -2481,7 +2482,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
           <TextField
             margin="dense"
             name="quantity"
-            label="Quantity"
+            label="Số Lượng"
             type="text"
             fullWidth
             variant="standard"
@@ -2494,7 +2495,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
           <TextField
             margin="dense"
             name="actualCost"
-            label="ActualCost"
+            label="Giá"
             type="number"
             fullWidth
             variant="standard"
@@ -2510,7 +2511,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
           <TextField
             margin="dense"
             name="note"
-            label="Note"
+            label="Ghi Chú"
             type="text"
             fullWidth
             variant="standard"
@@ -2645,7 +2646,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             id="maintenanceServiceCostId"
             options={filteredOptions}
             getOptionLabel={(option) =>
-              `Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost}  - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName}`
+              `Tên: ${option.maintenanceServiceName} - Giá: ${option.acturalCost}  - Xe: ${option.vehiclesBrandName} ${option.vehicleModelName}`
             }
             onChange={(event, newValue) => {
               const selectedCostId = newValue;
@@ -2674,7 +2675,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             )}
             renderOption={(props, option) => (
               <li {...props} key={option.maintenanceServiceCostId}>
-                {`Name: ${option.maintenanceServiceName} - Actual Cost: ${option.acturalCost} - Vehicle: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
+                {`Tên: ${option.maintenanceServiceName} - Giá: ${option.acturalCost} - Xe: ${option.vehiclesBrandName} ${option.vehicleModelName} `}
               </li>
             )}
           />
@@ -2682,7 +2683,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
             autoFocus
             margin="dense"
             name="maintenanceInformationId"
-            label="InformationMaintenance Id"
+            label="Mã Thông Tin"
             type="text"
             fullWidth
             variant="standard"
@@ -2703,7 +2704,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
           <TextField
             margin="dense"
             name="maintenanceServiceName"
-            label="MaintenanceServiceName"
+            label="Tên"
             type="text"
             fullWidth
             variant="standard"
@@ -2723,7 +2724,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
           <TextField
             margin="dense"
             name="quantity"
-            label="Quantity"
+            label="Số Lượng"
             type="text"
             fullWidth
             variant="standard"
@@ -2737,7 +2738,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
           <TextField
             margin="dense"
             name="actualCost"
-            label="ActualCost"
+            label="Giá"
             type="number"
             fullWidth
             variant="standard"
@@ -2753,7 +2754,7 @@ export const AddMaintenanceServiceInfoesDialog = ({
           <TextField
             margin="dense"
             name="note"
-            label="Note"
+            label="Ghi Chú"
             type="text"
             fullWidth
             variant="standard"

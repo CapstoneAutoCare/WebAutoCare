@@ -20,6 +20,7 @@ import brandReducer from "./brandSlice";
 import vehiclemodelsReducer from "./vehiclemodelsSlice";
 import odohistoryReducer from "./odohistory";
 import vehiclemainsReducer from "./vehiclemainSlice";
+import planReducer from "./planSlice";
 
 
 
@@ -47,6 +48,7 @@ const store = configureStore({
     vehiclemodels: vehiclemodelsReducer,
     odohistories: odohistoryReducer,
     vehiclemains: vehiclemainsReducer,
+    plans:planReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

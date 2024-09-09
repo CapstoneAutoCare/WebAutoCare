@@ -36,6 +36,9 @@ import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
 import { SidebarDataAdmin, SidebarDataCenter, SidebarDataCustomerCare } from "../Data/Data";
 import Navbar from "./Navbar";
 import Package from "./PageAdmin/Package";
+import { CustomerCareByCenterId } from "../redux/customercareSlice";
+import { PlanListGetall } from "../redux/planSlice";
+import Plan from "./PageAdmin/Plan";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -96,6 +99,7 @@ const Sidebar = () => {
     ADMIN: [
       <Center />,
       <Package />,
+      <Plan/>,
       <ScheduleList />,
       <BrandVehicle />,
       <VehicleModel />,
@@ -117,6 +121,7 @@ const Sidebar = () => {
     dispatch(SparePartsAll(tokenlocal));
     dispatch(Profile(tokenlocal));
     dispatch(ServicesListGetAll(tokenlocal));
+    dispatch(PlanListGetall(tokenlocal));
 
     localStorage.setItem("AccountId", code.sub);
     localStorage.setItem("ROLE", role);
@@ -126,7 +131,10 @@ const Sidebar = () => {
     if (role === "CENTER" || role === "CUSTOMERCARE") {
       const centerId = localStorage.getItem("CenterId");
       dispatch(VehiclesMaintenancesByCenter(centerId));
+      dispatch(CustomerCareByCenterId({ centerId, tokne: tokenlocal }));
+
       toast.success(`Welcome, ${role}!`);
+
     }
     if (role === "CUSTOMER" || role === "TECHNICIAN") {
       navigate("/");

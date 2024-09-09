@@ -51,12 +51,16 @@ const ServiceCare = () => {
   const { schedules, statusschedules, errorschedules } = useSelector(
     (state) => state.schedules
   );
+  const { plans, statusplans, errorplans } = useSelector(
+    (state) => state.plans
+  );
   const itemsPerPage = 5;
   const pageCount = Math.ceil(services.length / itemsPerPage);
 
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
+  const [filterPlans, setFilterPlans] = useState("");
   const [filterSchedule, setFilterSchedule] = useState("");
   const [filterName, setFilterName] = useState("");
 
@@ -108,9 +112,16 @@ const ServiceCare = () => {
   const filteredVehicleModels = vehiclemodels.filter(
     (model) => model.vehiclesBrandId === filterBrand
   );
+
+
   const filteredSchedule = schedules.filter(
-    (model) => model.vehicleModelId === filterVehicleModel
+    (model) => model.maintenancePlanId === filterPlans
   );
+  const filteredPlans = plans.filter(
+    (model) => model.reponseVehicleModels.vehicleModelId === filterVehicleModel
+
+  );
+
 
   const filteredservicelists = services.filter((service) => {
     const serviceName = service.serviceCareName
@@ -124,10 +135,16 @@ const ServiceCare = () => {
     const fitVehicleModels = filterVehicleModel
       ? service.reponseVehicleModel.vehicleModelId === filterVehicleModel
       : true;
+
+    const fitPlan = filterPlans
+      ? service.maintenancePlanId === filterPlans
+      : true;
+
     const fitschedule = filterSchedule
       ? service.maintananceScheduleId === filterSchedule
       : true;
     return (
+      fitPlan &&
       statusMatch &&
       fitBrand &&
       fitVehicleModels &&
@@ -170,12 +187,14 @@ const ServiceCare = () => {
           value={filterName}
           onChange={(event) => setFilterName(event.target.value)}
         />
+
         <Select
           value={filterBrand}
           onChange={(event) => {
             setFilterBrand(event.target.value);
             setFilterVehicleModel("");
             setFilterSchedule("");
+            setFilterPlans("");
           }}
           displayEmpty
         >
@@ -188,11 +207,15 @@ const ServiceCare = () => {
             </MenuItem>
           ))}
         </Select>
+
+
         <Select
           value={filterVehicleModel}
           onChange={(event) => {
             setFilterVehicleModel(event.target.value);
             setFilterSchedule("");
+            setFilterPlans("");
+
           }}
           displayEmpty
           disabled={!filterBrand}
@@ -206,11 +229,35 @@ const ServiceCare = () => {
             </MenuItem>
           ))}
         </Select>
+
+
+        <Select
+          value={filterPlans}
+          onChange={(event) => {
+            setFilterPlans(event.target.value);
+            setFilterSchedule("");
+
+          }}
+          displayEmpty
+          disabled={!filterVehicleModel}
+        >
+          <MenuItem value="">
+            <em>Gói Cấp Độ</em>
+          </MenuItem>
+          {filteredPlans.map((model) => (
+            <MenuItem key={model.maintenancePlanId} value={model.maintenancePlanId}>
+              {model.maintenancePlanName}
+            </MenuItem>
+          ))}
+        </Select>
+
+
+
         <Select
           value={filterSchedule}
           onChange={(event) => setFilterSchedule(event.target.value)}
           displayEmpty
-          disabled={!filterVehicleModel}
+          disabled={!filterPlans}
         >
           <MenuItem value="">
             <em>Gói Odo Km</em>
@@ -248,6 +295,7 @@ const ServiceCare = () => {
                     <TableCell>Loại Xe</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Mô Tả</TableCell>
+                    <TableCell>Cấp Bậc Bảo Dưỡng</TableCell>
                     <TableCell>Odo</TableCell>
                     <TableCell>Giá</TableCell>
                     <TableCell>Trạng Thái</TableCell>
@@ -305,6 +353,11 @@ const ServiceCare = () => {
                             <span>
                               {truncateNote(item?.serviceCareDescription)}
                             </span>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                          <Tooltip title={item?.maintenancePlanName} arrow>
+                            <span>{truncateNote(item?.maintenancePlanName)}</span>
                           </Tooltip>
                         </TableCell>
                         <TableCell

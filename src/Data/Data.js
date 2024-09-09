@@ -103,9 +103,14 @@ export const SidebarDataAdmin = [
     icon: UilLocationPoint,
     heading: "Trung Tâm",
   },
-{
+
+  {
     icon: UilClipboardAlt,
     heading: "Gói Đăng Kí ",
+  },
+  {
+    icon: UilClipboardAlt,
+    heading: "Bảo Dưỡng Cấp Bậc ",
   },
   {
     icon: UilClipboardAlt,

@@ -225,6 +225,9 @@ export default function HorizontalLinearStepper({
         </Fade>
 
         <OutlinedCardMain data={mainData} setReload={setReload} />
+
+
+        
         {odohistory && statusodohisotries === "succeeded" && (
           <OutlinedCardOdoHisotry
             data={odohistory}
