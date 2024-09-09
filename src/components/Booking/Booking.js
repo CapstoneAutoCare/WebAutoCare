@@ -355,8 +355,10 @@ const Booking = () => {
                             )}
                           </TableCell>
                         )}
-
-                        {role === "CENTER" && (
+<span className="status" style={{ ...makeStyle(item.status) }}>
+                                {translateStatus(item.status)}
+                              </span>
+                        {/* {role === "CENTER" && (
                           <TableCell>
                             {item.status === "WAITING" ? (
                               <Select
@@ -364,6 +366,7 @@ const Booking = () => {
                                 onChange={(event) => {
                                   const newStatus = event.target.value;
                                   // Handle status change here
+                                  handleStatusChange(item.bookingId, newStatus);
                                 }}
                                 style={{
                                   ...makeStyle(item.status),
@@ -379,33 +382,12 @@ const Booking = () => {
                                   </MenuItem>
                                 ))}
                               </Select>
-                            ) : item.status === "ACCEPTED" ? (
-                              <Select
-                                value={item.status}
-                                onChange={(event) => {
-                                  const newStatus = event.target.value;
-                                }}
-                                style={{
-                                  ...makeStyle(item.status),
-                                  borderRadius: "10px",
-                                  width: "125px",
-                                  fontSize: "10px",
-                                  height: "50px",
-                                }}
-                              >
-                                {customercares.map((customerCare) => (
-                                  <MenuItem key={customerCare.customerCareId} value={customerCare.customerCareId}>
-                                   {customerCare.customerCareId}
-                                  </MenuItem>
-                                ))}
-                              </Select>
                             ) : (
-                              <span className="status" style={{ ...makeStyle(item.status) }}>
-                                {translateStatus(item.status)}
-                              </span>
+                              
+
                             )}
                           </TableCell>
-                        )}
+                        )} */}
 
 
                         {/* <TableCell className="Details">
@@ -425,8 +407,9 @@ const Booking = () => {
               style={{ marginTop: "20px" }}
             />
           </Grid>
-        )}
-    </Box>
+        )
+      }
+    </Box >
   );
 };
 
