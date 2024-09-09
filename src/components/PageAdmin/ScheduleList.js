@@ -93,7 +93,7 @@ const ScheduleList = () => {
   return (
     <Box>
       <h3>Danh Sách Các Gói Odo Bảo Dưỡng</h3>
-      <Button variant="contained" color="success" onClick={handleClickOpen}>
+      {/* <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Hãng Mới Cho Xe
       </Button>
       <AddScheduleDialog
@@ -101,7 +101,7 @@ const ScheduleList = () => {
         handleClose={handleClose}
         token={token}
         setReload={setReload}
-      />
+      /> */}
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Select
           value={filterStatus}
