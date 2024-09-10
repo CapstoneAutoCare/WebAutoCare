@@ -471,6 +471,8 @@ export const AddMaintenanceServiceDialog = ({
       setSelectedModel(null);
       setBrandSearchTerm("");
       setModelSearchTerm("");
+      setSelectedPlan(null);
+      setSchedulePackage(null);
       dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
       dispatch(VehiclesMaintenancesByCenter(centerId));
 
@@ -662,6 +664,7 @@ export const AddMaintenanceServiceDialog = ({
                     variant="outlined"
                     onChange={(e) => {
                       setSelectedPlan(e.target.value);
+                      setSchedulePackage(null);
                       console.log(e.target.value);
                     }}
                   />
@@ -689,6 +692,7 @@ export const AddMaintenanceServiceDialog = ({
                 fullWidth
                 options={filteredOptionsSchedule}
                 key={selectedplans?.maintenancePlanId}
+
                 getOptionLabel={(option) =>
                   `Gói odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
                 }

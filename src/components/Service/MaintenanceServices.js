@@ -55,7 +55,9 @@ const MaintenanceServices = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [openView, setOpenView] = useState(false);
   const { showSnackbar } = useSnackbar();
-
+  const { plans, statusplans, errorplans } = useSelector(
+    (state) => state.plans
+  );
   const {
     maintenanceservices = [],
     statusmaintenanceservices,
@@ -120,6 +122,7 @@ const MaintenanceServices = () => {
     setSelectedItem(item);
     setOpenView(true);
   };
+  const [filterPlans, setFilterPlans] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
@@ -131,9 +134,15 @@ const MaintenanceServices = () => {
   const filteredVehicleModels = vehiclemodels.filter(
     (model) => model.vehiclesBrandId === filterBrand
   );
-  const filteredSchedule = schedules.filter(
-    (model) => model.vehicleModelId === filterVehicleModel
+
+  const filteredPlans = plans.filter(
+    (model) => model.reponseVehicleModels.vehicleModelId === filterVehicleModel
   );
+  const filteredSchedule = schedules.filter(
+    (model) => model.maintenancePlanId === filterPlans
+  );
+
+
   const filteredservicelists = maintenanceservices.filter((service) => {
     const serviceName = service.maintenanceServiceName
       ? service.maintenanceServiceName.toLowerCase()
@@ -145,14 +154,20 @@ const MaintenanceServices = () => {
     const fitVehicleModels = filterVehicleModel
       ? service.vehicleModelId === filterVehicleModel
       : true;
+    const fitPlan = filterPlans
+      ? service.maintenancePlanId === filterPlans
+      : true;
+
     const fitschedule = filterSchedule
       ? service.maintananceScheduleId === filterSchedule
       : true;
+
     const booleanCondition =
       filterBoolean === "" ||
       (filterBoolean === "Có Gói" && service.boolean) ||
       (filterBoolean === "Không Có Gói" && !service.boolean);
     return (
+      fitPlan &&
       booleanCondition &&
       statusMatch &&
       fitBrand &&
@@ -258,6 +273,8 @@ const MaintenanceServices = () => {
                     setFilterBrand(event.target.value);
                     setFilterVehicleModel("");
                     setFilterSchedule("");
+                    setFilterPlans("");
+
                   }}
                   displayEmpty
                 >
@@ -278,6 +295,7 @@ const MaintenanceServices = () => {
                   onChange={(event) => {
                     setFilterVehicleModel(event.target.value);
                     setFilterSchedule("");
+                    setFilterPlans("");
                   }}
                   displayEmpty
                   disabled={!filterBrand}
@@ -294,11 +312,32 @@ const MaintenanceServices = () => {
                     </MenuItem>
                   ))}
                 </Select>
+
+                <Select
+                  value={filterPlans}
+                  onChange={(event) => {
+                    setFilterPlans(event.target.value);
+                    setFilterSchedule("");
+
+                  }}
+                  displayEmpty
+                  disabled={!filterVehicleModel}
+                >
+                  <MenuItem value="">
+                    <em>Gói Cấp Độ</em>
+                  </MenuItem>
+                  {filteredPlans.map((model) => (
+                    <MenuItem key={model.maintenancePlanId} value={model.maintenancePlanId}>
+                      {model.maintenancePlanName}
+                    </MenuItem>
+                  ))}
+                </Select>
+
                 <Select
                   value={filterSchedule}
                   onChange={(event) => setFilterSchedule(event.target.value)}
                   displayEmpty
-                  disabled={!filterVehicleModel}
+                  disabled={!filterPlans}
                 >
                   <MenuItem value="">
                     <em>Gói Odo Km</em>

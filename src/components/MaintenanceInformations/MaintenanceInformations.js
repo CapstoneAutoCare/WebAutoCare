@@ -114,9 +114,9 @@ const MaintenanceInformations = () => {
   return (
     <Box>
       <h3>Danh Sách Thông Tin Bảo Trì Sửa Chữa</h3>
-      {/* <Button variant="contained" color="success">
-        Add Maintenance Informations
-      </Button> */}
+      <Button variant="contained" color="success">
+        Add Thông Tin Bảo Trì Sửa Chữa
+      </Button>
       <Box
         display="flex"
         justifyContent="space-between"
