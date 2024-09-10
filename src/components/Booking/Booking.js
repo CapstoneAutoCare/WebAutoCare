@@ -322,7 +322,7 @@ const Booking = () => {
                             </div>
                           )}
                         </TableCell>
-                        {role === "CUSTOMERCARE" && (
+                        {role === "CUSTOMERCARE" ? (
                           <TableCell>
                             {item.status === "WAITING" ? (
                               <Select
@@ -346,18 +346,31 @@ const Booking = () => {
                                 ))}
                               </Select>
                             ) : (
-                              <span
-                                className="status"
-                                style={{ ...makeStyle(item.status) }}
-                              >
-                                {translateStatus(item.status)}
-                              </span>
+                              <TableCell>
+
+                                <span
+                                  className="status"
+                                  style={{ ...makeStyle(item.status) }}
+                                >
+                                  {translateStatus(item.status)}
+                                </span>
+                              </TableCell>
+
                             )}
                           </TableCell>
+                        ) : (
+                          <TableCell>
+
+                            <span
+                              className="status"
+                              style={{ ...makeStyle(item.status) }}
+                            >
+                              {translateStatus(item.status)}
+                            </span>
+                          </TableCell>
                         )}
-<span className="status" style={{ ...makeStyle(item.status) }}>
-                                {translateStatus(item.status)}
-                              </span>
+
+
                         {/* {role === "CENTER" && (
                           <TableCell>
                             {item.status === "WAITING" ? (

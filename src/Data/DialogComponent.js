@@ -373,6 +373,9 @@ export const AddMaintenanceServiceDialog = ({
     (state) => state.schedules
   );
   const { services, statusservices } = useSelector((state) => state.services);
+  const { plans, statusplans } = useSelector((state) => state.plans);
+
+  const [selectedplans, setSelectedPlan] = useState(null);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [schedulePackage, setSchedulePackage] = useState(null);
@@ -391,9 +394,15 @@ export const AddMaintenanceServiceDialog = ({
       (model) => model.vehiclesBrandId === selectedBrand.responseBrand.vehiclesBrandId
     )
     : [];
-  const filteredOptionsSchedule = selectedModel
+  const filteredOptionsPlan = selectedModel
+    ? plans.filter(
+      (model) => model.reponseVehicleModels.vehicleModelId === selectedModel.vehicleModelId
+    )
+    : [];
+
+  const filteredOptionsSchedule = selectedplans
     ? schedules.filter(
-      (model) => model.vehicleModelId === selectedModel.vehicleModelId
+      (model) => model.maintenancePlanId === selectedplans.maintenancePlanId
     )
     : [];
   const filteredOptionsService = schedulePackage
@@ -498,6 +507,7 @@ export const AddMaintenanceServiceDialog = ({
                 setScheduleSearchTerm(null);
                 setSchedulePackage(null);
                 setServiceselects([]);
+                setSelectedPlan(null);
                 console.log("Hãng xe: ", newValue);
               }}
               renderOption={(props, option) => (
@@ -560,6 +570,7 @@ export const AddMaintenanceServiceDialog = ({
                   setScheduleSearchTerm(null);
                   setSchedulePackage(null);
                   setServiceselects([]);
+                  setSelectedPlan(null);
 
                   console.log("Loai xe: ", newValue);
                 }}
@@ -591,6 +602,7 @@ export const AddMaintenanceServiceDialog = ({
                       setModelSearchTerm(e.target.value);
                       setScheduleSearchTerm(null);
                       setSchedulePackage(null);
+                      setSelectedPlan(null);
                       console.log(e.target.value);
                     }}
                   />
@@ -611,10 +623,72 @@ export const AddMaintenanceServiceDialog = ({
                 Chọn Gói Odo
               </InputLabel>
               <Autocomplete
+                id="maintenancePlanId"
+                fullWidth
+                options={filteredOptionsPlan}
+                key={selectedModel?.vehicleModelId}
+                getOptionLabel={(option) =>
+                  `Gói:  ${option?.maintenancePlanName} (Mã: ${option?.maintenancePlanId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectedPlan(newValue);
+                  setServiceselects([]);
+                  setSchedulePackage(null);
+                  console.log("Gói: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.maintenancePlanId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.maintenancePlanName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Gói {option.maintenancePlanName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.maintenancePlanId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setSelectedPlan(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+
+
+
+          {selectedplans && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Gói
+              </InputLabel>
+              <Autocomplete
                 id="maintananceScheduleId"
                 fullWidth
                 options={filteredOptionsSchedule}
-                key={selectedModel?.vehicleModelId}
+                key={selectedplans?.maintenancePlanId}
                 getOptionLabel={(option) =>
                   `Gói odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
                 }
@@ -2383,7 +2457,7 @@ export const AddMaintenanceSparePartInfoesDialog = ({
       // const totaldiscount =
       //   calculatedTotalPrice + (calculatedTotalPrice * 10) / 100;
       setTotalPrice(calculatedTotalPrice);
-      
+
     }
   }, [
     dispatch,
