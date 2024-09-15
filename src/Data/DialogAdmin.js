@@ -905,6 +905,7 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
       sparePartDescription: "",
       sparePartType: "",
       originalPrice: 0,
+      image: "",
     },
     validationSchema: Yup.object({
       sparePartName: Yup.string().required("Yêu cầu tên phụ tùng"),
@@ -919,15 +920,16 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
 
     onSubmit: async (values) => {
       try {
-        // const data = {
-        //   maintananceScheduleName: values.maintananceScheduleName,
-        //   description: values.description ? values.description : null,
-        //   vehicleModelId: selectedModel.vehicleModelId,
-        // };
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
         await dispatch(
           CreateSpartPartPost({
             token,
-            data: { ...values, vehicleModelId: selectedModel.vehicleModelId },
+            data: { ...values, vehicleModelId: selectedModel.vehicleModelId, image: imageUrl },
           })
         );
         setReload((p) => !p);
@@ -938,8 +940,11 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
       }
     },
   });
-  console.log("Formik errors: ", formik.errors);
-
+  // console.log("Formik errors: ", formik.errors);
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
   useEffect(() => { }, [dispatch, open, setReload]);
 
   return (
@@ -1077,6 +1082,16 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
             </FormControl>
           )}
           <TextField
+            label="Hình Ảnh"
+            name="image"
+            type="file"
+            onChange={handleFileChange}
+            error={formik.touched.image && Boolean(formik.errors.image)}
+            helperText={formik.touched.image && formik.errors.image}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
             autoFocus
             margin="dense"
             name="sparePartName"
@@ -1186,11 +1201,17 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
   const { brands, statusbrands, errorbrands } = useSelector(
     (state) => state.brands
   );
+  const [imageFile, setImageFile] = useState(null);
+  const { plans, statusplans, errorplans } = useSelector(
+    (state) => state.plans
+  );
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
   const { schedules, statusschedules, errorschedules } = useSelector(
     (state) => state.schedules
   );
+  const [filterPlans, setFilterPlans] = useState("");
+
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [schedulePackage, setSchedulePackage] = useState(null);
@@ -1209,9 +1230,13 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
       (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
     )
     : [];
-  const filteredOptionsSchedule = selectedModel
+  const filteredPlans = plans.filter(
+    (model) => model.reponseVehicleModels.vehicleModelId === selectedModel?.vehicleModelId
+
+  );
+  const filteredOptionsSchedule = filterPlans
     ? schedules.filter(
-      (model) => model.vehicleModelId === selectedModel.vehicleModelId
+      (model) => model.maintenancePlanId === filterPlans.maintenancePlanId
     )
     : [];
   const formik = useFormik({
@@ -1237,12 +1262,19 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
 
     onSubmit: async (values) => {
       try {
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
         await dispatch(
           CreateServicePost({
             token,
             data: {
               ...values,
               maintananceScheduleId: schedulePackage.maintananceScheduleId,
+              image: imageUrl,
             },
           })
         );
@@ -1261,8 +1293,11 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
       }
     },
   });
-  console.log("Formik errors: ", formik.errors);
-
+  // console.log("Formik errors: ", formik.errors);
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
   useEffect(() => { }, [dispatch, open, setReload]);
 
   return (
@@ -1280,7 +1315,7 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
         },
       }}
     >
-      <DialogTitle> Thêm Phụ Tùng Mới Của Xe Cho Hãng</DialogTitle>
+      <DialogTitle> Thêm Dịch Vụ Mới Của Xe Cho Hãng</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
           <FormControl fullWidth variant="outlined" margin="normal">
@@ -1411,7 +1446,66 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
             <FormControl fullWidth variant="outlined" margin="normal">
               <InputLabel
                 shrink
-                htmlFor="vehicleModelId"
+                htmlFor="maintenancePlanId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Gói Odo
+              </InputLabel>
+              <Autocomplete
+                id="maintenancePlanId"
+                fullWidth
+                options={filteredPlans}
+                key={filteredPlans?.maintenancePlanId}
+                getOptionLabel={(option) =>
+                  `Gói odo:  ${option?.maintenancePlanName} (Mã: ${option?.maintenancePlanId})`
+                }
+                onChange={(event, newValue) => {
+                  setFilterPlans(newValue);
+                  console.log("Gói: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option?.maintenancePlanId}>
+                    {/* <img
+                      src={option?.logo}
+                      alt={option?.maintenancePlanName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    /> */}
+                    <div>
+                      <div>Gói odo {option?.maintenancePlanName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option?.maintenancePlanId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      // setModelSearchTerm(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+
+
+          {filterPlans && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="maintananceScheduleId"
                 style={{
                   backgroundColor: "white",
                   padding: "0 8px",
@@ -1423,17 +1517,17 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
                 id="maintananceScheduleId"
                 fullWidth
                 options={filteredOptionsSchedule}
-                key={selectedModel?.vehicleModelId}
+                key={filteredOptionsSchedule?.maintananceScheduleId}
                 getOptionLabel={(option) =>
-                  `Gói odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
+                  ` Odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
                 }
                 onChange={(event, newValue) => {
                   setSchedulePackage(newValue);
-                  console.log("Gói: ", newValue);
+                  console.log("Odo: ", newValue);
                 }}
                 renderOption={(props, option) => (
                   <li {...props} key={option.maintananceScheduleId}>
-                    <img
+                    {/* <img
                       src={option?.logo}
                       alt={option.maintananceScheduleName}
                       style={{
@@ -1442,9 +1536,9 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
                         marginRight: 10,
                         objectFit: "contain",
                       }}
-                    />
+                    /> */}
                     <div>
-                      <div>Gói odo {option.maintananceScheduleName}</div>
+                      <div>Odo {option.maintananceScheduleName}</div>
                       <div style={{ fontSize: "0.8em", color: "gray" }}>
                         Mã: {option.maintananceScheduleId}
                       </div>
@@ -1464,7 +1558,16 @@ export const AddServiceDialog = ({ open, handleClose, token, setReload }) => {
               />
             </FormControl>
           )}
-
+          <TextField
+            label="Hình Ảnh"
+            name="image"
+            type="file"
+            onChange={handleFileChange}
+            error={formik.touched.image && Boolean(formik.errors.image)}
+            helperText={formik.touched.image && formik.errors.image}
+            fullWidth
+            margin="normal"
+          />
           <TextField
             autoFocus
             margin="dense"

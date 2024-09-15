@@ -26,7 +26,7 @@ const MaintenanceInformationsApi = {
 
     return await axiosApi.get(url, config);
   },
-  async getListGetMonthlyRevenueByCenterId({ token, centerId ,year}) {
+  async getListGetMonthlyRevenueByCenterId({ token, centerId, year }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -36,8 +36,8 @@ const MaintenanceInformationsApi = {
     const url = `/MaintenanceInformations/GetListGetMonthlyRevenueByCenterId?id=${centerId}&year=${year}`;
 
     return await axiosApi.get(url, config);
-  }, 
-  async getInformationsByMonthInYearByCenterId({ token, id ,year}) {
+  },
+  async getInformationsByMonthInYearByCenterId({ token, id, year }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -48,7 +48,7 @@ const MaintenanceInformationsApi = {
     const url = "/MaintenanceInformations/GetListGetMonthlyBookingSummaryPAIDByCenterId";
 
     return axiosApi.get(url, config);
-  },  
+  },
   async getListByCenterAndStatus({ token, status }) {
     const config = {
       headers: {
@@ -61,7 +61,7 @@ const MaintenanceInformationsApi = {
 
     return await axiosApi.get(url, config);
   },
-  async GetListByCenterAndStatusCheckinAndTaskInactive({token,centerId}) {
+  async GetListByCenterAndStatusCheckinAndTaskInactive({ token, centerId }) {
     const config = {
       headers: {
         accept: "text/plain",
@@ -92,6 +92,19 @@ const MaintenanceInformationsApi = {
         console.error("AddMaintenanceInformations error:", error);
         throw error;
       });
+  },
+
+  async addMaintenPost({ token, data }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url =
+      "/MaintenanceInformations/PostMaintenance";
+    return await axiosApi
+      .post(url, data, config);
   },
   async changeStatus({ token, id, status }) {
     const config = {

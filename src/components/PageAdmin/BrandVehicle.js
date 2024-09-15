@@ -115,7 +115,7 @@ const BrandVehicle = () => {
                   <TableCell>Tên Hãng</TableCell>
                   <TableCell>Ngày Tạo</TableCell>
                   <TableCell>Mô Tả</TableCell>
-                  <TableCell>Trạng Thái</TableCell>
+                  {/* <TableCell>Trạng Thái</TableCell> */}
                   {/* <TableCell>Chi Tiết</TableCell> */}
                 </TableRow>
               </TableHead>
@@ -149,35 +149,14 @@ const BrandVehicle = () => {
                       <TableCell>{item?.vehiclesBrandName}</TableCell>
                       <TableCell>{formatDate(item?.createdDate)}</TableCell>
                       <TableCell>{item?.vehiclesBrandDescription}</TableCell>
-                      <TableCell>
-                        {/* <Select
-                          value={item.status}
-                          onChange={(event) => {
-                            const newStatus = event.target.value;
-                            handleStatusChange(item.vehicleModelId, newStatus);
-                          }}
-                          style={{
-                            ...makeStyle(item.status),
-                            borderRadius: "10px",
-                            width: "125px",
-                            fontSize: "10px",
-                            height: "50px",
-                          }}
-                        >
-                          {statusOptions.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {status}
-                            </MenuItem>
-                          ))}
-                        </Select> */}
-
+                      {/* <TableCell>
                         <span
                           className="status"
                           style={{ ...makeStyle(item.status) }}
                         >
                           {item.status}
                         </span>
-                      </TableCell>
+                      </TableCell> */}
                       {/* <TableCell className="Details">
                         <Button
                           // onClick={() => handleClickOpen(item)}

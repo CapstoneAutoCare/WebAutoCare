@@ -20,6 +20,30 @@ export const ScheduleListGetall = createAsyncThunk(
     }
   }
 );
+export const ScheduleGetListPackageCenterId = createAsyncThunk(
+  "schedules/ScheduleGetListPackageCenterId",
+  async ({token,id}, { rejectWithValue }) => {
+    try {
+      const list = await ScheduleApi.getListPackageCenterId({token,id});
+      console.log("schedules/ScheduleGetListPackageCenterId", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+export const ScheduleGetListPlanIdAndPackageCenterIdBookingId = createAsyncThunk(
+  "schedules/ScheduleGetListPlanIdAndPackageCenterIdBookingId",
+  async ({token,planId,id,bookingId}, { rejectWithValue }) => {
+    try {
+      const list = await ScheduleApi.getListPlanIdAndPackageCenterIdBookingId({token,planId,id,bookingId});
+      console.log("schedules/ScheduleGetListPlanIdAndPackageCenterIdBookingId", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 export const CreateSchedulePost = createAsyncThunk(
   "schedules/CreateSchedulePost",
   async ({ token, data }, { rejectWithValue }) => {
@@ -64,6 +88,34 @@ const scheduleSlice = createSlice({
         state.schedule = action.payload;
       })
       .addCase(CreateSchedulePost.rejected, (state, action) => {
+        state.statusschedules = "failed";
+        state.errorschedules = action.payload;
+      })
+      .addCase(ScheduleGetListPackageCenterId.pending, (state) => {
+        state.statusschedules = "loading";
+        state.schedule = null;
+        state.errorschedules = null;
+        state.schedules = [];
+      })
+      .addCase(ScheduleGetListPackageCenterId.fulfilled, (state, action) => {
+        state.statusschedules = "succeeded";
+        state.schedules = action.payload;
+      })
+      .addCase(ScheduleGetListPackageCenterId.rejected, (state, action) => {
+        state.statusschedules = "failed";
+        state.errorschedules = action.payload;
+      })
+      .addCase(ScheduleGetListPlanIdAndPackageCenterIdBookingId.pending, (state) => {
+        state.statusschedules = "loading";
+        state.schedule = null;
+        state.errorschedules = null;
+        state.schedules = [];
+      })
+      .addCase(ScheduleGetListPlanIdAndPackageCenterIdBookingId.fulfilled, (state, action) => {
+        state.statusschedules = "succeeded";
+        state.schedules = action.payload;
+      })
+      .addCase(ScheduleGetListPlanIdAndPackageCenterIdBookingId.rejected, (state, action) => {
         state.statusschedules = "failed";
         state.errorschedules = action.payload;
       });

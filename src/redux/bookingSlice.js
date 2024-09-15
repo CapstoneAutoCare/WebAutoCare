@@ -41,6 +41,20 @@ export const BookingByCenter = createAsyncThunk(
     }
   }
 );
+
+export const BookingGetListBookingCancelledInformationAndAcceptBooking = createAsyncThunk(
+  "booking/BookingGetListBookingCancelledInformationAndAcceptBooking",
+  async ({ token, id }, { rejectWithValue }) => {
+    try {
+      const list = await BookingApi.getListBookingCancelledInformationAndAcceptBooking({ token, id });
+      console.log(list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+
 export const PatchStatusBookingByCenter = createAsyncThunk(
   "booking/PatchStatusBookingCenter",
   async ({customercareId, bookingId, status, token }, { rejectWithValue }) => {
@@ -136,6 +150,22 @@ const bookingSlice = createSlice({
         state.statusbooking = "failed";
         state.errorbooking = action.payload;
         alert(action.payload);
+      })
+      .addCase(BookingGetListBookingCancelledInformationAndAcceptBooking.pending, (state) => {
+        state.statusbooking = "loading";
+        state.bookings = [];
+        state.booking = null;
+        state.errorbooking = null;
+      })
+      .addCase(BookingGetListBookingCancelledInformationAndAcceptBooking.fulfilled, (state, action) => {
+        state.statusbooking = "succeeded";
+        state.bookings = action.payload;
+        console.log("payload", state.booking);
+      })
+      .addCase(BookingGetListBookingCancelledInformationAndAcceptBooking.rejected, (state, action) => {
+        state.statusbooking = "failed";
+        state.errorbooking = action.payload;
+        // alert(action.payload);
       });
   },
 });

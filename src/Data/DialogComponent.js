@@ -59,6 +59,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   GetListByCenterAndStatusCheckinAndTaskInactive,
   MaintenanceInformationById,
+  MaintenanceInformationsPostMaintenance,
 } from "../redux/maintenanceInformationsSlice";
 import {
   CardMainServiceCostComponent,
@@ -67,7 +68,7 @@ import {
   TaskDetailComponent,
 } from "../components/MaintenanceInformations/OutlinedCard";
 import HorizontalLinearStepper from "../components/MaintenanceInformations/HorizontalLinearStepper";
-import { BookingById } from "../redux/bookingSlice";
+import { BookingById, BookingGetListBookingCancelledInformationAndAcceptBooking } from "../redux/bookingSlice";
 import { storage } from "./firebase";
 import {
   GetSpartPartNotSparePartItemId,
@@ -91,6 +92,9 @@ import { MaintenanceServiceInfoesPost } from "../redux/maintenanceServiceInfoesS
 import { CreateBrandVehicles } from "../redux/brandSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
+import { CustomerCareByCenterId } from "../redux/customercareSlice";
+import { ScheduleGetListPackageCenterId, ScheduleGetListPlanIdAndPackageCenterIdBookingId } from "../redux/scheduleSlice";
+import { MaintenanceVehiclesDetailgetListByPlanAndVehicleAndCenter } from "../redux/maintenanceVehiclesDetailsSlice";
 
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
@@ -473,6 +477,7 @@ export const AddMaintenanceServiceDialog = ({
       setModelSearchTerm("");
       setSelectedPlan(null);
       setSchedulePackage(null);
+
       dispatch(GetServiceCaresNotInMaintenanceServices({ token, centerId }));
       dispatch(VehiclesMaintenancesByCenter(centerId));
 
@@ -541,6 +546,8 @@ export const AddMaintenanceServiceDialog = ({
                     setSelectedModel(null);
                     setModelSearchTerm(null);
                     setScheduleSearchTerm(null);
+                    setServiceselects([]);
+
                   }}
                 />
               )}
@@ -605,6 +612,8 @@ export const AddMaintenanceServiceDialog = ({
                       setScheduleSearchTerm(null);
                       setSchedulePackage(null);
                       setSelectedPlan(null);
+                      setServiceselects([]);
+
                       console.log(e.target.value);
                     }}
                   />
@@ -616,7 +625,7 @@ export const AddMaintenanceServiceDialog = ({
             <FormControl fullWidth variant="outlined" margin="normal">
               <InputLabel
                 shrink
-                htmlFor="vehicleModelId"
+                htmlFor="maintenancePlanId"
                 style={{
                   backgroundColor: "white",
                   padding: "0 8px",
@@ -628,14 +637,16 @@ export const AddMaintenanceServiceDialog = ({
                 id="maintenancePlanId"
                 fullWidth
                 options={filteredOptionsPlan}
-                key={selectedModel?.vehicleModelId}
+                key={filteredOptionsPlan?.vehicleModelId}
                 getOptionLabel={(option) =>
                   `Gói:  ${option?.maintenancePlanName} (Mã: ${option?.maintenancePlanId})`
                 }
                 onChange={(event, newValue) => {
                   setSelectedPlan(newValue);
-                  setServiceselects([]);
+                  setServiceselects(null);
                   setSchedulePackage(null);
+                  setServiceselects([]);
+
                   console.log("Gói: ", newValue);
                 }}
                 renderOption={(props, option) => (
@@ -665,6 +676,8 @@ export const AddMaintenanceServiceDialog = ({
                     onChange={(e) => {
                       setSelectedPlan(e.target.value);
                       setSchedulePackage(null);
+                      setServiceselects([]);
+
                       console.log(e.target.value);
                     }}
                   />
@@ -679,7 +692,7 @@ export const AddMaintenanceServiceDialog = ({
             <FormControl fullWidth variant="outlined" margin="normal">
               <InputLabel
                 shrink
-                htmlFor="vehicleModelId"
+                htmlFor="maintananceScheduleId"
                 style={{
                   backgroundColor: "white",
                   padding: "0 8px",
@@ -691,7 +704,7 @@ export const AddMaintenanceServiceDialog = ({
                 id="maintananceScheduleId"
                 fullWidth
                 options={filteredOptionsSchedule}
-                key={selectedplans?.maintenancePlanId}
+                key={filteredOptionsSchedule?.maintananceScheduleId}
 
                 getOptionLabel={(option) =>
                   `Gói odo:  ${option?.maintananceScheduleName} (Mã: ${option?.maintananceScheduleId})`
@@ -727,7 +740,10 @@ export const AddMaintenanceServiceDialog = ({
                     {...params}
                     variant="outlined"
                     onChange={(e) => {
-                      setModelSearchTerm(e.target.value);
+                      // setModelSearchTerm(e.target.value);
+                      setSchedulePackage(null);
+                      setServiceselects([]);
+
                       console.log(e.target.value);
                     }}
                   />
@@ -1823,6 +1839,223 @@ const validationSchemaTaskByCenter = Yup.object({
   ),
   maintenanceTaskName: Yup.string().required("Yêu cầu thêm thông tin"),
 });
+
+
+
+
+export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => {
+  const dispatch = useDispatch();
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+
+  const { maintenanceVehiclesDetails, statusmaintenanceVehiclesDetails } = useSelector(
+    (state) => state.maintenanceVehiclesDetails
+  );
+
+  const { bookings, statusbooking, error } = useSelector(
+    (state) => state.booking
+  );
+  const { customercares } = useSelector(
+    (state) => state.customercare
+  );
+  const { reloadAdd, setReloadAdd } = useState(false);
+  const formik = useFormik({
+    initialValues: {
+      informationMaintenanceName: "",
+      note: "",
+      bookingId: "",
+      customerCareId: "",
+      maintenanceVehiclesDetailId: ""
+    },
+    onSubmit: async (values, { resetForm }) => {
+      const data = {
+        informationMaintenanceName: "Bảo Dưỡng",
+        note: values.note,
+        bookingId: values.bookingId,
+        customerCareId: values.customerCareId,
+        maintenanceVehiclesDetailId: values.maintenanceVehiclesDetailId,
+      };
+      console.log(data);
+      await dispatch(MaintenanceInformationsPostMaintenance({ token: token, data: data }))
+        .then(() => {
+          // dispatch(MaintenanceServicesByCenterId({ sparePartsItemId, token }));
+          resetForm();
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Failed to add item:", error);
+        });
+      // await dispatch(GetListByCenterAndStatusCheckinAndTaskInactive(token));
+      // await dispatch(TechinicanByCenterId({ centerId, token }));
+
+      setReloadAdd(!reloadAdd);
+    },
+  });
+
+  useEffect(() => {
+    dispatch(TechinicanByCenterId({ centerId, token }));
+    dispatch(
+      GetListByCenterAndStatusCheckinAndTaskInactive({ token, centerId })
+    );
+    dispatch(CustomerCareByCenterId({ centerId, token }));
+    dispatch(BookingGetListBookingCancelledInformationAndAcceptBooking({ token, id: centerId }))
+    // dispatch(ScheduleGetListPackageCenterId({ token, id: centerId }))
+    setSelectedPlanId("");
+  }, [dispatch, token, centerId, reloadAdd, open]);
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Tạo Thông Tin Bảo Dưỡng</DialogTitle>
+      {statusbooking === "loading" && (
+        <DialogContent dividers>
+          <CircularProgress />
+        </DialogContent>
+      )}
+      {statusbooking === "succeeded" &&
+        (
+          <DialogContent>
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Đơn Đặt Lịch</InputLabel>
+                <Select
+                  label="Đơn Đặt Lịch"
+                  name="bookingId"
+                  value={formik.values.bookingId}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    const selectedBooking = bookings.find(
+                      (booking) => booking.bookingId === event.target.value
+                    );
+                    setSelectedPlanId(selectedBooking?.maintenancePlanId || "");
+                    console.log("Selected Booking Maintenance Plan ID: ", selectedBooking?.maintenancePlanId);
+                    console.log("Selected Booking: ", selectedBooking?.bookingId);
+                    formik.setFieldValue("maintenanceVehiclesDetailId", "");
+                    dispatch(MaintenanceVehiclesDetailgetListByPlanAndVehicleAndCenter({ token, planId: selectedBooking?.maintenancePlanId, vehicleId: selectedBooking?.vehicleId, centerId: centerId }))
+
+                  }}
+                  error={
+                    formik.touched.bookingId &&
+                    Boolean(formik.errors.bookingId)
+                  }
+                >
+                  {bookings.map((option) => (
+                    <MenuItem
+                      key={option.bookingId}
+                      value={option.bookingId}
+                    >
+                      Note: {option.note} - {option.responseVehicles.vehiclesBrandName} {""} {option.responseVehicles.vehicleModelName} {" "}
+                      {option.responseVehicles.licensePlate} {" "}
+                      - Gói Bảo dưỡng:  {option.maintenancePlanName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Nhân Viên</InputLabel>
+                <Select
+                  label="Nhân Viên"
+                  name="customerCareId"
+                  value={formik.values.customerCareId}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    // const selectedtechnicianId = technicians.find(
+                    //   (part) => part.technicianId === event.target.value
+                    // );
+                    // formik.setFieldValue(
+                    //   "maintenanceServiceName",
+                    //   selectedtechnicianId?.serviceCareName || ""
+                    // );
+                    console.log("Nhan vien cham soc: ", event.target.value);
+                  }}
+                  error={
+                    formik.touched.customerCareId &&
+                    Boolean(formik.errors.customerCareId)
+                  }
+                >
+                  {customercares.map((option) => (
+                    <MenuItem
+                      key={option.customerCareId}
+                      value={option.customerCareId}
+                    >
+                      Tên: {option.firstName} {""}  {option.lastName} - Email:{option.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Gói</InputLabel>
+                <Select
+                  label="Gói"
+                  name="maintenanceVehiclesDetailId"
+                  value={formik.values.maintenanceVehiclesDetailId}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    // const selectedtechnicianId = technicians.find(
+                    //   (part) => part.technicianId === event.target.value
+                    // );
+                    // formik.setFieldValue(
+                    //   "maintenanceServiceName",
+                    //   selectedtechnicianId?.serviceCareName || ""
+                    // );
+                    console.log("maintenanceVehiclesDetailId: ", event.target.value);
+                  }}
+                  error={
+                    formik.touched.maintenanceVehiclesDetailId &&
+                    Boolean(formik.errors.maintenanceVehiclesDetailId)
+                  }
+                >
+                  {maintenanceVehiclesDetails
+                    .filter((mvd) => mvd.responseMaintenanceSchedules.maintenancePlanId === selectedPlanId)
+                    .map((option) => (
+                      <MenuItem
+                        key={option.maintenanceVehiclesDetailId}
+                        value={option.maintenanceVehiclesDetailId}
+                      >
+                        Tên: {option.responseMaintenanceSchedules.maintenancePlanName} - Odo: {option.responseMaintenanceSchedules.maintananceScheduleName} Km
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+              <TextField
+                autoFocus
+                margin="dense"
+                name="note"
+                label="Ghi Chú"
+                type="text"
+                fullWidth
+                variant="standard"
+                value={formik.values.note}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.note &&
+                  Boolean(formik.errors.note)
+                }
+                helperText={
+                  formik.touched.note &&
+                  formik.errors.note
+                }
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+
+              <DialogActions>
+                <Button onClick={handleClose}>Trả Về</Button>
+                <Button type="submit">Thêm</Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        )}
+    </Dialog>
+  );
+};
+
+
+
+
+
+
 export const AddTaskDialog = ({ open, handleClose, token, centerId }) => {
   const dispatch = useDispatch();
 

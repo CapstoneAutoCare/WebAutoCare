@@ -20,7 +20,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { MaintenanceInformationsByCenterId } from "../../redux/maintenanceInformationsSlice";
-import { MaintenanceInformationsDetailDialog } from "../../Data/DialogComponent";
+import { AddMaintenanceDialog, MaintenanceInformationsDetailDialog } from "../../Data/DialogComponent";
 import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatDate } from "../../Data/Pagination";
 import { ClearPaymentData } from "../../redux/paymentSlice";
@@ -53,6 +53,8 @@ const MaintenanceInformations = () => {
   const token = localStorage.getItem("localtoken");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [openAddDialog, setAddDialog] = useState(false);
+
   const { maintenanceInformations = [], statusmi } = useSelector(
     (state) => state.maintenanceInformation
   );
@@ -62,7 +64,10 @@ const MaintenanceInformations = () => {
   const itemsPerPage = 7;
 
   const pageCount = Math.ceil(maintenanceInformations.length / itemsPerPage);
-
+  const handleClickOpenAdd = () => {
+    setAddDialog(true);
+    console.log("Selected Item: ");
+  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -79,7 +84,10 @@ const MaintenanceInformations = () => {
     setSelectedItem(null);
     dispatch(ClearPaymentData());
   };
-
+  const handleAddClose = () => {
+    setAddDialog(false);
+    setReload(!reload);
+  };
   const [filterStatus, setFilterStatus] = useState("");
   const [filterVehicle, setFilterVehicle] = useState("");
   const [filterLicensePlate, setFilterLicensePlate] = useState("");
@@ -114,9 +122,15 @@ const MaintenanceInformations = () => {
   return (
     <Box>
       <h3>Danh Sách Thông Tin Bảo Trì Sửa Chữa</h3>
-      <Button variant="contained" color="success">
+      <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
         Add Thông Tin Bảo Trì Sửa Chữa
       </Button>
+      <AddMaintenanceDialog
+        open={openAddDialog}
+        handleClose={handleAddClose}
+        token={token}
+        centerId={centerId}
+      />
       <Box
         display="flex"
         justifyContent="space-between"

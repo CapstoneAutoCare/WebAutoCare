@@ -34,6 +34,22 @@ export const MaintenanceInformationsByCenterId = createAsyncThunk(
     }
   }
 );
+
+export const MaintenanceInformationsPostMaintenance = createAsyncThunk(
+  "maintenanceInformation/MaintenanceInformationsPostMaintenance",
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const list = await MaintenanceInformationsApi.addMaintenPost({
+        token,
+        data,
+      });
+      console.log(list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 export const MaintenanceInformationById = createAsyncThunk(
   "maintenanceInformation/GetById",
   async ({ miId, token }, { rejectWithValue }) => {
@@ -94,11 +110,11 @@ export const GetListByCenterAndStatus = createAsyncThunk(
 );
 export const GetListByCenterAndStatusCheckinAndTaskInactive = createAsyncThunk(
   "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",
-  async ({token,centerId}, { rejectWithValue }) => {
+  async ({ token, centerId }, { rejectWithValue }) => {
     try {
       const list =
         await MaintenanceInformationsApi.GetListByCenterAndStatusCheckinAndTaskInactive(
-          {token,centerId}
+          { token, centerId }
         );
       console.log(
         "maintenanceInformation/GetListByCenterAndStatusCheckinAndTaskInactive",
@@ -221,9 +237,35 @@ const maintenanceInformationsSlice = createSlice({
           state.statusmi = "failed";
           state.errormi = action.payload;
         }
-      );
+      )
+      .addCase(
+        MaintenanceInformationsPostMaintenance.pending,
+        (state) => {
+          state.statusmi = "loading";
+          state.maintenanceInformations = [];
+          state.main = null;
+          state.errormi = null;
+        }
+      )
+      .addCase(
+        MaintenanceInformationsPostMaintenance.fulfilled,
+        (state, action) => {
+          state.statusmi = "succeeded";
+          state.main = action.payload;
+          console.log("payload", state.main);
+        }
+      )
+      .addCase(
+        MaintenanceInformationsPostMaintenance.rejected,
+        (state, action) => {
+          state.statusmi = "failed";
+          state.errormi = action.payload;
+        }
+      )
+
+      ;
   },
 });
-export const {} = maintenanceInformationsSlice.actions;
+export const { } = maintenanceInformationsSlice.actions;
 
 export default maintenanceInformationsSlice.reducer;

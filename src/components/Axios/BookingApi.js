@@ -39,6 +39,19 @@ const BookingApi = {
 
     return await axiosApi.get(url, config);
   },
+
+
+  async getListBookingCancelledInformationAndAcceptBooking({ token, id }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/Bookings/GetListBookingCancelledInformationAndAcceptBooking?centerId=${id}`;
+
+    return await axiosApi.get(url, config);
+  },
   async patchStatus({ customercareId, bookingId, status, token }) {
     const config = {
       headers: {
