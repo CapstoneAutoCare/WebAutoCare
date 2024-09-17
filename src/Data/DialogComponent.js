@@ -586,7 +586,7 @@ export const AddMaintenanceServiceDialog = ({
                 renderOption={(props, option) => (
                   <li {...props} key={option.vehiclesModelId}>
                     <img
-                      src={option?.logo}
+                      src={option?.image}
                       alt={option.vehiclesBrandName}
                       style={{
                         width: 40,

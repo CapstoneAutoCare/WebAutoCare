@@ -7,8 +7,6 @@ import jwt_decode from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import ProfilePage from "./Updates/ProfilePage";
 import Booking from "./Booking/Booking";
 import CustomerCare from "./CustomerCare/CustomerCare";
 import SparePartItems from "./SparePart/SparePartItems";
@@ -31,14 +29,13 @@ import { SparePartsAll } from "../redux/sparepartsSlice";
 import { Profile } from "../redux/accountSlice";
 import ProfilePageV1 from "./Authen/Profile";
 import { ServicesListGetAll } from "../redux/servicesSlice";
-import Dashboard from "./MainDash/Dashboard";
 import { VehiclesMaintenancesByCenter } from "../redux/vehiclemainSlice";
 import { SidebarDataAdmin, SidebarDataCenter, SidebarDataCustomerCare } from "../Data/Data";
 import Navbar from "./Navbar";
-import Package from "./PageAdmin/Package";
 import { CustomerCareByCenterId } from "../redux/customercareSlice";
 import { PlanListGetall } from "../redux/planSlice";
 import Plan from "./PageAdmin/Plan";
+import Transactions from "./PageAdmin/Transactions";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -98,7 +95,7 @@ const Sidebar = () => {
     ],
     ADMIN: [
       <Center />,
-      <Package />,
+      <Transactions />,
       <Plan/>,
       <ScheduleList />,
       <BrandVehicle />,

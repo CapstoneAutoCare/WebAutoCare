@@ -106,7 +106,7 @@ export const SidebarDataAdmin = [
 
   {
     icon: UilClipboardAlt,
-    heading: "Gói Đăng Kí ",
+    heading: "Giao Dịch",
   },
   {
     icon: UilClipboardAlt,

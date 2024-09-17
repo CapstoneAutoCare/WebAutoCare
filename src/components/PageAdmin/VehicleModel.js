@@ -112,7 +112,21 @@ const VehicleModel = () => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{item?.image}</TableCell>
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt="Item Logo"
+                            // className="item-logo"
+                            style={{ width: "100px", height: "100px" }}
+                          />
+                        ) : (
+                          <div
+                            className="no-image-placeholder"
+                            style={{ width: "80px", height: "80px" }}
+                          >
+                            No Image Available
+                          </div>
+                        )}
                         <TableCell>{item?.vehicleModelId}</TableCell>
                         <TableCell>{item?.vehiclesBrandName}</TableCell>
                         <TableCell>{item?.vehicleModelName}</TableCell>
