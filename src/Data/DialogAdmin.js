@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   FormHelperText,
   Grid,
@@ -44,6 +45,8 @@ import {
 } from "../redux/mainserviceSlice";
 import { CreateOdoHisotryPost } from "../redux/odohistory";
 import axios from "axios";
+import { formatNumberWithDots } from "../components/MaintenanceInformations/OutlinedCard";
+import { formatDate } from "./Pagination";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
@@ -3161,5 +3164,89 @@ export const UseFormikCreateOdoHisotry = ({
         </form>
       </DialogContent>
     </Dialog >
+  );
+};
+
+
+
+
+
+
+export const TransactionDetailsDialog = ({ open, handleClose, transaction }) => {
+  if (!transaction) return null;
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Chi tiết giao dịch</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h6">Thông tin giao dịch</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Mã giao dịch:</strong> {transaction.transactionsId}</Typography>
+            <Typography><strong>Ngày giao dịch:</strong> {formatDate(transaction.transactionDate)}</Typography>
+            <Typography><strong>Khối lượng:</strong> {transaction.volume}%</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Số tiền:</strong> {formatNumberWithDots(transaction.amount)} VND</Typography>
+            <Typography><strong>Phương thức thanh toán:</strong> {transaction.paymentMethod}</Typography>
+            <Typography><strong>Trạng thái:</strong> {transaction.status}</Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6">Thông tin trung tâm bảo dưỡng</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography><strong>Tên trung tâm:</strong> {transaction.responseCenter.maintenanceCenterName}</Typography>
+            <Typography><strong>Địa chỉ:</strong> {transaction.responseCenter.address}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Thông tin khách hàng</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Họ tên:</strong> {transaction.responseClient.firstName}{" "}{transaction.responseClient.lastName}</Typography>
+            <Typography><strong>Địa chỉ:</strong> {transaction.responseClient.address}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Email:</strong> {transaction.responseClient.email}</Typography>
+            <Typography><strong>Số điện thoại:</strong> {transaction.responseClient.phone}</Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6">Thông tin xe</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Hãng xe:</strong> {transaction.responseVehicles.vehiclesBrandName}</Typography>
+            <Typography><strong>Mẫu xe:</strong> {transaction.responseVehicles.vehicleModelName}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Biển số xe:</strong> {transaction.responseVehicles.licensePlate}</Typography>
+            <Typography><strong>Màu sắc:</strong> {transaction.responseVehicles.color}</Typography>
+          </Grid>
+
+
+
+
+          <Grid item xs={12}>
+            <Typography variant="h6">Thông tin gói bảo dưỡng</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography><strong>Tên gói:</strong> {transaction.responseMaintenancePlan.maintenancePlanName}</Typography>
+            <Typography><strong>Mô tả:</strong> {transaction.responseMaintenancePlan.description}</Typography>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Đóng
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };

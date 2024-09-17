@@ -92,7 +92,22 @@ export const makeStyle = (status) => {
       background: "#990000",
       color: "white",
     };
-  } else {
+  } else if (status === "RECEIVED" ) {
+    return {
+      background: "#28a745",
+      color: "white",
+    };
+  }
+  else if (status === "TRANSFERRED") {
+    return {
+      background: "#007bff",
+      color: "white",
+    };
+  }
+  
+  
+  
+  else {
     return {
       background: "#0099CC",
       color: "white",
