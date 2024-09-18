@@ -19,7 +19,7 @@ const Transactions = () => {
     const [open, setOpen] = useState(false);
 
     const [page, setPage] = useState(1);
-    const itemsPerPage = 4;
+    const itemsPerPage = 8;
     const pageCount = Math.ceil(transactions.length / itemsPerPage);
 
     const handleChangePage = (event, newPage) => {
@@ -44,9 +44,9 @@ const Transactions = () => {
     return (
         <Box>
             <h3>Các Gói Giao Dịch</h3>
-            <Button variant="contained" color="success" >
+            {/* <Button variant="contained" color="success" >
                 Chuyển Tiền
-            </Button>
+            </Button> */}
             {statustransactions === "succeeded" &&
                 transactions &&
                 transactions.length > 0 && (

@@ -190,7 +190,7 @@ const MaintenanceInformations = () => {
                     <TableCell>Ngày Kết Thúc</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Số Lượng </TableCell>
-                    <TableCell>Tổng Chi Phí Hiện Tại</TableCell>
+                    {/* <TableCell>Tổng Chi Phí Hiện Tại</TableCell> */}
                     <TableCell>Ghi Chú</TableCell>
                     <TableCell>Chi Tiết</TableCell>
                   </TableRow>
@@ -243,7 +243,7 @@ const MaintenanceInformations = () => {
                                 .length}{" "}
                             items
                           </TableCell>
-                          <TableCell
+                          {/* <TableCell
                             style={{
                               // borderRadius: "10px",
                               // fontSize: "25px",
@@ -251,7 +251,7 @@ const MaintenanceInformations = () => {
                             }}
                           >
                             {formatNumberWithDots(item.totalPrice)} VND
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell>
                             <Tooltip title={item.note} arrow>
                               <span>{truncateNote(item.note)}</span>

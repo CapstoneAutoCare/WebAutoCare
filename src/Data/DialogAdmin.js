@@ -3236,9 +3236,19 @@ export const TransactionDetailsDialog = ({ open, handleClose, transaction }) => 
             <Typography variant="h6">Thông tin gói bảo dưỡng</Typography>
             <Divider />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <Typography><strong>Tên gói:</strong> {transaction.responseMaintenancePlan.maintenancePlanName}</Typography>
             <Typography><strong>Mô tả:</strong> {transaction.responseMaintenancePlan.description}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography><strong>Nội dung:</strong> {transaction.description}</Typography>
+            {transaction.status === "RECEIVED" && (<Button
+              variant="contained"
+              color="success"
+            >
+              Chuyển Tiền
+            </Button>)}
+
           </Grid>
         </Grid>
       </DialogContent>
