@@ -35,6 +35,26 @@ export const MaintenanceInformationsByCenterId = createAsyncThunk(
   }
 );
 
+export const MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar = createAsyncThunk(
+  "maintenanceInformation/MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar",
+  async ({ token, planId, vehicleId, centerId }, { rejectWithValue }) => {
+    try {
+      const list = await MaintenanceInformationsApi.getListByPlanAndVehicleAndCenterAndStatusWatingbycar({
+        token,
+        planId,
+        vehicleId,
+        centerId,
+      });
+      console.log(list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+
+
+
 export const MaintenanceInformationsPostMaintenance = createAsyncThunk(
   "maintenanceInformation/MaintenanceInformationsPostMaintenance",
   async ({ token, data }, { rejectWithValue }) => {
@@ -262,7 +282,21 @@ const maintenanceInformationsSlice = createSlice({
           state.errormi = action.payload;
         }
       )
-
+      .addCase(MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar.pending, (state) => {
+        state.statusmi = "loading";
+        state.maintenanceInformations = [];
+        state.main = null;
+        state.errormi = null;
+      })
+      .addCase(MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar.fulfilled, (state, action) => {
+        state.statusmi = "succeeded";
+        state.maintenanceInformations = action.payload;
+        console.log("payload", state.maintenanceInformations);
+      })
+      .addCase(MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar.rejected, (state, action) => {
+        state.statusmi = "failed";
+        state.errormi = action.payload;
+      })
       ;
   },
 });

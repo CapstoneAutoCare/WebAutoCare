@@ -74,6 +74,20 @@ const MaintenanceInformationsApi = {
 
     return await axiosApi.get(url, config);
   },
+  async getListByPlanAndVehicleAndCenterAndStatusWatingbycar({ token, planId,vehicleId,centerId }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { planId,vehicleId,centerId },
+    };
+    const url =
+      "/MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusWatingbycar";
+
+    return await axiosApi.get(url, config);
+  },
+  
   async addMaintenanceInformationsItem(token, data) {
     const config = {
       headers: {

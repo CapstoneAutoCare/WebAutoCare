@@ -397,7 +397,7 @@ export const AddVehicleModelDialog = ({
                 handleClose();
               }}
             >
-              Huy
+              Hủy
             </Button>
             <Button type="submit">Thêm</Button>
           </DialogActions>

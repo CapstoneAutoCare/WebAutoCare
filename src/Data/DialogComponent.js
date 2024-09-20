@@ -59,6 +59,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   GetListByCenterAndStatusCheckinAndTaskInactive,
   MaintenanceInformationById,
+  MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar,
   MaintenanceInformationsPostMaintenance,
 } from "../redux/maintenanceInformationsSlice";
 import {
@@ -1850,7 +1851,9 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
   const { maintenanceVehiclesDetails, statusmaintenanceVehiclesDetails } = useSelector(
     (state) => state.maintenanceVehiclesDetails
   );
-
+  const { maintenanceInformations = [], statusmi } = useSelector(
+    (state) => state.maintenanceInformation
+  );
   const { bookings, statusbooking, error } = useSelector(
     (state) => state.booking
   );
@@ -1860,19 +1863,17 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
   const { reloadAdd, setReloadAdd } = useState(false);
   const formik = useFormik({
     initialValues: {
-      informationMaintenanceName: "",
       note: "",
       bookingId: "",
       customerCareId: "",
-      maintenanceVehiclesDetailId: ""
+      informationMaintenanceId: ""
     },
     onSubmit: async (values, { resetForm }) => {
       const data = {
-        informationMaintenanceName: "Bảo Dưỡng",
         note: values.note,
         bookingId: values.bookingId,
         customerCareId: values.customerCareId,
-        maintenanceVehiclesDetailId: values.maintenanceVehiclesDetailId,
+        informationMaintenanceId: values.informationMaintenanceId,
       };
       console.log(data);
       await dispatch(MaintenanceInformationsPostMaintenance({ token: token, data: data }))
@@ -1927,8 +1928,8 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
                     setSelectedPlanId(selectedBooking?.maintenancePlanId || "");
                     console.log("Selected Booking Maintenance Plan ID: ", selectedBooking?.maintenancePlanId);
                     console.log("Selected Booking: ", selectedBooking?.bookingId);
-                    formik.setFieldValue("maintenanceVehiclesDetailId", "");
-                    dispatch(MaintenanceVehiclesDetailgetListByPlanAndVehicleAndCenter({ token, planId: selectedBooking?.maintenancePlanId, vehicleId: selectedBooking?.vehicleId, centerId: centerId }))
+                    formik.setFieldValue("informationMaintenanceId", "");
+                    dispatch(MaintenanceInformationsGetListByPlanAndVehicleAndCenterAndStatusWatingbycar({ token, planId: selectedBooking?.maintenancePlanId, vehicleId: selectedBooking?.vehicleId, centerId: centerId }))
 
                   }}
                   error={
@@ -1986,8 +1987,8 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
                 <InputLabel>Gói</InputLabel>
                 <Select
                   label="Gói"
-                  name="maintenanceVehiclesDetailId"
-                  value={formik.values.maintenanceVehiclesDetailId}
+                  name="informationMaintenanceId"
+                  value={formik.values.informationMaintenanceId}
                   onChange={(event) => {
                     formik.handleChange(event);
                     // const selectedtechnicianId = technicians.find(
@@ -1997,21 +1998,21 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
                     //   "maintenanceServiceName",
                     //   selectedtechnicianId?.serviceCareName || ""
                     // );
-                    console.log("maintenanceVehiclesDetailId: ", event.target.value);
+                    console.log("informationMaintenanceId: ", event.target.value);
                   }}
                   error={
                     formik.touched.maintenanceVehiclesDetailId &&
                     Boolean(formik.errors.maintenanceVehiclesDetailId)
                   }
                 >
-                  {maintenanceVehiclesDetails
-                    .filter((mvd) => mvd.responseMaintenanceSchedules.maintenancePlanId === selectedPlanId)
+                  {maintenanceInformations
+                    // .filter((mvd) => mvd.responseMaintenanceSchedules.maintenancePlanId === selectedPlanId)
                     .map((option) => (
                       <MenuItem
-                        key={option.maintenanceVehiclesDetailId}
-                        value={option.maintenanceVehiclesDetailId}
+                        key={option.informationMaintenanceId}
+                        value={option.informationMaintenanceId}
                       >
-                        Tên: {option.responseMaintenanceSchedules.maintenancePlanName} - Odo: {option.responseMaintenanceSchedules.maintananceScheduleName} Km
+                        Tên: {option.informationMaintenanceName} Km
                       </MenuItem>
                     ))}
                 </Select>

@@ -44,9 +44,14 @@ const Transactions = () => {
     return (
         <Box>
             <h3>Các Gói Giao Dịch</h3>
-            {/* <Button variant="contained" color="success" >
+            <Button variant="contained" color="success" >
                 Chuyển Tiền
-            </Button> */}
+            </Button>
+            {statustransactions === "loading" && (
+                <DialogContent dividers>
+                    <CircularProgress />
+                </DialogContent>
+            )}
             {statustransactions === "succeeded" &&
                 transactions &&
                 transactions.length > 0 && (
