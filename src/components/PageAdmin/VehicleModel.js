@@ -24,6 +24,7 @@ import {
   AddVehicleModelDialog,
 } from "../../Data/DialogAdmin";
 import { VehicleModelsGetAllList } from "../../redux/vehiclemodelsSlice";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const VehicleModel = () => {
@@ -66,6 +67,8 @@ const VehicleModel = () => {
 
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Loại Xe Của Từng Hãng</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Loại Xe Mới

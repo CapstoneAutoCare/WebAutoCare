@@ -21,6 +21,12 @@
 .bars {
   display: none;
 }
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px; /* Khoảng cách giữa logo và phần còn lại */
+}
 
 .menu {
   margin-top: 0; /* Removed margin to align items correctly */

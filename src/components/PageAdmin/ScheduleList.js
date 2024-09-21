@@ -22,9 +22,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
-import { AddScheduleDialog } from "../../Data/DialogAdmin";
+import { AddScheduleDialog, UpdateScheduleDialog } from "../../Data/DialogAdmin";
 import { makeStyle } from "../Booking/Booking";
 import { ScheduleListGetall } from "../../redux/scheduleSlice";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const ScheduleList = () => {
@@ -32,6 +33,7 @@ const ScheduleList = () => {
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
   const [open, setOpen] = useState(false);
+  const [openedit, setOpenedit] = useState(false);
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 7;
@@ -54,8 +56,14 @@ const ScheduleList = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
+  const [filterPlans, setFilterPlans] = useState("");
+  const [selectitem, setSelectedItem] = useState("");
+
   const { brands, statusvehiclemodels, errorbrands } = useSelector(
     (state) => state.brands
+  );
+  const { plans, statusplans, errorplans } = useSelector(
+    (state) => state.plans
   );
   const { vehiclemodels, statusbrands, errorvehiclemodels } = useSelector(
     (state) => state.vehiclemodels
@@ -69,6 +77,10 @@ const ScheduleList = () => {
   const filteredVehicleModels = vehiclemodels.filter(
     (model) => model.vehiclesBrandId === filterBrand
   );
+  const filteredPlans = plans.filter(
+    (model) => model.reponseVehicleModels.vehicleModelId === filterVehicleModel
+
+  );
   const filterListSchedule = schedules.filter((schedule) => {
     const statusMatch = filterStatus ? schedule?.status === filterStatus : true;
     const fitBrand = filterBrand
@@ -77,31 +89,55 @@ const ScheduleList = () => {
     const fitVehicle = filterVehicleModel
       ? schedule?.vehicleModelId === filterVehicleModel
       : true;
-    return statusMatch && fitBrand && fitVehicle;
+
+
+
+    const fitPlans = filterPlans ? schedule?.maintenancePlanId === filterPlans : true;
+
+
+
+    return statusMatch && fitBrand && fitVehicle && fitPlans;
   });
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
-    setReload(!reload);
+    setReload((prev) => !prev);
   };
+
+
+  const handleEditClose = () => {
+    setReload((prev) => !prev);
+    setSelectedItem(null);
+    setOpenedit(false);
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setOpenedit(true);
+
+  };
+
+
   useEffect(() => {
     dispatch(ScheduleListGetall(token));
   }, [dispatch, token, reload]);
 
   return (
     <Box>
+                  <Navbar />
+
       <h3>Danh Sách Các Gói Odo Bảo Dưỡng</h3>
-      {/* <Button variant="contained" color="success" onClick={handleClickOpen}>
-        Thêm Hãng Mới Cho Xe
+      <Button variant="contained" color="success" onClick={handleClickOpen}>
+        Thêm Gói Odo Bảo Dưỡng
       </Button>
       <AddScheduleDialog
         open={open}
         handleClose={handleClose}
         token={token}
         setReload={setReload}
-      /> */}
+      />
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Select
           value={filterStatus}
@@ -139,6 +175,7 @@ const ScheduleList = () => {
           value={filterVehicleModel}
           onChange={(event) => {
             setFilterVehicleModel(event.target.value);
+            setFilterPlans("");
           }}
           displayEmpty
           disabled={!filterBrand}
@@ -149,6 +186,25 @@ const ScheduleList = () => {
           {filteredVehicleModels.map((model) => (
             <MenuItem key={model.vehicleModelId} value={model.vehicleModelId}>
               {model.vehicleModelName}
+            </MenuItem>
+          ))}
+        </Select>
+
+        <Select
+          value={filterPlans}
+          onChange={(event) => {
+            setFilterPlans(event.target.value);
+
+          }}
+          displayEmpty
+          disabled={!filterVehicleModel}
+        >
+          <MenuItem value="">
+            <em>Gói Cấp Độ</em>
+          </MenuItem>
+          {filteredPlans.map((model) => (
+            <MenuItem key={model.maintenancePlanId} value={model.maintenancePlanId}>
+              {model.maintenancePlanName}
             </MenuItem>
           ))}
         </Select>
@@ -176,7 +232,7 @@ const ScheduleList = () => {
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Mô Tả</TableCell>
                     <TableCell>Trạng Thái</TableCell>
-                    {/* <TableCell>Chi Tiết</TableCell> */}
+                    <TableCell>Chỉnh Sửa</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -234,15 +290,15 @@ const ScheduleList = () => {
                             {item.status}
                           </span>
                         </TableCell>
-                        {/* <TableCell className="Details">
+                        <TableCell className="Details">
                           <Button
-                            // onClick={() => handleClickOpen(item)}
+                            onClick={() => handleEdit(item)}
                             variant="contained"
                             color="success"
                           >
-                            Hiển Thị
+                            Chỉnh Sửa
                           </Button>
-                        </TableCell> */}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -258,6 +314,17 @@ const ScheduleList = () => {
             />
           </Grid>
         )}
+
+
+      {selectitem && (
+        <UpdateScheduleDialog
+          open={openedit}
+          handleClose={handleEditClose}
+          token={token}
+          item={selectitem}
+          setReload={setReload}
+        />
+      )}
     </Box>
   );
 };

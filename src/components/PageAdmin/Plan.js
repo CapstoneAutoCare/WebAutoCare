@@ -22,9 +22,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
-import { AddScheduleDialog } from "../../Data/DialogAdmin";
+import { AddMaintenancePlanDialog, AddScheduleDialog } from "../../Data/DialogAdmin";
 import { makeStyle } from "../Booking/Booking";
 import { ScheduleListGetall } from "../../redux/scheduleSlice";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const Plan = () => {
@@ -94,16 +95,18 @@ const Plan = () => {
 
     return (
         <Box>
+            <Navbar />
+
             <h3>Danh Sách Các Gói Odo Bảo Dưỡng</h3>
-            {/* <Button variant="contained" color="success" onClick={handleClickOpen}>
-                Thêm Hãng Mới Cho Xe
+            <Button variant="contained" color="success" onClick={handleClickOpen}>
+                Thêm Gói Cho Xe
             </Button>
-            <AddScheduleDialog
+            <AddMaintenancePlanDialog
                 open={open}
                 handleClose={handleClose}
                 token={token}
                 setReload={setReload}
-            /> */}
+            />
             <Box display="flex" justifyContent="space-between" mb={2}>
                 <Select
                     value={filterStatus}

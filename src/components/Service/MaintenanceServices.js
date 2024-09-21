@@ -31,6 +31,7 @@ import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { AddMaintenanceServiceDialogOutSide } from "../../Data/DialogAdmin";
 import { VehiclesMaintenancesByCenter } from "../../redux/vehiclemainSlice";
 import { useSnackbar } from "../../Data/SnackbarProvider";
+import Navbar from "../Navbar";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -187,6 +188,8 @@ const MaintenanceServices = () => {
   return (
     <div>
       <Box>
+      <Navbar />
+
         <h3>Danh Sách Các Dịch Vụ Từng Xe</h3>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {role === "CENTER" && (

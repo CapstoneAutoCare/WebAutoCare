@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { CreateVehiclesModelPost } from "../redux/vehiclemodelsSlice";
-import { CreateSchedulePost } from "../redux/scheduleSlice";
+import { CreateSchedulePost, UpdatechedulePut } from "../redux/scheduleSlice";
 import {
   CreateSpartPartPost,
   SparePartsAll,
@@ -47,6 +47,7 @@ import { CreateOdoHisotryPost } from "../redux/odohistory";
 import axios from "axios";
 import { formatNumberWithDots } from "../components/MaintenanceInformations/OutlinedCard";
 import { formatDate } from "./Pagination";
+import { CreatePlanPost } from "../redux/planSlice";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 export const AddBrandVehicleDialog = ({
@@ -75,15 +76,15 @@ export const AddBrandVehicleDialog = ({
     onSubmit: async (values) => {
       try {
         let imageUrl = values.logo;
-        // if (imageFile) {
-        //   const storageRef = ref(storage, `images/${imageFile.name}`);
-        //   await uploadBytes(storageRef, imageFile);
-        //   imageUrl = await getDownloadURL(storageRef);
-        // }
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
         await dispatch(
           CreateBrandVehicles({
             token: token,
-            data: { ...values, logo: "" },
+            data: { ...values, logo: imageUrl },
           })
         );
         setReload((p) => !p);
@@ -124,7 +125,7 @@ export const AddBrandVehicleDialog = ({
       <DialogTitle>Thêm Hãng Mới</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          {/* <TextField
+          <TextField
             label="Logo"
             name="logo"
             type="file"
@@ -133,7 +134,7 @@ export const AddBrandVehicleDialog = ({
             helperText={formik.touched.logo && formik.errors.logo}
             fullWidth
             margin="normal"
-          /> */}
+          />
           <TextField
             autoFocus
             margin="dense"
@@ -222,16 +223,16 @@ export const AddVehicleModelDialog = ({
     }),
     onSubmit: async (values) => {
       try {
-        // let imageUrl = values.image;
-        // if (imageFile) {
-        //   const storageRef = ref(storage, `images/${imageFile.name}`);
-        //   await uploadBytes(storageRef, imageFile);
-        //   imageUrl = await getDownloadURL(storageRef);
-        // }
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
         await dispatch(
           CreateVehiclesModelPost({
             token: token,
-            data: { ...values, image: "" },
+            data: { ...values, image: imageUrl },
           })
         );
         setReload((p) => !p);
@@ -334,7 +335,7 @@ export const AddVehicleModelDialog = ({
             }}
           />
 
-          {/* <TextField
+          <TextField
             label="Logo"
             name="image"
             type="file"
@@ -346,7 +347,7 @@ export const AddVehicleModelDialog = ({
             InputLabelProps={{
               shrink: true,
             }}
-          /> */}
+          />
           <TextField
             autoFocus
             margin="dense"
@@ -416,11 +417,15 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
   const { vehiclemodels, statusvehiclemodels, errorvehiclemodels } =
     useSelector((state) => state.vehiclemodels);
 
+  const { plans, statusplans, errorplans } = useSelector(
+    (state) => state.plans
+  );
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [brandSearchTerm, setBrandSearchTerm] = useState("");
   const [modelSearchTerm, setModelSearchTerm] = useState("");
-
+  const [modelSearchPlan, setmodelPlan] = useState("");
+  const [selectPlan, setSelectPlan] = useState(null);
   const filteredOptionsBrand = brands.filter((option) =>
     option.vehiclesBrandName
       .toLowerCase()
@@ -432,10 +437,14 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
       (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
     )
     : [];
+  const filteredPlans = plans.filter(
+    (model) => model.reponseVehicleModels?.vehicleModelId === selectedModel?.vehicleModelId
+
+  );
 
   const formik = useFormik({
     initialValues: {
-      vehicleModelId: "",
+      maintenancePlanId: "",
       description: "",
       maintananceScheduleName: 0,
     },
@@ -451,7 +460,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
         const data = {
           maintananceScheduleName: values.maintananceScheduleName,
           description: values.description ? values.description : null,
-          vehicleModelId: selectedModel.vehicleModelId,
+          maintenancePlanId: selectPlan.maintenancePlanId,
         };
         await dispatch(
           CreateSchedulePost({
@@ -459,6 +468,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
             data,
           })
         );
+        // console.log(data);
         setReload((p) => !p);
         handleClose();
       } catch (error) {
@@ -468,7 +478,11 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
   });
   console.log("Formik errors: ", formik.errors);
 
-  useEffect(() => { }, [dispatch, open, setReload]);
+  useEffect(() => {
+    setSelectedModel(null);
+    setSelectedBrand(null);
+    setSelectPlan(null);
+  }, [dispatch, open, setReload]);
 
   return (
     <Dialog
@@ -604,6 +618,65 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
               />
             </FormControl>
           )}
+
+          {selectedModel && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="maintenancePlanId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Loại Xe
+              </InputLabel>
+              <Autocomplete
+                id="maintenancePlanId"
+                fullWidth
+                options={filteredPlans}
+                key={filteredPlans?.maintenancePlanId}
+                getOptionLabel={(option) =>
+                  `Bảo Dưỡng Cấp:  ${option.maintenancePlanName} (Mã: ${option.maintenancePlanId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectPlan(newValue);
+                  console.log("Plan: ", newValue);
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.maintenancePlanId}>
+                    {/* <img
+                      src={option?.logo}
+                      alt={option.maintenancePlanName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    /> */}
+                    <div>
+                      <div>Xe {option.maintenancePlanName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.maintenancePlanId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setmodelPlan(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+
           <TextField
             autoFocus
             margin="dense"
@@ -3242,12 +3315,12 @@ export const TransactionDetailsDialog = ({ open, handleClose, transaction }) => 
           </Grid>
           <Grid item xs={6}>
             <Typography><strong>Nội dung:</strong> {transaction.description}</Typography>
-            {transaction.status === "RECEIVED" && (<Button
+            {/* {transaction.status === "RECEIVED" && (<Button
               variant="contained"
               color="success"
             >
               Chuyển Tiền
-            </Button>)}
+            </Button>)} */}
 
           </Grid>
         </Grid>
@@ -3257,6 +3330,414 @@ export const TransactionDetailsDialog = ({ open, handleClose, transaction }) => 
           Đóng
         </Button>
       </DialogActions>
+    </Dialog>
+  );
+};
+
+
+
+export const AddMaintenancePlanDialog = ({
+  open,
+  handleClose,
+  token,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+  const [filterBrand, setFilterBrand] = useState("");
+
+  const { brands, statusbrands, errorbrands } = useSelector(
+    (state) => state.brands
+  );
+  const { vehiclemodels, errorvehiclemodels } = useSelector(
+    (state) => state.vehiclemodels
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [brandSearchTerm, setBrandSearchTerm] = useState("");
+  const [modelSearchTerm, setModelSearchTerm] = useState("");
+
+  const filteredOptionsBrand = brands.filter((option) =>
+    option.vehiclesBrandName
+      .toLowerCase()
+      .includes(brandSearchTerm.toLowerCase())
+  );
+
+  const filteredOptionsModel = selectedBrand
+    ? vehiclemodels.filter(
+      (model) => model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+    )
+    : [];
+  const formik = useFormik({
+    initialValues: {
+      vehicleModelId: "",
+      maintenancePlanName: "",
+      description: "",
+    },
+    validationSchema: Yup.object({
+      // vehicleModelId: Yup.string().required("Yêu cầu tên hãng xe"),
+      maintenancePlanName: Yup.string().required("Yêu cầu gói bảo dưỡng"),
+      description: Yup.string().required(
+        "Yêu cầu mô tả"
+      ),
+    }),
+    onSubmit: async (values) => {
+      try {
+        // let imageUrl = values.image;
+        // if (imageFile) {
+        //   const storageRef = ref(storage, `images/${imageFile.name}`);
+        //   await uploadBytes(storageRef, imageFile);
+        //   imageUrl = await getDownloadURL(storageRef);
+        // }
+        await dispatch(
+          CreatePlanPost({
+            token: token,
+            data: { ...values, vehicleModelId: selectedModel.vehicleModelId },
+          })
+        );
+        // console.log({ ...values, vehicleModelId: selectedModel.vehicleModelId });
+        setReload((p) => !p);
+        handleClose();
+      } catch (error) {
+        console.error("Failed to add model vehicle", error);
+      }
+    },
+  });
+
+
+  useEffect(() => {
+
+  }, [dispatch, open, setReload]);
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "75%",
+          height: "75%",
+          maxWidth: "none",
+          maxHeight: "none",
+        },
+      }}
+    >
+      <DialogTitle>Thêm Gói Cho Xe</DialogTitle>
+      <DialogContent>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel
+              shrink
+              htmlFor="vehiclesBrandId"
+              style={{
+                backgroundColor: "white",
+                padding: "0 8px",
+              }}
+            >
+              Chọn Hãng Xe
+            </InputLabel>
+            <Autocomplete
+              id="vehiclesBrandId"
+              key={filteredOptionsBrand.vehiclesBrandId}
+              fullWidth
+              options={filteredOptionsBrand}
+              getOptionLabel={(option) =>
+                `Hãng xe: ${option.vehiclesBrandName} (Mã: ${option.vehiclesBrandId})`
+              }
+              onChange={(event, newValue) => {
+                setSelectedBrand(newValue);
+                setSelectedModel(null);
+                setModelSearchTerm(null);
+                console.log("Hãng xe: ", newValue);
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={option.vehiclesBrandId}>
+                  <img
+                    src={option?.logo}
+                    alt={option.vehiclesBrandName}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      marginRight: 10,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <div>
+                    <div>Hãng xe: {option.vehiclesBrandName}</div>
+                    <div style={{ fontSize: "0.8em", color: "gray" }}>
+                      Mã: {option.vehiclesBrandId}
+                    </div>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setBrandSearchTerm(e.target.value);
+                    setSelectedModel(null);
+                    setModelSearchTerm(null);
+                  }}
+                />
+              )}
+            />
+          </FormControl>
+
+          {selectedBrand && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel
+                shrink
+                htmlFor="vehicleModelId"
+                style={{
+                  backgroundColor: "white",
+                  padding: "0 8px",
+                }}
+              >
+                Chọn Loại Xe
+              </InputLabel>
+              <Autocomplete
+                id="vehiclesModelId"
+                fullWidth
+                options={filteredOptionsModel}
+                key={selectedBrand?.vehiclesBrandId}
+                getOptionLabel={(option) =>
+                  `Loại xe:  ${option.vehicleModelName} (Mã: ${option.vehicleModelId})`
+                }
+                onChange={(event, newValue) => {
+                  setSelectedModel(newValue);
+                  console.log("Loai xe: ", newValue);
+                  // formik.setFieldValue("vehicleModelId", newValue.vehiclesModelId)
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.vehiclesModelId}>
+                    <img
+                      src={option?.logo}
+                      alt={option.vehiclesBrandName}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 10,
+                        objectFit: "contain",
+                      }}
+                    />
+                    <div>
+                      <div>Xe {option.vehicleModelName}</div>
+                      <div style={{ fontSize: "0.8em", color: "gray" }}>
+                        Mã: {option.vehicleModelId}
+                      </div>
+                    </div>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    onChange={(e) => {
+                      setModelSearchTerm(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                )}
+              />
+            </FormControl>
+          )}
+
+          <TextField
+            autoFocus
+            margin="dense"
+            name="maintenancePlanName"
+            label="Tên Gói"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.maintenancePlanName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.maintenancePlanName &&
+              Boolean(formik.errors.maintenancePlanName)
+            }
+            helperText={
+              formik.touched.maintenancePlanName && formik.errors.maintenancePlanName
+            }
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+
+          <TextField
+            margin="dense"
+            name="description"
+            label="Mô Tả Gói"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.description &&
+              Boolean(formik.errors.description)
+            }
+            helperText={
+              formik.touched.description &&
+              formik.errors.description
+            }
+          />
+
+          <DialogActions>
+            <Button
+              onClick={() => {
+                formik.resetForm();
+                handleClose();
+              }}
+            >
+              Hủy
+            </Button>
+            <Button type="submit">Thêm</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+export const UpdateScheduleDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+
+  const formik = useFormik({
+    initialValues: {
+      odo: item?.odo,
+      description: item?.description,
+    },
+    validationSchema: Yup.object({
+      description: Yup.string().required(
+        "Yêu cầu mô tả"
+      ),
+      odo: Yup.number()
+        .required("Yêu cầu giá dịch vụ")
+        .min(10000, "Thấp nhất là 10000"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+
+        dispatch(
+          UpdatechedulePut({
+            token: token,
+            id: item.maintananceScheduleId,
+            data: { ...values },
+          })
+        )
+        // console.log(values);
+        setReload((p) => !p);
+        resetForm();
+        handleClose();
+      } catch (error) {
+        console.error("Failed to update spare part item", error);
+      }
+    },
+  });
+
+
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        odo: item?.maintananceScheduleName,
+        description: item?.description,
+      });
+    }
+  }, [dispatch, item, token, setReload]);
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Cập Nhật Phụ Tùng Trung Tâm
+      </DialogTitle>
+
+      {item && (
+        <>
+          <DialogContent dividers>
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                label="Số Odo"
+                name="odo"
+                value={formik.values.odo}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.odo &&
+                  Boolean(formik.errors.odo)
+                }
+                helperText={
+                  formik.touched.odo &&
+                  formik.errors.odo
+                }
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+
+              <TextField
+                label="Mô Tả"
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description &&
+                  formik.errors.description
+                }
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+
+              <DialogActions>
+                <Button type="submit" color="primary">
+                  Cập Nhật
+                </Button>
+                <Button
+                  onClick={() => {
+                    formik.resetForm();
+                  }}
+                >
+                  Hủy
+                </Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </>
+      )}
     </Dialog>
   );
 };

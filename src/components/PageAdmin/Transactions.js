@@ -6,6 +6,7 @@ import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { TransactionListGetall } from "../../redux/transactionSlice";
 import { TransactionDetailsDialog } from "../../Data/DialogAdmin";
+import Navbar from "../Navbar";
 
 const Transactions = () => {
     const dispatch = useDispatch();
@@ -43,10 +44,11 @@ const Transactions = () => {
 
     return (
         <Box>
+            <Navbar />
             <h3>Các Gói Giao Dịch</h3>
-            <Button variant="contained" color="success" >
+            {/* <Button variant="contained" color="success" >
                 Chuyển Tiền
-            </Button>
+            </Button> */}
             {statustransactions === "loading" && (
                 <DialogContent dividers>
                     <CircularProgress />

@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { TechinicanByCenterId } from "../../redux/techinicansSlice";
 import { truncateNote } from "../Booking/Booking";
 import { RegisterTechCare } from "../../Data/DialogAdmin";
+import Navbar from "../Navbar";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCPET") {
@@ -105,7 +106,7 @@ export default function Technician() {
     const districtMatch = filterDistrict
       ? center.address?.toLowerCase().includes(filterDistrict.toLowerCase())
       : true;
-  
+
     const phoneMatch = filterPhone
       ? center.phone?.toLowerCase().includes(filterPhone.toLowerCase())
       : true;
@@ -124,6 +125,8 @@ export default function Technician() {
   }, [dispatch, centerId, token, reload]);
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Nhân Viên</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Tạo Nhân Viên
@@ -285,11 +288,11 @@ export default function Technician() {
                             ))}
                           </Select> */}
                           <span
-                                className="status"
-                                style={makeStyle(item.status)}
-                              >
-                                {item.status}
-                              </span>
+                            className="status"
+                            style={makeStyle(item.status)}
+                          >
+                            {item.status}
+                          </span>
                         </TableCell>
                         {/* <TableCell className="Details">
                           <Button

@@ -30,6 +30,7 @@ import {
   AddVehicleModelDialog,
   UpdateServiceDialog,
 } from "../../Data/DialogAdmin";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const ServiceCare = () => {
@@ -157,6 +158,8 @@ const ServiceCare = () => {
   }, [dispatch, token, reload]);
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Dịch Vụ Bảo Dưỡng Của Gói Theo Từng Odo Và Từng Xe</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Dịch Vụ Gói Mới

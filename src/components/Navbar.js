@@ -130,7 +130,7 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, backgroundColor: '#000000', color: '#ffffff' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, backgroundColor: '#ffffff', color: '#00000' }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

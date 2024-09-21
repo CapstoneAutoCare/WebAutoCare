@@ -25,6 +25,7 @@ import { makeStyle, truncateNote } from "../Booking/Booking";
 import { formatDate } from "../../Data/Pagination";
 import { ClearPaymentData } from "../../redux/paymentSlice";
 import { formatNumberWithDots } from "./OutlinedCard";
+import Navbar from "../Navbar";
 const statusOptions = [
   "CREATEDBYClIENT",
   "WAITINGBYCAR",
@@ -121,9 +122,11 @@ const MaintenanceInformations = () => {
 
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Thông Tin Bảo Trì Sửa Chữa</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
-        Add Thông Tin Bảo Trì Sửa Chữa
+        Thêm Thông Tin Bảo Trì Sửa Chữa
       </Button>
       <AddMaintenanceDialog
         open={openAddDialog}

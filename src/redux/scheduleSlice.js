@@ -22,9 +22,9 @@ export const ScheduleListGetall = createAsyncThunk(
 );
 export const ScheduleGetListPackageCenterId = createAsyncThunk(
   "schedules/ScheduleGetListPackageCenterId",
-  async ({token,id}, { rejectWithValue }) => {
+  async ({ token, id }, { rejectWithValue }) => {
     try {
-      const list = await ScheduleApi.getListPackageCenterId({token,id});
+      const list = await ScheduleApi.getListPackageCenterId({ token, id });
       console.log("schedules/ScheduleGetListPackageCenterId", list.data);
       return list.data;
     } catch (error) {
@@ -34,9 +34,9 @@ export const ScheduleGetListPackageCenterId = createAsyncThunk(
 );
 export const ScheduleGetListPlanIdAndPackageCenterIdBookingId = createAsyncThunk(
   "schedules/ScheduleGetListPlanIdAndPackageCenterIdBookingId",
-  async ({token,planId,id,bookingId}, { rejectWithValue }) => {
+  async ({ token, planId, id, bookingId }, { rejectWithValue }) => {
     try {
-      const list = await ScheduleApi.getListPlanIdAndPackageCenterIdBookingId({token,planId,id,bookingId});
+      const list = await ScheduleApi.getListPlanIdAndPackageCenterIdBookingId({ token, planId, id, bookingId });
       console.log("schedules/ScheduleGetListPlanIdAndPackageCenterIdBookingId", list.data);
       return list.data;
     } catch (error) {
@@ -50,6 +50,20 @@ export const CreateSchedulePost = createAsyncThunk(
     try {
       const list = await ScheduleApi.createpost({ token, data });
       console.log("schedules/CreateSchedulePost", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
+
+
+export const UpdatechedulePut = createAsyncThunk(
+  "schedules/UpdatechedulePut",
+  async ({ token, id, data }, { rejectWithValue }) => {
+    try {
+      const list = await ScheduleApi.updateschedule({ token, id, data });
+      console.log("schedules/UpdatechedulePut", list.data);
       return list.data;
     } catch (error) {
       return rejectWithValue(error.response.data.Exception);
@@ -118,9 +132,25 @@ const scheduleSlice = createSlice({
       .addCase(ScheduleGetListPlanIdAndPackageCenterIdBookingId.rejected, (state, action) => {
         state.statusschedules = "failed";
         state.errorschedules = action.payload;
-      });
+      })
+      .addCase(UpdatechedulePut.pending, (state) => {
+        state.statusschedules = "loading";
+        state.schedule = null;
+        state.errorschedules = null;
+        state.schedules = [];
+      })
+      .addCase(UpdatechedulePut.fulfilled, (state, action) => {
+        state.statusschedules = "succeeded";
+        state.schedule = action.payload;
+      })
+      .addCase(UpdatechedulePut.rejected, (state, action) => {
+        state.statusschedules = "failed";
+        state.errorschedules = action.payload;
+      })
+
+      ;
   },
 });
-export const {} = scheduleSlice.actions;
+export const { } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

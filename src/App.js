@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      {!isAuthPage && <Navbar />}
+      {/* {!isAuthPage && <Navbar />} */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />

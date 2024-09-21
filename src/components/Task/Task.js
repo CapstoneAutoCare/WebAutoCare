@@ -25,6 +25,7 @@ import {
   ViewTaskDetailDialog,
 } from "../../Data/DialogComponent";
 import { formatDate } from "../../Data/Pagination";
+import Navbar from "../Navbar";
 
 const statusOptions = ["ACTIVE", "ACCEPTED", "CANCELLED"];
 const statusMap = {
@@ -94,6 +95,8 @@ const Task = () => {
 
   return (
     <Box>
+            <Navbar />
+
       <h3>Danh Sách Bàn Giao Xe Cho Nhân Viên Kĩ Thuật</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
         Bàn giao xe

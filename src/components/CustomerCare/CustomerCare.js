@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CustomerCareByCenterId } from "../../redux/customercareSlice";
 import { RegisterCustomerCare, RegisterDialog } from "../../Data/DialogAdmin";
 import { truncateNote } from "../Booking/Booking";
+import Navbar from "../Navbar";
 
 const makeStyle = (status) => {
   if (status === "ACTIVE" || status === "ACCPET") {
@@ -120,6 +121,8 @@ export default function CustomerCare() {
   }, [dispatch, centerId, token, reload]);
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Nhân Viên</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Tạo Nhân Viên
@@ -275,11 +278,11 @@ export default function CustomerCare() {
                           ))}
                         </Select> */}
                         <span
-                                className="status"
-                                style={makeStyle(item.status)}
-                              >
-                                {item.status}
-                              </span>
+                          className="status"
+                          style={makeStyle(item.status)}
+                        >
+                          {item.status}
+                        </span>
                       </TableCell>
                       {/* <TableCell className="Details">
                         <Button

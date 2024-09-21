@@ -35,6 +35,7 @@ import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
 import { formatDate } from "../../Data/Pagination";
 import { GetSpartPartNotSparePartItemId } from "../../redux/sparepartsSlice";
 import { VehiclesMaintenancesByCenter } from "../../redux/vehiclemainSlice";
+import Navbar from "../Navbar";
 
 const makeStyle = (status) => {
   switch (status) {
@@ -142,6 +143,8 @@ const SparePartItems = () => {
   }, [dispatch, centerId, token, reload]);
   return (
     <Box>
+            <Navbar />
+
       <h3>Danh Sách Các Phụ Tùng Từng Xe</h3>
 
       {role === "CENTER" && (

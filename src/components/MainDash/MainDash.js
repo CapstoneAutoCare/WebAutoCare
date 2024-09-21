@@ -15,6 +15,7 @@ import BookingApi from "../Axios/BookingApi";
 import MaintenanceInformationsApi from "../Axios/MaintenanceInformationsApi";
 import { CombinedBarChart, CombinedChartv1, MonthlyBarChart, RevenueBarChart } from "./MonthlyBarChart";
 import PieChartComponent from "./PieChartComponent";
+import Navbar from "../Navbar";
 
 export const MainDash = () => {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ export const MainDash = () => {
       console.error('Error fetching monthly data:', error);
     }
   };
- 
+
   useEffect(() => {
     const token = localStorage.getItem("localtoken");
     fetchMonthlyData({ centerId, token, year: selectedYear });
@@ -62,6 +63,8 @@ export const MainDash = () => {
 
   return (
     <Box >
+      <Navbar />
+
       <Typography variant="h4" gutterBottom>
         Doanh Số Theo Năm
       </Typography>
@@ -122,7 +125,7 @@ export const MainDash = () => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-         
+
         }}
       >
         <MonthlyBarChart

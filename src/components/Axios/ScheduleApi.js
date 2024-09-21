@@ -55,7 +55,7 @@ const ScheduleApi = {
       params: { planId, id, bookingId },
 
     };
-    
+
     const url = "/MaintenanceSchedule/GetListPlanIdAndPackageCenterIdBookingId";
 
     return await axiosApi.get(url, config);
@@ -70,6 +70,18 @@ const ScheduleApi = {
     const url = "/MaintenanceSchedule/Post";
 
     return await axiosApi.post(url, data, config);
+  },
+  async updateschedule({ token, id, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: { id },
+    };
+    const url = "/MaintenanceSchedule/Update";
+
+    return await axiosApi.put(url, data, config);
   },
 };
 export default ScheduleApi;

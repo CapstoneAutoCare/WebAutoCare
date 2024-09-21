@@ -25,6 +25,7 @@ import { ScheduleListGetall } from "../../redux/scheduleSlice";
 import { formatDate } from "../../Data/Pagination";
 import { BrandGetAllList } from "../../redux/brandSlice";
 import { AddBrandVehicleDialog } from "../../Data/DialogAdmin";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const BrandVehicle = () => {
@@ -70,6 +71,8 @@ const BrandVehicle = () => {
 
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Các Hãng Xe</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Hãng Mới Cho Xe

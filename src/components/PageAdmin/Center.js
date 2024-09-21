@@ -25,6 +25,7 @@ import { CenterGetAll, ChangeStatusPut } from "../../redux/centerSlice";
 import { formatDate } from "../../Data/Pagination";
 import { RegisterDialog } from "../../Data/DialogAdmin";
 import { DetailCenter } from "./DetailCenter";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const Center = () => {
@@ -105,6 +106,7 @@ const Center = () => {
 
   return (
     <Box>
+      <Navbar />
       <h3>Danh Sách Trung Tâm</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Tạo Trung Tâm

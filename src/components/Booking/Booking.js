@@ -25,6 +25,7 @@ import {
   PatchStatusBookingByCenter,
 } from "../../redux/bookingSlice";
 import * as signalR from "@microsoft/signalr";
+import Navbar from "../Navbar";
 
 export const makeStyle = (status) => {
   if (status === "INACTIVE") {
@@ -92,7 +93,7 @@ export const makeStyle = (status) => {
       background: "#990000",
       color: "white",
     };
-  } else if (status === "RECEIVED" ) {
+  } else if (status === "RECEIVED") {
     return {
       background: "#28a745",
       color: "white",
@@ -104,9 +105,9 @@ export const makeStyle = (status) => {
       color: "white",
     };
   }
-  
-  
-  
+
+
+
   else {
     return {
       background: "#0099CC",
@@ -207,6 +208,7 @@ const Booking = () => {
 
   return (
     <Box>
+      <Navbar />
       <h3>Danh Sách Lịch Đặt</h3>
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Select

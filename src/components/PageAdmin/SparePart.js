@@ -28,6 +28,7 @@ import {
   UpdateSparePartDialog,
 } from "../../Data/DialogAdmin";
 import { SparePartsAll } from "../../redux/sparepartsSlice";
+import Navbar from "../Navbar";
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const SparePart = () => {
@@ -126,7 +127,10 @@ const SparePart = () => {
   }, [dispatch, token, reload]);
   return (
     <Box>
+      <Navbar />
+
       <h3>Danh Sách Phụ Tùng Của Từng Xe</h3>
+
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Phụ Tùng Mới Của Xe Cho Hãng
       </Button>
@@ -234,22 +238,22 @@ const SparePart = () => {
                       >
                         {/* <TableCell>{item?.sparePartId}</TableCell> */}
                         <TableCell>
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt="Item Logo"
-                            className="item-logo"
-                            style={{ width: "80px", height: "80px" }}
-                          />
-                        ) : (
-                          <div
-                            className="no-image-placeholder"
-                            style={{ width: "80px", height: "80px" }}
-                          >
-                            No Image Available
-                          </div>
-                        )}
-                      </TableCell>
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt="Item Logo"
+                              className="item-logo"
+                              style={{ width: "80px", height: "80px" }}
+                            />
+                          ) : (
+                            <div
+                              className="no-image-placeholder"
+                              style={{ width: "80px", height: "80px" }}
+                            >
+                              No Image Available
+                            </div>
+                          )}
+                        </TableCell>
                         <TableCell>{item?.sparePartName}</TableCell>
                         <TableCell>
                           <Tooltip title={item?.sparePartType} arrow>

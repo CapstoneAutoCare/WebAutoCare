@@ -96,7 +96,7 @@ const Sidebar = () => {
     ADMIN: [
       <Center />,
       <Transactions />,
-      <Plan/>,
+      <Plan />,
       <ScheduleList />,
       <BrandVehicle />,
       <VehicleModel />,
@@ -166,7 +166,7 @@ const Sidebar = () => {
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
-        {/* 
+
         {userRole === "CENTER" && (
           <div className="logo">
             <img
@@ -208,7 +208,7 @@ const Sidebar = () => {
               }}
             />
           </div>
-        )} */}
+        )}
         <div className="menu">
           {getSidebarData().map((item, index) => (
             <div
