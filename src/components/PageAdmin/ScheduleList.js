@@ -126,8 +126,7 @@ const ScheduleList = () => {
 
   return (
     <Box>
-                  <Navbar />
-
+      <Navbar />
       <h3>Danh Sách Các Gói Odo Bảo Dưỡng</h3>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
         Thêm Gói Odo Bảo Dưỡng

@@ -3675,7 +3675,7 @@ export const UpdateScheduleDialog = ({
       }}
     >
       <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
-        Cập Nhật Phụ Tùng Trung Tâm
+        Cập Nhật Gói Dịch Vụ
       </DialogTitle>
 
       {item && (
@@ -3729,6 +3729,7 @@ export const UpdateScheduleDialog = ({
                 <Button
                   onClick={() => {
                     formik.resetForm();
+                    handleClose();
                   }}
                 >
                   Hủy
