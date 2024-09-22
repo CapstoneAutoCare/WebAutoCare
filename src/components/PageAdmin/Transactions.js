@@ -19,17 +19,15 @@ const Transactions = () => {
 
     const [open, setOpen] = useState(false);
 
-    const [page, setPage] = useState(1);
-    const itemsPerPage = 8;
-    const pageCount = Math.ceil(transactions.length / itemsPerPage);
+    const [pageReceived, setPageReceived] = useState(1);
+    const [pageTransferred, setPageTransferred] = useState(1);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+    const itemsPerPageReceived = 3;
+    const itemsPerPageTransferred = 3;
+
     const handleClickOpen = (item) => {
         setSelectedTransaction(item);
         setOpen(true);
-
     };
     const handleClose = () => {
         setOpen(false);
@@ -37,6 +35,26 @@ const Transactions = () => {
         setSelectedTransaction(null);
     };
 
+    
+    const handleChangePageReceived = (event, newPage) => {
+        setPageReceived(newPage);
+    };
+    const handleChangePageTransferred = (event, newPage) => {
+        setPageTransferred(newPage);
+    };
+
+   
+    var transactionReceived = transactions
+        .filter((item) => item?.status === "RECEIVED")
+        .slice((pageReceived - 1) * itemsPerPageReceived, pageReceived * itemsPerPageReceived);
+
+    
+    var transactionTransferred = transactions
+        .filter((item) => item?.status === "TRANSFERRED")
+        .slice((pageTransferred - 1) * itemsPerPageTransferred, pageTransferred * itemsPerPageTransferred);
+
+    const pageCountReceived = Math.ceil(transactions.filter(item => item?.status === "RECEIVED").length / itemsPerPageReceived);
+    const pageCountTransferred = Math.ceil(transactions.filter(item => item?.status === "TRANSFERRED").length / itemsPerPageTransferred);
 
     useEffect(() => {
         dispatch(TransactionListGetall(token))
@@ -45,123 +63,190 @@ const Transactions = () => {
     return (
         <Box>
             <Navbar />
-            <h3>Các Gói Giao Dịch</h3>
-            {/* <Button variant="contained" color="success" >
-                Chuyển Tiền
-            </Button> */}
-            {statustransactions === "loading" && (
-                <DialogContent dividers>
-                    <CircularProgress />
-                </DialogContent>
-            )}
-            {statustransactions === "succeeded" &&
-                transactions &&
-                transactions.length > 0 && (
-                    <Grid>
-                        <TableContainer
-                            component={Paper}
-                            style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
-                        >
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        {/* <TableCell>Ảnh Trung Tâm </TableCell> */}
-                                        <TableCell>Tên Trung Tâm</TableCell>
-                                        <TableCell>Tên Hãng</TableCell>
-                                        <TableCell>Tên Loại Xe</TableCell>
-                                        <TableCell>Biển Số Xe</TableCell>
-                                        <TableCell>Gói Bảo Dưỡng</TableCell>
-                                        <TableCell>Ngày Tạo</TableCell>
-                                        <TableCell>Khối Lượng Giao Dịch</TableCell>
-                                        <TableCell>Phương Thức Giao Dịch</TableCell>
-                                        <TableCell>Tiền Giao Dịch</TableCell>
-                                        <TableCell>Trạng Thái</TableCell>
-                                        <TableCell>Chi Tiết</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {transactions
-                                        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                                        .map((item) => (
-                                            <TableRow
-                                                key={item?.transactionsId}
-                                                sx={{
-                                                    "&:last-child td, &:last-child th": { border: 0 },
-                                                }}
-                                            >
+            <Button variant="contained" color="success" >
+                Thêm Loại Xe Mới
+            </Button>
+            <Box>
+                <h3>Các Gói Giao Dịch Nhận Khách Hàng </h3>
 
-                                                {/* <TableCell>{item.responseCenter.logo ? (
-                                                    <img
-                                                        src={item.responseCenter.logo}
-                                                        alt="Item Logo"
-                                                        style={{ width: "100px", height: "100px" }}
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        className="no-image-placeholder"
-                                                        style={{ width: "80px", height: "80px" }}
-                                                    >
-                                                        No Image Available
-                                                    </div>
-                                                )}</TableCell> */}
-
-                                                <TableCell>{item?.responseCenter.maintenanceCenterName}</TableCell>
-                                                <TableCell>{item?.responseVehicles.vehiclesBrandName}</TableCell>
-                                                <TableCell>{item?.responseVehicles.vehicleModelName}</TableCell>
-                                                <TableCell>{item?.responseVehicles.licensePlate}</TableCell>
-                                                <TableCell>{item?.responseMaintenancePlan.maintenancePlanName}</TableCell>
-                                                <TableCell>{formatDate(item?.transactionDate)}</TableCell>
-                                                <TableCell>{item?.volume}%</TableCell>
-                                                <TableCell>{item?.paymentMethod}</TableCell>
-                                                <TableCell style={{
-                                                    fontWeight: "bold",
-                                                }}>{formatNumberWithDots(item?.amount)} VND</TableCell>
-                                                <TableCell><span
-                                                    className="status"
-                                                    style={{ ...makeStyle(item.status) }}
-                                                >
-                                                    {item.status}
-                                                </span></TableCell>
-                                                {/* <TableCell>{formatDate(item?.transactionDate)}</TableCell> */}
-
-                                                {/* <TableCell>
-                          <span
-                            className="status"
-                            style={{ ...makeStyle(item.status) }}
-                          >
-                            {item.status}
-                          </span>
-                        </TableCell> */}
-                                                <TableCell className="Details">
-                                                    <Button
-                                                        onClick={() => handleClickOpen(item)}
-                                                        variant="contained"
-                                                        color="success"
-                                                    >
-                                                        Hiển Thị
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <Pagination
-                            count={pageCount}
-                            page={page}
-                            onChange={handleChangePage}
-                            variant="outlined"
-                            shape="rounded"
-                            style={{ marginTop: "20px", paddingBottom: "30px" }}
-                        />
-                    </Grid>
+                {statustransactions === "loading" && (
+                    <DialogContent dividers>
+                        <CircularProgress />
+                    </DialogContent>
                 )}
-            <TransactionDetailsDialog
-                open={open}
-                handleClose={handleClose}
-                transaction={selectedTransaction}
-            />
-        </Box >
+                {statustransactions === "succeeded" &&
+                    transactions &&
+                    transactions.length > 0 && (
+                        <Grid>
+                            <TableContainer
+                                component={Paper}
+                                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+                            >
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            {/* <TableCell>Ảnh Trung Tâm </TableCell> */}
+                                            <TableCell>Tên Trung Tâm</TableCell>
+                                            <TableCell>Tên Hãng</TableCell>
+                                            <TableCell>Tên Loại Xe</TableCell>
+                                            <TableCell>Biển Số Xe</TableCell>
+                                            <TableCell>Gói Bảo Dưỡng</TableCell>
+                                            <TableCell>Ngày Tạo</TableCell>
+                                            <TableCell>Khối Lượng Giao Dịch</TableCell>
+                                            <TableCell>Phương Thức Giao Dịch</TableCell>
+                                            <TableCell>Tiền Giao Dịch</TableCell>
+                                            <TableCell>Trạng Thái</TableCell>
+                                            <TableCell>Chi Tiết</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {transactionReceived
+                                            .map((item) => (
+                                                <TableRow
+                                                    key={item?.transactionsId}
+                                                    sx={{
+                                                        "&:last-child td, &:last-child th": { border: 0 },
+                                                    }}
+                                                >
+                                                    <TableCell>{item?.responseCenter.maintenanceCenterName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.vehiclesBrandName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.vehicleModelName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.licensePlate}</TableCell>
+                                                    <TableCell>{item?.responseMaintenancePlan.maintenancePlanName}</TableCell>
+                                                    <TableCell>{formatDate(item?.transactionDate)}</TableCell>
+                                                    <TableCell>{item?.volume}%</TableCell>
+                                                    <TableCell>{item?.paymentMethod}</TableCell>
+                                                    <TableCell style={{
+                                                        fontWeight: "bold",
+                                                    }}>{formatNumberWithDots(item?.amount)} VND</TableCell>
+                                                    <TableCell><span
+                                                        className="status"
+                                                        style={{ ...makeStyle(item.status) }}
+                                                    >
+                                                        {item.status}
+                                                    </span></TableCell>
+                                                    <TableCell className="Details">
+                                                        <Button
+                                                            onClick={() => handleClickOpen(item)}
+                                                            variant="contained"
+                                                            color="success"
+                                                        >
+                                                            Hiển Thị
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Pagination
+                                count={pageCountReceived}
+                                page={pageReceived}
+                                onChange={handleChangePageReceived}
+                                variant="outlined"
+                                shape="rounded"
+                                style={{ marginTop: "20px", paddingBottom: "30px" }}
+                            />
+                        </Grid>
+                    )}
+                <TransactionDetailsDialog
+                    open={open}
+                    handleClose={handleClose}
+                    transaction={selectedTransaction}
+                />
+            </Box >
+            <Box>
+                <h3>Các Gói Giao Dịch Chuyển Trung Tâm</h3>
+                {statustransactions === "loading" && (
+                    <DialogContent dividers>
+                        <CircularProgress />
+                    </DialogContent>
+                )}
+                {statustransactions === "succeeded" &&
+                    transactions &&
+                    transactions.length > 0 && (
+                        <Grid>
+                            <TableContainer
+                                component={Paper}
+                                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+                            >
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            {/* <TableCell>Ảnh Trung Tâm </TableCell> */}
+                                            <TableCell>Tên Trung Tâm</TableCell>
+                                            <TableCell>Tên Hãng</TableCell>
+                                            <TableCell>Tên Loại Xe</TableCell>
+                                            <TableCell>Biển Số Xe</TableCell>
+                                            <TableCell>Gói Bảo Dưỡng</TableCell>
+                                            <TableCell>Ngày Tạo</TableCell>
+                                            <TableCell>Khối Lượng Giao Dịch</TableCell>
+                                            <TableCell>Phương Thức Giao Dịch</TableCell>
+                                            <TableCell>Tiền Giao Dịch</TableCell>
+                                            <TableCell>Trạng Thái</TableCell>
+                                            <TableCell>Chi Tiết</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {transactionTransferred
+                                            .map((item) => (
+                                                <TableRow
+                                                    key={item?.transactionsId}
+                                                    sx={{
+                                                        "&:last-child td, &:last-child th": { border: 0 },
+                                                    }}
+                                                >
+
+                                                    <TableCell>{item?.responseCenter.maintenanceCenterName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.vehiclesBrandName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.vehicleModelName}</TableCell>
+                                                    <TableCell>{item?.responseVehicles.licensePlate}</TableCell>
+                                                    <TableCell>{item?.responseMaintenancePlan.maintenancePlanName}</TableCell>
+                                                    <TableCell>{formatDate(item?.transactionDate)}</TableCell>
+                                                    <TableCell>{item?.volume}%</TableCell>
+                                                    <TableCell>{item?.paymentMethod}</TableCell>
+                                                    <TableCell style={{
+                                                        fontWeight: "bold",
+                                                    }}>{formatNumberWithDots(item?.amount)} VND</TableCell>
+                                                    <TableCell><span
+                                                        className="status"
+                                                        style={{ ...makeStyle(item.status) }}
+                                                    >
+                                                        {item.status}
+                                                    </span></TableCell>
+                                                    <TableCell className="Details">
+                                                        <Button
+                                                            onClick={() => handleClickOpen(item)}
+                                                            variant="contained"
+                                                            color="success"
+                                                        >
+                                                            Hiển Thị
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Pagination
+                                count={pageCountTransferred}
+                                page={pageTransferred}
+                                onChange={handleChangePageTransferred}
+                                variant="outlined"
+                                shape="rounded"
+                                style={{ marginTop: "20px", paddingBottom: "30px" }}
+                            />
+                        </Grid>
+                    )}
+                <TransactionDetailsDialog
+                    open={open}
+                    handleClose={handleClose}
+                    transaction={selectedTransaction}
+                />
+            </Box >
+        </Box>
+
+
     );
 };
 
