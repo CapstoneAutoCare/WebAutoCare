@@ -29,7 +29,7 @@ const Navbar = () => {
   };
   const handleModalClick = () => {
     setModal(true);
-    setSelectedTab(0); 
+    setSelectedTab(0);
   };
 
 
@@ -148,7 +148,7 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, backgroundColor: '#ffffff', color: '#00000' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', color: '#00000' }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -338,65 +338,65 @@ const Navbar = () => {
 
 
       <Modal open={modal} onClose={handleClose}>
-            <Box
-                sx={{
-                    width: '80%',
-                    height: '80%',
-                    bgcolor: 'white',
-                    display: 'flex',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    boxShadow: 24,
-                    overflow: 'hidden' // Prevent outer overflow
-                }}
+        <Box
+          sx={{
+            width: '80%',
+            height: '80%',
+            bgcolor: 'white',
+            display: 'flex',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            boxShadow: 24,
+            overflow: 'hidden' // Prevent outer overflow
+          }}
+        >
+          <Box
+            sx={{
+              minWidth: '150px',
+              borderRight: '1px solid #ddd',
+              height: '100%', // Set height to 100%
+              overflowY: 'auto', // Enable vertical scrolling
+              paddingRight: '20px'
+            }}
+          >
+            <Tabs
+              value={selectedTab}
+              onChange={handleChangeTab}
+              orientation="vertical"
             >
-                <Box
-                    sx={{
-                        minWidth: '150px',
-                        borderRight: '1px solid #ddd',
-                        height: '100%', // Set height to 100%
-                        overflowY: 'auto', // Enable vertical scrolling
-                        paddingRight: '20px'
-                    }}
-                >
-                    <Tabs
-                        value={selectedTab}
-                        onChange={handleChangeTab}
-                        orientation="vertical"
-                    >
-                        <Tab label="Thống Kê" />
-                        <Tab label="Thông tin cá nhân" />
-                        <Tab label="Giao dịch" />
-                        <Tab label="Xe Mua Gói" />
-                    </Tabs>
-                </Box>
+              <Tab label="Thống Kê" />
+              <Tab label="Thông tin cá nhân" />
+              <Tab label="Giao dịch" />
+              <Tab label="Xe Mua Gói" />
+            </Tabs>
+          </Box>
 
-                <Box sx={{ flexGrow: 1, paddingLeft: '20px', overflowY: 'auto' }}>
-                    {selectedTab === 0 && (
-                        <Box>
-                            <MainDash />
-                        </Box>
-                    )}
-                    {selectedTab === 1 && (
-                        <Box>
-                            {/* Content for personal information */}
-                        </Box>
-                    )}
-                    {selectedTab === 2 && (
-                        <Box>
-                            <TransactionsCenter />
-                        </Box>
-                    )}
-                    {selectedTab === 3 && (
-                        <Box>
-                            <VehicleList />
-                        </Box>
-                    )}
-                </Box>
-            </Box>
-        </Modal>
+          <Box sx={{ flexGrow: 1, paddingLeft: '20px', overflowY: 'auto' }}>
+            {selectedTab === 0 && (
+              <Box>
+                <MainDash />
+              </Box>
+            )}
+            {selectedTab === 1 && (
+              <Box>
+                {/* Content for personal information */}
+              </Box>
+            )}
+            {selectedTab === 2 && (
+              <Box>
+                <TransactionsCenter />
+              </Box>
+            )}
+            {selectedTab === 3 && (
+              <Box>
+                <VehicleList />
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Modal>
 
     </div>
   );
