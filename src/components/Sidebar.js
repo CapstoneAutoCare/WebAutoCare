@@ -158,12 +158,20 @@ const Sidebar = () => {
         className="bars"
         style={expanded ? { left: "60%" } : { left: "5%" }}
         onClick={() => setExpanded(!expanded)}
+
       >
         <UilBars />
       </div>
       <motion.div
         className="sidebar"
         variants={sidebarVariants}
+        style={{
+          width: "250px", // Fixed width
+          height: "100vh", // Full viewport height
+          position: "fixed", // Fixed position
+          overflowY: "auto", // Enable vertical scrolling
+          zIndex: 1000 // Ensure it's on top of other content
+        }}
         animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
 
@@ -226,11 +234,23 @@ const Sidebar = () => {
           </div>
         </div>
       </motion.div>
-      {sidebarComponents[userRole] ? (
-        sidebarComponents[userRole][selected]
-      ) : (
-        <MainDash />
-      )}
+
+
+      <div
+        className="main-content"
+        style={{
+          marginLeft: "250px", // Leave space for the fixed sidebar
+          padding: "20px", // Add some padding
+          overflowY: "auto", // Allow vertical scrolling for the main content
+          height: "100vh", // Full viewport height
+        }}
+      >
+        {sidebarComponents[userRole] ? (
+          sidebarComponents[userRole][selected]
+        ) : (
+          <MainDash />
+        )}
+      </div>
     </>
   );
 };

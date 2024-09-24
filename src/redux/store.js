@@ -23,6 +23,7 @@ import vehiclemainsReducer from "./vehiclemainSlice";
 import planReducer from "./planSlice";
 import mainvechieldetailsReducer from "./maintenanceVehiclesDetailsSlice";
 import transactionReducer from "./transactionSlice";
+import vehicleReducer from "./vehicleSlice";
 
 
 
@@ -50,9 +51,10 @@ const store = configureStore({
     vehiclemodels: vehiclemodelsReducer,
     odohistories: odohistoryReducer,
     vehiclemains: vehiclemainsReducer,
-    plans:planReducer,
+    plans: planReducer,
     maintenanceVehiclesDetails: mainvechieldetailsReducer,
     transactions: transactionReducer,
+    vehicles: vehicleReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

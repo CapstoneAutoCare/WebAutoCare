@@ -8,18 +8,7 @@ const initialState = {
   vehiclemodel: null,
 };
 
-// export const ServicesAll = createAsyncThunk(
-//   "services/GetAll",
-//   async ({ token }, { rejectWithValue }) => {
-//     try {
-//       const list = await ServicesApi.getAll({ token });
-//       console.log("services/GetAll", list.data);
-//       return list.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response.data.Exception);
-//     }
-//   }
-// );
+
 export const VehicleModelsGetAllList = createAsyncThunk(
   "vehiclemodels/VehicleModelsGetAllList",
   async (token, { rejectWithValue }) => {

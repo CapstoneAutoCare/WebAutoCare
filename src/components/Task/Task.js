@@ -43,7 +43,7 @@ const Task = () => {
   const { tasks = [], statustasks } = useSelector((state) => state.tasks);
   const [reloadTaskDialog, setReloadTaskDialog] = useState(false);
   const [page, setPage] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 6;
 
   const pageCount = Math.ceil(tasks.length / itemsPerPage);
 
@@ -95,8 +95,7 @@ const Task = () => {
 
   return (
     <Box>
-            <Navbar />
-
+      <Navbar />
       <h3>Danh Sách Bàn Giao Xe Cho Nhân Viên Kĩ Thuật</h3>
       <Button variant="contained" color="success" onClick={handleClickOpenAdd}>
         Bàn giao xe

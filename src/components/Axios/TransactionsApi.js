@@ -44,6 +44,17 @@ const TransactionsApi = {
 
     return await axiosApi.get(url, config);
   },
+  async getListByCenteId({ token, id }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = "/Transactions/GetListByCenterId?id=" + id;
+
+    return await axiosApi.get(url, config);
+  },
   async createpost({ token, data }) {
     const config = {
       headers: {

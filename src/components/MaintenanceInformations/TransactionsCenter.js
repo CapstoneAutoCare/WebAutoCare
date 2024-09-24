@@ -1,17 +1,18 @@
+import { Box, Button, CircularProgress, DialogContent, Grid, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { TransactionDetailsDialog } from "../../Data/DialogAdmin";
+import { TransactionGetListByCenteId, TransactionListGetall } from "../../redux/transactionSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, CircularProgress, DialogContent, Grid, MenuItem, Pagination, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import { formatDate } from "../../Data/Pagination";
-import { makeStyle, truncateNote } from "../Booking/Booking";
-import { formatNumberWithDots } from "../MaintenanceInformations/OutlinedCard";
-import { TransactionListGetall } from "../../redux/transactionSlice";
-import { TransactionDetailsDialog } from "../../Data/DialogAdmin";
-import Navbar from "../Navbar";
+import { formatNumberWithDots } from "./OutlinedCard";
+import { makeStyle } from "../Booking/Booking";
 
-const Transactions = () => {
+const TransactionsCenter = () => {
     const dispatch = useDispatch();
     const [reload, setReload] = useState(false);
     const token = localStorage.getItem("localtoken");
+    const centerId = localStorage.getItem("CenterId");
+
     const { transactions, statustransactions, errortransactions } = useSelector(
         (state) => state.transactions
     );
@@ -35,7 +36,7 @@ const Transactions = () => {
         setSelectedTransaction(null);
     };
 
-    
+
     const handleChangePageReceived = (event, newPage) => {
         setPageReceived(newPage);
     };
@@ -43,12 +44,12 @@ const Transactions = () => {
         setPageTransferred(newPage);
     };
 
-   
+
     var transactionReceived = transactions
         .filter((item) => item?.status === "RECEIVED")
         .slice((pageReceived - 1) * itemsPerPageReceived, pageReceived * itemsPerPageReceived);
 
-    
+
     var transactionTransferred = transactions
         .filter((item) => item?.status === "TRANSFERRED")
         .slice((pageTransferred - 1) * itemsPerPageTransferred, pageTransferred * itemsPerPageTransferred);
@@ -57,15 +58,11 @@ const Transactions = () => {
     const pageCountTransferred = Math.ceil(transactions.filter(item => item?.status === "TRANSFERRED").length / itemsPerPageTransferred);
 
     useEffect(() => {
-        dispatch(TransactionListGetall(token))
-    }, [dispatch, reload]);
+        dispatch(TransactionGetListByCenteId({ token, id: centerId }))
+    }, [dispatch, reload,centerId,token]);
 
     return (
         <Box>
-            <Navbar />
-            {/* <Button variant="contained" color="success" >
-                Thêm Loại Xe Mới
-            </Button> */}
             <Box>
                 <h3>Các Gói Giao Dịch Nhận Khách Hàng </h3>
 
@@ -250,4 +247,4 @@ const Transactions = () => {
     );
 };
 
-export default Transactions;
+export default TransactionsCenter;

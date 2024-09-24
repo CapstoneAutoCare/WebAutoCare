@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { IconButton, Badge, Modal, Box, Typography, Avatar, Button, List, ListItem, ListItemText, TextField, Select, MenuItem } from "@mui/material";
+import { IconButton, Badge, Modal, Box, Typography, Avatar, Button, List, ListItem, ListItemText, TextField, Select, MenuItem, Tabs, Tab } from "@mui/material";
 import { FaBell, FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import AccountApi from "./Axios/AccountApi";
 import axios from "axios";
 import axiosApi from "./Axios/AxiosApi";
+import Transactions from "./PageAdmin/Transactions";
+import TransactionsCenter from "./MaintenanceInformations/TransactionsCenter";
+import { MainDash } from "./MainDash/MainDash";
+import VehicleList from "./Vehicle/Vehicle";
 
 const Navbar = () => {
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
@@ -14,6 +18,20 @@ const Navbar = () => {
   const { profile } = useSelector((state) => state.account);
   const tokenlocal = localStorage.getItem("localtoken");
   const [reload, setReload] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [modal, setModal] = useState(false)
+
+  const handleClose = () => setModal(false);
+
+  // Chuyển đổi tab
+  const handleChangeTab = (event, newValue) => {
+    setSelectedTab(newValue);
+  };
+  const handleModalClick = () => {
+    setModal(true);
+    setSelectedTab(0); 
+  };
+
 
   const fetchNotifications = async () => {
     try {
@@ -200,6 +218,11 @@ const Navbar = () => {
               <FaUser size={24} />
             </IconButton>
           )}
+          {profile?.Role === "CENTER" && (
+            <IconButton color="inherit" onClick={handleModalClick}>
+              <FaUser size={24} />
+            </IconButton>
+          )}
 
         </Box>
       </Box>
@@ -312,6 +335,69 @@ const Navbar = () => {
           </Box>
         </Box>
       </Modal>
+
+
+      <Modal open={modal} onClose={handleClose}>
+            <Box
+                sx={{
+                    width: '80%',
+                    height: '80%',
+                    bgcolor: 'white',
+                    display: 'flex',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    boxShadow: 24,
+                    overflow: 'hidden' // Prevent outer overflow
+                }}
+            >
+                <Box
+                    sx={{
+                        minWidth: '150px',
+                        borderRight: '1px solid #ddd',
+                        height: '100%', // Set height to 100%
+                        overflowY: 'auto', // Enable vertical scrolling
+                        paddingRight: '20px'
+                    }}
+                >
+                    <Tabs
+                        value={selectedTab}
+                        onChange={handleChangeTab}
+                        orientation="vertical"
+                    >
+                        <Tab label="Thống Kê" />
+                        <Tab label="Thông tin cá nhân" />
+                        <Tab label="Giao dịch" />
+                        <Tab label="Xe Mua Gói" />
+                    </Tabs>
+                </Box>
+
+                <Box sx={{ flexGrow: 1, paddingLeft: '20px', overflowY: 'auto' }}>
+                    {selectedTab === 0 && (
+                        <Box>
+                            <MainDash />
+                        </Box>
+                    )}
+                    {selectedTab === 1 && (
+                        <Box>
+                            {/* Content for personal information */}
+                        </Box>
+                    )}
+                    {selectedTab === 2 && (
+                        <Box>
+                            <TransactionsCenter />
+                        </Box>
+                    )}
+                    {selectedTab === 3 && (
+                        <Box>
+                            <VehicleList />
+                        </Box>
+                    )}
+                </Box>
+            </Box>
+        </Modal>
+
     </div>
   );
 };

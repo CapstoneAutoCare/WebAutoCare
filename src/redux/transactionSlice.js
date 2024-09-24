@@ -47,6 +47,19 @@ export const TransactionGetListByCenterAndStatusTransferred = createAsyncThunk(
     }
 );
 
+export const TransactionGetListByCenteId = createAsyncThunk(
+    "transactions/TransactionGetListByCenteId",
+    async ({ token, id }, { rejectWithValue }) => {
+        try {
+            const list = await TransactionsApi.getListByCenteId({ token, id });
+            console.log("transactions/TransactionGetListByCenteId", list.data);
+            return list.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data.Exception);
+        }
+    }
+);
+
 // export const CreatePlanPost = createAsyncThunk(
 //   "transactions/CreatePlanPost",
 //   async ({ token, data }, { rejectWithValue }) => {
@@ -109,6 +122,21 @@ const transactionSlice = createSlice({
                 state.transactions = action.payload;
             })
             .addCase(TransactionGetListByCenterAndStatusTransferred.rejected, (state, action) => {
+                state.statustransactions = "failed";
+                state.errortransactions = action.payload;
+            })
+
+            .addCase(TransactionGetListByCenteId.pending, (state) => {
+                state.statustransactions = "loading";
+                state.transaction = null;
+                state.errortransactions = null;
+                state.transactions = [];
+            })
+            .addCase(TransactionGetListByCenteId.fulfilled, (state, action) => {
+                state.statustransactions = "succeeded";
+                state.transactions = action.payload;
+            })
+            .addCase(TransactionGetListByCenteId.rejected, (state, action) => {
                 state.statustransactions = "failed";
                 state.errortransactions = action.payload;
             })

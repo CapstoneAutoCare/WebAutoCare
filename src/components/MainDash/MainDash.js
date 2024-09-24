@@ -64,10 +64,8 @@ export const MainDash = () => {
   return (
     <Box >
       <Navbar />
-
-      <Typography variant="h4" gutterBottom>
-        Doanh Số Theo Năm
-      </Typography>
+      <h3>        Doanh Số Theo Năm
+      </h3>
       <FormControl variant="outlined" fullWidth sx={{ mb: 2 }}>
         <InputLabel>Năm</InputLabel>
         <Select
@@ -101,7 +99,7 @@ export const MainDash = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Tổng Đơn Đặt Lịch"
+            title="Tổng Doanh Thu Gói KH Mua"
             price={maininforss.price}
             count={maininforss.count}
             isLoss
@@ -111,7 +109,7 @@ export const MainDash = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
-            title="Tổng Doanh Thu"
+            title="Tổng Doanh Thu SP Thêm"
             price={payments.price}
             count={payments.count}
             isLoss
