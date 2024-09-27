@@ -88,7 +88,7 @@ const VehicleCard = ({ vehicle }) => {
                         plans.length > 0 && (
                             <Box>
                                 <Typography variant="h5" color="primary">
-                                    Maintenance Plans
+                                    Danh Sách Gói Bảo Dưỡng
                                 </Typography>
                                 {/* <Grid container spacing={2} sx={{ pr: 2, paddingTop: 5 }}> */}
                                 {plans.length > 0 ? (

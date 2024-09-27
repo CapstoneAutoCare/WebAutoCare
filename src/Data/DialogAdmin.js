@@ -452,6 +452,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
       maintananceScheduleName: Yup.number().required(
         "Yêu cầu nhập số Odo"
       ).min(1000, "Ít nhất là 1000"),
+      
       description: Yup.string().required("Yêu cầu mô tả"),
     }),
 
