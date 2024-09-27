@@ -1983,40 +1983,44 @@ export const AddMaintenanceDialog = ({ open, handleClose, token, centerId }) => 
                   ))}
                 </Select>
               </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Gói</InputLabel>
-                <Select
-                  label="Gói"
-                  name="informationMaintenanceId"
-                  value={formik.values.informationMaintenanceId}
-                  onChange={(event) => {
-                    formik.handleChange(event);
-                    // const selectedtechnicianId = technicians.find(
-                    //   (part) => part.technicianId === event.target.value
-                    // );
-                    // formik.setFieldValue(
-                    //   "maintenanceServiceName",
-                    //   selectedtechnicianId?.serviceCareName || ""
-                    // );
-                    console.log("informationMaintenanceId: ", event.target.value);
-                  }}
-                  error={
-                    formik.touched.maintenanceVehiclesDetailId &&
-                    Boolean(formik.errors.maintenanceVehiclesDetailId)
-                  }
-                >
-                  {maintenanceInformations
-                    // .filter((mvd) => mvd.responseMaintenanceSchedules.maintenancePlanId === selectedPlanId)
-                    .map((option) => (
-                      <MenuItem
-                        key={option.informationMaintenanceId}
-                        value={option.informationMaintenanceId}
-                      >
-                        Tên: {option.informationMaintenanceName} Km
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
+              {bookings && selectedPlanId  && (
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Gói</InputLabel>
+                  <Select
+                    label="Gói"
+                    name="informationMaintenanceId"
+                    value={formik.values.informationMaintenanceId}
+                    onChange={(event) => {
+                      formik.handleChange(event);
+                      // const selectedtechnicianId = technicians.find(
+                      //   (part) => part.technicianId === event.target.value
+                      // );
+                      // formik.setFieldValue(
+                      //   "maintenanceServiceName",
+                      //   selectedtechnicianId?.serviceCareName || ""
+                      // );
+                      console.log("informationMaintenanceId: ", event.target.value);
+                    }}
+                    
+                    error={
+                      formik.touched.maintenanceVehiclesDetailId &&
+                      Boolean(formik.errors.maintenanceVehiclesDetailId)
+                    }
+                  >
+                    {maintenanceInformations
+                      // .filter((mvd) => mvd.responseMaintenanceSchedules.maintenancePlanId === selectedPlanId)
+                      .map((option) => (
+                        <MenuItem
+                          key={option.informationMaintenanceId}
+                          value={option.informationMaintenanceId}
+                        >
+                          Tên: {option.informationMaintenanceName} Km
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              )}
+
               <TextField
                 autoFocus
                 margin="dense"

@@ -22,8 +22,8 @@ const Transactions = () => {
     const [pageReceived, setPageReceived] = useState(1);
     const [pageTransferred, setPageTransferred] = useState(1);
 
-    const itemsPerPageReceived = 3;
-    const itemsPerPageTransferred = 3;
+    const itemsPerPageReceived = 4;
+    const itemsPerPageTransferred = 4;
 
     const handleClickOpen = (item) => {
         setSelectedTransaction(item);

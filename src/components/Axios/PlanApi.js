@@ -33,6 +33,18 @@ const PlanApi = {
 
     return await axiosApi.get(url, config);
   },
+  async getListByCenterAndVehicle({ token, id,vehicleId }) {
+    const config = {
+      headers: {
+        accept: "text/plain",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {id,vehicleId},
+    };
+    const url = "/MaintenancePlans/GetListFilterCenterAndVehicle"
+
+    return await axiosApi.get(url, config);
+  },
   async createpost({ token, data }) {
     const config = {
       headers: {

@@ -21,6 +21,19 @@ export const PlanListGetall = createAsyncThunk(
     }
   }
 );
+
+export const PlanListByCenterAndVehicle = createAsyncThunk(
+  "plans/PlanListByCenterAndVehicle",
+  async ({token,id,vehicleId}, { rejectWithValue }) => {
+    try {
+      const list = await PlanApi.getListByCenterAndVehicle({token,id,vehicleId});
+      console.log("plans/PlanListByCenterAndVehicle", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 export const CreatePlanPost = createAsyncThunk(
   "plans/CreatePlanPost",
   async ({ token, data }, { rejectWithValue }) => {
@@ -69,7 +82,23 @@ const planSlice = createSlice({
       .addCase(CreatePlanPost.rejected, (state, action) => {
         state.statusplans = "failed";
         state.errorplans = action.payload;
-      });
+      })
+      .addCase(PlanListByCenterAndVehicle.pending, (state) => {
+        state.statusplans = "loading";
+        state.plan = null;
+        state.errorplans = null;
+        state.plans = [];
+      })
+      .addCase(PlanListByCenterAndVehicle.fulfilled, (state, action) => {
+        state.statusplans = "succeeded";
+        state.plans = action.payload;
+      })
+      .addCase(PlanListByCenterAndVehicle.rejected, (state, action) => {
+        state.statusplans = "failed";
+        state.errorplans = action.payload;
+      })
+      
+      ;
   },
 });
 export const {} = planSlice.actions;

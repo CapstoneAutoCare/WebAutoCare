@@ -83,7 +83,7 @@ const MaintenanceInformationsApi = {
       params: { planId,vehicleId,centerId },
     };
     const url =
-      "/MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusWatingbycar";
+      "/MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusCREATEDBYClIENT";
 
     return await axiosApi.get(url, config);
   },
