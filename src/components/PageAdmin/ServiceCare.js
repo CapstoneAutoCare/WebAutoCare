@@ -56,7 +56,6 @@ const ServiceCare = () => {
     (state) => state.plans
   );
   const itemsPerPage = 5;
-  const pageCount = Math.ceil(services.length / itemsPerPage);
 
   const [filterStatus, setFilterStatus] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
@@ -153,6 +152,8 @@ const ServiceCare = () => {
       (!filterName || serviceName.includes(filterName.toLowerCase()))
     );
   });
+  const pageCount = Math.ceil(filteredservicelists.length / itemsPerPage);
+
   useEffect(() => {
     dispatch(ServicesListGetAll(token));
   }, [dispatch, token, reload]);
