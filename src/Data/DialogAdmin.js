@@ -1049,9 +1049,9 @@ export const AddSparePartDialog = ({ open, handleClose, token, setReload }) => {
                 handleClose();
               }}
             >
-              Cancel
+              Hủy
             </Button>
-            <Button type="submit">Add</Button>
+            <Button type="submit">Thêm</Button>
           </DialogActions>
         </form>
       </DialogContent>

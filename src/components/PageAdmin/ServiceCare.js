@@ -110,34 +110,34 @@ const ServiceCare = () => {
   };
 
   const filteredVehicleModels = vehiclemodels.filter(
-    (model) => model.vehiclesBrandId === filterBrand
+    (model) => model?.vehiclesBrandId === filterBrand
   );
 
 
   const filteredSchedule = schedules.filter(
-    (model) => model.maintenancePlanId === filterPlans
+    (model) => model?.maintenancePlanId === filterPlans
   );
   const filteredPlans = plans.filter(
-    (model) => model.reponseVehicleModels.vehicleModelId === filterVehicleModel
+    (model) => model?.reponseVehicleModels?.vehicleModelId === filterVehicleModel
 
   );
 
 
   const filteredservicelists = services.filter((service) => {
-    const serviceName = service.serviceCareName
-      ? service.serviceCareName.toLowerCase()
+    const serviceName = service?.serviceCareName
+      ? service?.serviceCareName.toLowerCase()
       : "";
     const statusMatch = filterStatus ? service.status === filterStatus : true;
 
     const fitBrand = filterBrand
-      ? service.reponseVehicleModel.vehiclesBrandId === filterBrand
+      ? service?.reponseVehicleModel?.vehiclesBrandId === filterBrand
       : true;
     const fitVehicleModels = filterVehicleModel
-      ? service.reponseVehicleModel.vehicleModelId === filterVehicleModel
+      ? service?.reponseVehicleModel?.vehicleModelId === filterVehicleModel
       : true;
 
     const fitPlan = filterPlans
-      ? service.maintenancePlanId === filterPlans
+      ? service?.maintenancePlanId === filterPlans
       : true;
 
     const fitschedule = filterSchedule
@@ -152,7 +152,7 @@ const ServiceCare = () => {
       (!filterName || serviceName.includes(filterName.toLowerCase()))
     );
   });
-  const pageCount = Math.ceil(filteredservicelists.length / itemsPerPage);
+  const pageCount = Math.ceil(filteredservicelists?.length / itemsPerPage);
 
   useEffect(() => {
     dispatch(ServicesListGetAll(token));

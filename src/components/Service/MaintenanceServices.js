@@ -132,35 +132,35 @@ const MaintenanceServices = () => {
   const [filterName, setFilterName] = useState("");
   const [filterBoolean, setFilterBoolean] = useState("");
 
-  const filteredVehicleModels = vehiclemodels.filter(
-    (model) => model.vehiclesBrandId === filterBrand
+  const filteredVehicleModels = vehiclemodels?.filter(
+    (model) => model?.vehiclesBrandId === filterBrand
   );
 
   const filteredPlans = plans.filter(
-    (model) => model.reponseVehicleModels.vehicleModelId === filterVehicleModel
+    (model) => model?.reponseVehicleModels?.vehicleModelId === filterVehicleModel
   );
   const filteredSchedule = schedules.filter(
-    (model) => model.maintenancePlanId === filterPlans
+    (model) => model?.maintenancePlanId === filterPlans
   );
 
 
-  const filteredservicelists = maintenanceservices.filter((service) => {
-    const serviceName = service.maintenanceServiceName
-      ? service.maintenanceServiceName.toLowerCase()
+  const filteredservicelists = maintenanceservices?.filter((service) => {
+    const serviceName = service?.maintenanceServiceName
+      ? service?.maintenanceServiceName?.toLowerCase()
       : "";
     const statusMatch = filterStatus ? service.status === filterStatus : true;
     const fitBrand = filterBrand
-      ? service.vehiclesBrandId === filterBrand
+      ? service?.vehiclesBrandId === filterBrand
       : true;
     const fitVehicleModels = filterVehicleModel
-      ? service.vehicleModelId === filterVehicleModel
+      ? service?.vehicleModelId === filterVehicleModel
       : true;
     const fitPlan = filterPlans
-      ? service.maintenancePlanId === filterPlans
+      ? service?.maintenancePlanId === filterPlans
       : true;
 
     const fitschedule = filterSchedule
-      ? service.maintananceScheduleId === filterSchedule
+      ? service?.maintananceScheduleId === filterSchedule
       : true;
 
     const booleanCondition =
@@ -174,10 +174,10 @@ const MaintenanceServices = () => {
       fitBrand &&
       fitVehicleModels &&
       fitschedule &&
-      (!filterName || serviceName.includes(filterName.toLowerCase()))
+      (!filterName || serviceName.includes(filterName?.toLowerCase()))
     );
   });
-  const pageCount = Math.ceil(filteredservicelists.length / itemsPerPage);
+  const pageCount = Math.ceil(filteredservicelists?.length / itemsPerPage);
 
   const role = localStorage.getItem("ROLE");
   useEffect(() => {

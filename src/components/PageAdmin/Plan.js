@@ -181,7 +181,7 @@ const Plan = () => {
                                         <TableCell>Loại Xe</TableCell>
                                         <TableCell>Ngày Tạo</TableCell>
                                         <TableCell>Trạng Thái</TableCell>
-                                        <TableCell>Chi Tiết</TableCell>
+                                        {/* <TableCell>Chi Tiết</TableCell> */}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>

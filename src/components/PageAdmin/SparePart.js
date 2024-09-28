@@ -61,20 +61,20 @@ const SparePart = () => {
   const [filterVehicleModel, setFilterVehicleModel] = useState("");
   const [filterName, setFilterName] = useState("");
 
-  const filteredVehicleModels = vehiclemodels.filter(
-    (model) => model.vehiclesBrandId === filterBrand
+  const filteredVehicleModels = vehiclemodels?.filter(
+    (model) => model?.vehiclesBrandId === filterBrand
   );
 
-  const filteredsparepartslists = spareparts.filter((service) => {
+  const filteredsparepartslists = spareparts?.filter((service) => {
     const statusMatch = filterStatus ? service.status === filterStatus : true;
     const fitBrand = filterBrand
-      ? service.reponseVehicleModel.vehiclesBrandId === filterBrand
+      ? service?.reponseVehicleModel?.vehiclesBrandId === filterBrand
       : true;
     const fitVehicleModels = filterVehicleModel
-      ? service.reponseVehicleModel.vehicleModelId === filterVehicleModel
+      ? service?.reponseVehicleModel?.vehicleModelId === filterVehicleModel
       : true;
     const searchName = filterName
-      ? service?.sparePartName.toLowerCase().includes(filterName.toLowerCase())
+      ? service?.sparePartName?.toLowerCase().includes(filterName?.toLowerCase())
       : true;
     return statusMatch && fitBrand && fitVehicleModels && searchName;
   });
@@ -172,8 +172,8 @@ const SparePart = () => {
             <em>Hãng Xe</em>
           </MenuItem>
           {brands.map((brand) => (
-            <MenuItem key={brand.vehiclesBrandId} value={brand.vehiclesBrandId}>
-              {brand.vehiclesBrandName}
+            <MenuItem key={brand?.vehiclesBrandId} value={brand?.vehiclesBrandId}>
+              {brand?.vehiclesBrandName}
             </MenuItem>
           ))}
         </Select>
@@ -189,8 +189,8 @@ const SparePart = () => {
             <em>Loại Xe</em>
           </MenuItem>
           {filteredVehicleModels.map((model) => (
-            <MenuItem key={model.vehicleModelId} value={model.vehicleModelId}>
-              {model.vehicleModelName}
+            <MenuItem key={model?.vehicleModelId} value={model?.vehicleModelId}>
+              {model?.vehicleModelName}
             </MenuItem>
           ))}
         </Select>
@@ -238,9 +238,9 @@ const SparePart = () => {
                       >
                         {/* <TableCell>{item?.sparePartId}</TableCell> */}
                         <TableCell>
-                          {item.image ? (
+                          {item?.image ? (
                             <img
-                              src={item.image}
+                              src={item?.image}
                               alt="Item Logo"
                               className="item-logo"
                               style={{ width: "80px", height: "80px" }}
@@ -261,10 +261,10 @@ const SparePart = () => {
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          {item?.reponseVehicleModel.vehiclesBrandName}
+                          {item?.reponseVehicleModel?.vehiclesBrandName}
                         </TableCell>
                         <TableCell>
-                          {item?.reponseVehicleModel.vehicleModelName}
+                          {item?.reponseVehicleModel?.vehicleModelName}
                         </TableCell>
                         <TableCell>{formatDate(item?.createdDate)}</TableCell>
                         <TableCell>
@@ -279,7 +279,7 @@ const SparePart = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {formatNumberWithDots(item.originalPrice)} VND
+                          {formatNumberWithDots(item?.originalPrice)} VND
                         </TableCell>
                         <TableCell>
                           {/* <Select
