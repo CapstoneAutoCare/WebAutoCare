@@ -59,12 +59,12 @@ const TransactionsCenter = () => {
 
     useEffect(() => {
         dispatch(TransactionGetListByCenteId({ token, id: centerId }))
-    }, [dispatch, reload,centerId,token]);
+    }, [dispatch, reload, centerId, token]);
 
     return (
         <Box>
             <Box>
-                <h3>Các Gói Giao Dịch Nhận Khách Hàng </h3>
+                <h3>Các Gói Giao Dịch Admin Nhận Từ Khách Hàng </h3>
 
                 {statustransactions === "loading" && (
                     <DialogContent dividers>
@@ -116,6 +116,7 @@ const TransactionsCenter = () => {
                                                     <TableCell style={{
                                                         fontWeight: "bold",
                                                     }}>{formatNumberWithDots(item?.amount)} VND</TableCell>
+
                                                     <TableCell><span
                                                         className="status"
                                                         style={{ ...makeStyle(item.status) }}
@@ -153,7 +154,7 @@ const TransactionsCenter = () => {
                 />
             </Box >
             <Box>
-                <h3>Các Gói Giao Dịch Chuyển Trung Tâm</h3>
+                <h3>Các Gói Giao Dịch Admin Chuyển Trung Tâm</h3>
                 {statustransactions === "loading" && (
                     <DialogContent dividers>
                         <CircularProgress />
@@ -205,12 +206,13 @@ const TransactionsCenter = () => {
                                                     <TableCell style={{
                                                         fontWeight: "bold",
                                                     }}>{formatNumberWithDots(item?.amount)} VND</TableCell>
+
                                                     <TableCell><span
                                                         className="status"
                                                         style={{ ...makeStyle(item.status) }}
-                                                    >
-                                                        {item.status}
+                                                    >{item.status}
                                                     </span></TableCell>
+
                                                     <TableCell className="Details">
                                                         <Button
                                                             onClick={() => handleClickOpen(item)}

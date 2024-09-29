@@ -22,6 +22,7 @@ import { formatDate } from "../../Data/Pagination";
 import {
   AddBrandVehicleDialog,
   AddVehicleModelDialog,
+  UpdateModelDialog,
 } from "../../Data/DialogAdmin";
 import { VehicleModelsGetAllList } from "../../redux/vehiclemodelsSlice";
 import Navbar from "../Navbar";
@@ -34,7 +35,8 @@ const VehicleModel = () => {
   const [reload, setReload] = useState(false);
   const token = localStorage.getItem("localtoken");
   const [open, setOpen] = useState(false);
-
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [page, setPage] = useState(1);
   const itemsPerPage = 7;
   const pageCount = Math.ceil(vehiclemodels.length / itemsPerPage);
@@ -48,6 +50,17 @@ const VehicleModel = () => {
   const handleClose = () => {
     setOpen(false);
     setReload(!reload);
+  };
+  const handleEditClose = () => {
+    setReload(!reload);
+    setSelectedItem(null);
+    setOpenDialog(false);
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    console.log(item);
+    setOpenDialog(true);
   };
   const handleStatusChange = async (maintenanceCenterId, newStatus) => {
     try {
@@ -102,7 +115,7 @@ const VehicleModel = () => {
                     <TableCell>Tên Loại Xe</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     {/* <TableCell>Trạng Thái</TableCell> */}
-                    {/* <TableCell>Chi Tiết</TableCell> */}
+                    <TableCell>Chỉnh Sửa</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -116,8 +129,8 @@ const VehicleModel = () => {
                         }}
                       >
                         {item.image ? (
-                          <img
-                            src={item.image}
+                          <image
+                            src={item?.image}
                             alt="Item Logo"
                             // className="item-logo"
                             style={{ width: "100px", height: "100px" }}
@@ -143,15 +156,15 @@ const VehicleModel = () => {
                             {item.status}
                           </span>
                         </TableCell> */}
-                        {/* <TableCell className="Details">
+                        <TableCell className="Details">
                           <Button
-                            // onClick={() => handleClickOpen(item)}
+                            onClick={() => handleEdit(item)}
                             variant="contained"
                             color="success"
                           >
-                            Hiển Thị
+                            Chỉnh Sửa
                           </Button>
-                        </TableCell> */}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -167,6 +180,15 @@ const VehicleModel = () => {
             />
           </Grid>
         )}
+      {selectedItem && (
+        <UpdateModelDialog
+          open={openDialog}
+          handleClose={handleEditClose}
+          token={token}
+          item={selectedItem}
+          setReload={setReload}
+        />
+      )}
     </Box>
   );
 };

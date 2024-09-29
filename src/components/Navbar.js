@@ -366,8 +366,8 @@ const Navbar = () => {
               onChange={handleChangeTab}
               orientation="vertical"
             >
-              <Tab label="Thống Kê" />
-              <Tab label="Thông tin cá nhân" />
+              {/* <Tab label="Thống Kê" /> */}
+              {/* <Tab label="Thông tin cá nhân" /> */}
               <Tab label="Giao dịch" />
               <Tab label="Xe Mua Gói" />
             </Tabs>
@@ -376,24 +376,26 @@ const Navbar = () => {
           <Box sx={{ flexGrow: 1, paddingLeft: '20px', overflowY: 'auto' }}>
             {selectedTab === 0 && (
               <Box>
-                <MainDash />
+                {/* <MainDash /> */}
+                <TransactionsCenter />
+
               </Box>
             )}
             {selectedTab === 1 && (
               <Box>
                 {/* Content for personal information */}
+                <VehicleList />
+
               </Box>
             )}
-            {selectedTab === 2 && (
+            {/* {selectedTab === 2 && (
               <Box>
-                <TransactionsCenter />
               </Box>
             )}
             {selectedTab === 3 && (
               <Box>
-                <VehicleList />
               </Box>
-            )}
+            )} */}
           </Box>
         </Box>
       </Modal>

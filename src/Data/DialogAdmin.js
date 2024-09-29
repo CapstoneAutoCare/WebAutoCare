@@ -22,7 +22,7 @@ import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
-import { CreateVehiclesModelPost } from "../redux/vehiclemodelsSlice";
+import { CreateVehiclesModelPost, UpdateVehiclesModelPut } from "../redux/vehiclemodelsSlice";
 import { CreateSchedulePost, UpdatechedulePut } from "../redux/scheduleSlice";
 import {
   CreateSpartPartPost,
@@ -452,7 +452,7 @@ export const AddScheduleDialog = ({ open, handleClose, token, setReload }) => {
       maintananceScheduleName: Yup.number().required(
         "Yêu cầu nhập số Odo"
       ).min(1000, "Ít nhất là 1000"),
-      
+
       description: Yup.string().required("Yêu cầu mô tả"),
     }),
 
@@ -3731,6 +3731,139 @@ export const UpdateScheduleDialog = ({
                   onClick={() => {
                     formik.resetForm();
                     handleClose();
+                  }}
+                >
+                  Hủy
+                </Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </>
+      )}
+    </Dialog>
+  );
+};
+
+
+
+
+
+export const UpdateModelDialog = ({
+  open,
+  handleClose,
+  token,
+  item,
+  setReload,
+}) => {
+  const dispatch = useDispatch();
+  const [imageFile, setImageFile] = useState(null);
+
+  const formik = useFormik({
+    initialValues: {
+      vehicleModelName: item?.vehicleModelName || "",
+      image: item?.image,
+    },
+    validationSchema: Yup.object({
+      vehicleModelName: Yup.string().required("Yêu cầu tên loại xe"),
+    }),
+
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        let imageUrl = values.image;
+        if (imageFile) {
+          const storageRef = ref(storage, `images/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        dispatch(
+          UpdateVehiclesModelPut({
+            token: token,
+            id: item.vehicleModelId,
+            data: { ...values, image: imageUrl },
+          })
+        ).then(() => {
+          dispatch(ServicesListGetAll(token));
+          handleClose();
+          resetForm();
+        });
+        setReload((p) => !p);
+        resetForm();
+      } catch (error) {
+        console.error("Failed to update spare part item", error);
+      }
+    },
+  });
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    formik.setFieldValue("image", e.target.files[0].name);
+  };
+  useEffect(() => {
+    if (item) {
+      formik.setValues({
+        vehicleModelName: item?.vehicleModelName || "",
+        image: item?.image || "",
+      });
+    }
+  }, [dispatch, item, token]);
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        style: {
+          width: "65%",
+          maxWidth: "65%",
+          height: "65%",
+          maxHeight: "auto",
+        },
+      }}
+    >
+      <DialogTitle style={{ textAlign: "center", fontWeight: "bolder" }}>
+        Cập Nhật Loại Xe
+      </DialogTitle>
+
+      {item && (
+        <>
+          <DialogContent dividers>
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                label="Tên Loại Xe"
+                name="vehicleModelName"
+                value={formik.values.vehicleModelName}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.vehicleModelName &&
+                  Boolean(formik.errors.vehicleModelName)
+                }
+                helperText={
+                  formik.touched.vehicleModelName &&
+                  formik.errors.vehicleModelName
+                }
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Hình Ảnh"
+                name="image"
+                type="file"
+                onChange={handleFileChange}
+                error={formik.touched.image && Boolean(formik.errors.image)}
+                helperText={formik.touched.image && formik.errors.image}
+                fullWidth
+                margin="normal"
+              />
+              <DialogActions>
+                <Button type="submit" color="primary">
+                  Cập Nhật
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+                    formik.resetForm();
                   }}
                 >
                   Hủy

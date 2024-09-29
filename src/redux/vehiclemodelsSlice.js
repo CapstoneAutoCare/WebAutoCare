@@ -34,6 +34,19 @@ export const CreateVehiclesModelPost = createAsyncThunk(
     }
   }
 );
+
+export const UpdateVehiclesModelPut = createAsyncThunk(
+  "vehiclemodels/UpdateVehiclesModelPut",
+  async ({ token,id, data }, { rejectWithValue }) => {
+    try {
+      const list = await VehicleModelApi.update({ token, id,data });
+      console.log("vehiclemodels/UpdateVehiclesModelPut", list.data);
+      return list.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.Exception);
+    }
+  }
+);
 const brandSlice = createSlice({
   name: "vehiclemodels",
   initialState,
@@ -69,7 +82,24 @@ const brandSlice = createSlice({
         state.statusvehiclemodels = "failed";
         state.errorvehiclemodels = action.payload;
         alert(action.payload);
-      });
+      })
+      .addCase(UpdateVehiclesModelPut.pending, (state) => {
+        state.statusvehiclemodels = "loading";
+        state.vehiclemodel = null;
+        state.errorvehiclemodels = null;
+        state.vehiclemodels = [];
+      })
+      .addCase(UpdateVehiclesModelPut.fulfilled, (state, action) => {
+        state.statusvehiclemodels = "succeeded";
+        state.vehiclemodel = action.payload;
+      })
+      .addCase(UpdateVehiclesModelPut.rejected, (state, action) => {
+        state.statusvehiclemodels = "failed";
+        state.errorvehiclemodels = action.payload;
+        alert(action.payload);
+      })
+      
+      ;
   },
 });
 export const {} = brandSlice.actions;

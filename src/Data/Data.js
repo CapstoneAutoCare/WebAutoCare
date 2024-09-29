@@ -114,7 +114,7 @@ export const SidebarDataAdmin = [
   },
   {
     icon: UilClipboardAlt,
-    heading: "Gói Dịch Vụ",
+    heading: "Mốc Odo Bảo Dưỡng",
   },
   {
     icon: UilReceipt,

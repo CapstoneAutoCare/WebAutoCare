@@ -38,5 +38,16 @@ const VehicleModelApi = {
     const url = "/VehicleModel/Post";
     return await axiosApi.post(url, data, config);
   },
+
+  async update({ token, id, data }) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const url = `/VehicleModel/Update?id=${id}`;
+    return await axiosApi.put(url, data, config);
+  },
 };
 export default VehicleModelApi;

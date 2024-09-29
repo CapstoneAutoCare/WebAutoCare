@@ -97,7 +97,7 @@ export const MainDash = () => {
             extra="8,900"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3}>
+        {/* <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
             title="Tổng Doanh Thu Gói KH Mua"
             price={maininforss.price}
@@ -106,7 +106,7 @@ export const MainDash = () => {
             color="warning"
             extra="$20,395"
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <AnalyticEcommerce
             title="Tổng Doanh Thu SP Thêm"
