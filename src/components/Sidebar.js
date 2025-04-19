@@ -45,8 +45,8 @@ const Sidebar = () => {
   const dispatch = useDispatch();
 
   const sidebarVariants = {
-    true: { left: "0" },
-    false: { left: "-60%" },
+    true: { width: "280px" },
+    false: { width: "80px" },
   };
 
   const tokenlocal = localStorage.getItem("localtoken");
@@ -152,67 +152,98 @@ const Sidebar = () => {
     navigate("/");
   };
 
+  const handleSidebarToggle = () => {
+    setExpanded(!expanded);
+  };
+
   return (
     <>
       <div
         className="bars"
-        style={expanded ? { left: "60%" } : { left: "5%" }}
-        onClick={() => setExpanded(!expanded)}
-
+        onClick={handleSidebarToggle}
+        style={{
+          position: "fixed",
+          top: "20px",
+          left: expanded ? "300px" : "100px",
+          zIndex: 1001,
+          background: "#ffffff",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "left 0.3s ease",
+        }}
       >
         <UilBars />
       </div>
+
       <motion.div
         className="sidebar"
         variants={sidebarVariants}
+        animate={expanded ? "true" : "false"}
         style={{
-          width: "250px", // Fixed width
-          height: "100vh", // Full viewport height
-          position: "fixed", // Fixed position
-          overflowY: "auto", // Enable vertical scrolling
-          zIndex: 1000 // Ensure it's on top of other content
+          height: "100vh",
+          position: "fixed",
+          overflowY: "auto",
+          zIndex: 1000,
+          background: "#ffffff",
+          borderRight: "1px solid #e0e0e0",
+          transition: "width 0.3s ease",
         }}
-        animate={window.innerWidth <= 768 ? `${expanded}` : ""}
       >
-
         {userRole === "CENTER" && (
-          <div className="logo">
+          <div className="logo" style={{ padding: expanded ? "1.5rem" : "1rem" }}>
             <img
-              src="https://img.pikbest.com/origin/10/14/70/27tpIkbEsThjY.jpg!sw800"
+              src={SidebarDataCenter[0].logo}
               alt="logo"
               style={{
-                width: "150px",
-                height: "120px",
+                width: expanded ? "120px" : "60px",
+                height: expanded ? "120px" : "60px",
                 borderRadius: "50%",
-                border: "1px solid #000",
+                border: "1px solid #e0e0e0",
+                transition: "all 0.3s ease",
+                objectFit: "cover",
+                backgroundColor: "#f5f6fa",
+                padding: "10px"
               }}
             />
           </div>
         )}
         {userRole === "ADMIN" && (
-          <div className="logo">
+          <div className="logo" style={{ padding: expanded ? "1.5rem" : "1rem" }}>
             <img
-              src="https://thumbs.dreamstime.com/b/red-admin-sign-pc-laptop-vector-illustration-administrator-icon-screen-controller-man-system-box-88756468.jpg"
+              src={SidebarDataAdmin[0].logo}
               alt="logo"
               style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "70%",
-                border: "1px solid #000",
+                width: expanded ? "120px" : "60px",
+                height: expanded ? "120px" : "60px",
+                borderRadius: "50%",
+                border: "1px solid #e0e0e0",
+                transition: "all 0.3s ease",
+                objectFit: "cover",
+                backgroundColor: "#f5f6fa",
+                padding: "10px"
               }}
             />
           </div>
         )}
         {userRole === "CUSTOMERCARE" && (
-          <div className="logo">
+          <div className="logo" style={{ padding: expanded ? "1.5rem" : "1rem" }}>
             <img
-              src="{profile?.Logo}"
+              src={SidebarDataCustomerCare[0].logo}
               alt="logo"
               style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "70%",
-                border: "1px solid #000",
+                width: expanded ? "120px" : "60px",
+                height: expanded ? "120px" : "60px",
+                borderRadius: "50%",
+                border: "1px solid #e0e0e0",
+                transition: "all 0.3s ease",
+                objectFit: "cover",
+                backgroundColor: "#f5f6fa",
+                padding: "10px"
               }}
             />
           </div>
@@ -223,26 +254,37 @@ const Sidebar = () => {
               className={selected === index ? "menuItem active" : "menuItem"}
               key={index}
               onClick={() => handleSidebarItemClick(index)}
+              style={{
+                padding: expanded ? "0.8rem 1rem" : "0.8rem 0.5rem",
+                justifyContent: expanded ? "flex-start" : "center",
+              }}
             >
               <item.icon />
-              <span>{item.heading}</span>
+              {expanded && <span>{item.heading}</span>}
             </div>
           ))}
-          <div className="menuItem" onClick={handleSubmitLogOut}>
+          <div 
+            className="menuItem" 
+            onClick={handleSubmitLogOut}
+            style={{
+              padding: expanded ? "0.8rem 1rem" : "0.8rem 0.5rem",
+              justifyContent: expanded ? "flex-start" : "center",
+            }}
+          >
             <UilSignOutAlt />
-            <span>Đăng Xuất</span>
+            {expanded && <span>Đăng Xuất</span>}
           </div>
         </div>
       </motion.div>
 
-
       <div
         className="main-content"
         style={{
-          marginLeft: "250px", // Leave space for the fixed sidebar
-          padding: "20px", // Add some padding
-          overflowY: "auto", // Allow vertical scrolling for the main content
-          height: "100vh", // Full viewport height
+          marginLeft: expanded ? "280px" : "80px",
+          padding: "20px",
+          overflowY: "auto",
+          height: "100vh",
+          transition: "margin-left 0.3s ease",
         }}
       >
         {sidebarComponents[userRole] ? (

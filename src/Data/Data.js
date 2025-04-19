@@ -1,3 +1,7 @@
+import centerLogo from "../imgs/center-logo.png";
+import adminLogo from "../imgs/admin-logo.png";
+import customerCareLogo from "../imgs/customer-care-logo.png";
+
 // Sidebar imports
 import {
   UilEstate,
@@ -24,6 +28,7 @@ export const SidebarDataCenter = [
   {
     icon: UilChart,
     heading: "Thống Kê",
+    logo: centerLogo
   },
   {
     icon: CarRepairIcon,
@@ -70,6 +75,7 @@ export const SidebarDataCustomerCare = [
   {
     icon: CarRepairIcon,
     heading: "Thông Tin Bảo Trì Sửa Chữa",
+    logo: customerCareLogo
   },
   {
     icon: UilSchedule,
@@ -98,10 +104,10 @@ export const SidebarDataAdmin = [
   //   heading: "Dashboard",
   // },
 
-
   {
     icon: UilLocationPoint,
     heading: "Trung Tâm",
+    logo: adminLogo
   },
 
   {

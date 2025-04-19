@@ -144,7 +144,7 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchNotifications();
-  }, [reload, notifications, unreadCount]);
+  }, [reload, unreadCount]);
 
   return (
     <div className="navbar">
